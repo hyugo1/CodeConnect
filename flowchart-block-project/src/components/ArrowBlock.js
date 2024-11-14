@@ -1,8 +1,9 @@
 // src/components/ArrowBlock.js
 import React from 'react';
 import { useDrag } from 'react-dnd';
+// import Draggable from 'react-draggable';
 
-const ArrowBlock = ({ id }) => {
+const ArrowBlock = ({ id, onDropConnection }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'ARROW',
     item: { id },
@@ -12,6 +13,7 @@ const ArrowBlock = ({ id }) => {
   }));
 
   return (
+    // <Draggable>
     <div
       ref={drag}
       style={{
@@ -20,9 +22,10 @@ const ArrowBlock = ({ id }) => {
         margin: '10px',
         backgroundColor: isDragging ? 'lightblue' : 'white',
         cursor: 'move',
+        height: '50px',
+        width: '40px'
       }}
-    >
-      Arrow
+    >Arrow
     </div>
   );
 };

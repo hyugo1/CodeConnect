@@ -1,7 +1,7 @@
 // src/App.js
 import React from 'react';
-import FlowchartCanvas from './components/FlowchartCanvas';
-import OutputArea from './components/OutputArea'; // New import
+import Canvas from './components/Canvas';
+import OutputArea from './components/OutputArea';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import './components/Block.css';
@@ -21,8 +21,8 @@ const App = () => {
               overflowY: 'auto',
             }}
           >
-            <h2>Blocks</h2>
-            <FlowchartCanvas isPalette={true} />
+            <h2>Blocks Palette</h2>
+            <Canvas isPalette={true} />
           </div>
 
           {/* Center Panel (Flowchart Canvas) */}
@@ -34,8 +34,8 @@ const App = () => {
               borderRight: '2px solid #ccc',
             }}
           >
-            <h2>Flowchart Canvas</h2>
-            <FlowchartCanvas isPalette={false} />
+            <h2>Place the Blocks!</h2>
+            <Canvas isPalette={false} />
           </div>
 
           {/* Right Panel (Output Area) */}

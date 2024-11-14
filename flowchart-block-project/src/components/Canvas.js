@@ -5,7 +5,7 @@ import DraggableBlock from './DraggableBlock';
 import ArrowBlock from './ArrowBlock';
 import './DropZone.css';
 
-const FlowchartCanvas = ({ isPalette }) => {
+const Canvas = ({ isPalette }) => {
   const [droppedBlocks, setDroppedBlocks] = useState([]);
   const [connections, setConnections] = useState([]);
 
@@ -56,13 +56,13 @@ const FlowchartCanvas = ({ isPalette }) => {
         position: 'relative',
         minHeight: '400px',
         maxWidth: '1000px',
-        padding: isPalette ? '10px' : '20px',
+        // padding: isPalette ? '10px' : '20px',
         background: isPalette ? '#f9f9f9' : '#e9e9e9',
         border: '2px dashed #ccc',
       }}
     >
       {isPalette &&
-        ['Start', 'Process', 'End'].map((name, index) => (
+        ['Start', 'Action', 'End'].map((name, index) => (
           <DraggableBlock key={index} id={`${name}-${index}`} type="BLOCK" name={name} />
         ))}
 
@@ -120,4 +120,4 @@ const FlowchartCanvas = ({ isPalette }) => {
   );
 };
 
-export default FlowchartCanvas;
+export default Canvas;
