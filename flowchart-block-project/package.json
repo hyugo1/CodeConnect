@@ -13,6 +13,7 @@
     "react-draggable": "^4.4.6",
     "react-flow-renderer": "^10.3.17",
     "react-scripts": "5.0.1",
+    "reactflow": "^11.11.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

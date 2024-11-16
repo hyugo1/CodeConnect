@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useDrop } from 'react-dnd';
-import Draggable from 'react-draggable';
 import DraggableBlock from './DraggableBlock';
-import ArrowBlock from './ArrowBlock';
+import Draggable from 'react-draggable';
 import './DropZone.css';
 
 const Canvas = ({ isPalette }) => {
@@ -10,22 +9,12 @@ const Canvas = ({ isPalette }) => {
   const [connections, setConnections] = useState([]);
 
   const [, drop] = useDrop({
-    accept: ['BLOCK', 'ARROW'],
+    accept: 'BLOCK',
     drop: (item, monitor) => {
       const clientOffset = monitor.getClientOffset();
 
       if (clientOffset) {
-        if (item.type === 'BLOCK') {
-          // Handle regular block drop
-          addBlockToCanvas(item, clientOffset);
-        } else if (item.type === 'ARROW') {
-          // Handle ArrowBlock
-          if (droppedBlocks.length >= 2) {
-            const fromBlockId = droppedBlocks[droppedBlocks.length - 2].id;
-            const toBlockId = droppedBlocks[droppedBlocks.length - 1].id;
-            connectArrowBlock(fromBlockId, toBlockId);
-          }
-        }
+        addBlockToCanvas(item, clientOffset);
       }
     },
   });
@@ -41,13 +30,6 @@ const Canvas = ({ isPalette }) => {
     ]);
   };
 
-  const connectArrowBlock = (fromBlockId, toBlockId) => {
-    setConnections((prevConnections) => [
-      ...prevConnections,
-      { from: fromBlockId, to: toBlockId },
-    ]);
-  };
-
   return (
     <div
       id="canvas-container"
@@ -56,17 +38,24 @@ const Canvas = ({ isPalette }) => {
         position: 'relative',
         minHeight: '400px',
         maxWidth: '1000px',
-        // padding: isPalette ? '10px' : '20px',
         background: isPalette ? '#f9f9f9' : '#e9e9e9',
         border: '2px dashed #ccc',
       }}
     >
-      {isPalette &&
+      {/* {isPalette &&
         ['Start', 'Action', 'End'].map((name, index) => (
           <DraggableBlock key={index} id={`${name}-${index}`} type="BLOCK" name={name} />
-        ))}
-
-      {isPalette && <ArrowBlock type="ARROW" />}
+        ))} */}
+        {isPalette &&
+    ['Start', 'Action', 'End'].map((name, index) => (
+    <DraggableBlock
+      key={index}
+      id={`${name}-${index}`}
+      type="BLOCK"
+      name={name}
+      blockType={name.toLowerCase()} // Start, action, end
+    />
+    ))}
 
       {!isPalette &&
         droppedBlocks.map((block) => (
@@ -78,12 +67,14 @@ const Canvas = ({ isPalette }) => {
               style={{
                 position: 'absolute',
                 border: '1px solid black',
+                textAlign: 'center',
                 padding: '20px',
                 backgroundColor: '#fff',
                 cursor: 'move',
               }}
             >
               {block.name}
+              <div style={{ fontSize: '20px', marginTop: '10px' }}>↓</div> {/* Arrow symbol */}
             </div>
           </Draggable>
         ))}
