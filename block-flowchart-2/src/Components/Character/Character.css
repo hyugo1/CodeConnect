@@ -1,10 +1,13 @@
 /* src/Components/Character/Character.css */
 
 .character-container {
-    position: relative;
-    display: inline-block;
-    margin: 20px;
-  }
+  position: relative;
+}
+
+.character-image {
+  width: 100px;
+  height: auto;
+}
   
   .message-bubble {
     position: absolute;
@@ -30,10 +33,6 @@
     border-color: white transparent;
   }
   
-  .character-image {
-    width: 100px; /* Adjust size as needed */
-    height: auto;
-  }
 
   /* Position the character area appropriately */
 .character-area {

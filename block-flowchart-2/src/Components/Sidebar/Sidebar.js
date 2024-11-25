@@ -1,7 +1,24 @@
 // src/Components/Sidebar/Sidebar.js
 
 import React from 'react';
-import { FaPlay, FaStop, FaQuestion, FaSync, FaCheck, FaPrint } from 'react-icons/fa'; // Added FaPrint and removed FaCog
+import {
+  FaPlay,
+  FaStop,
+  FaQuestion,
+  FaSync,
+  FaCheck,
+  FaPrint,
+  FaArrowUp,
+  FaArrowDown,
+  FaArrowLeft,
+  FaArrowRight,
+  FaArrowsAltH,
+  FaPlus,
+  FaMinus,
+  FaTimes,
+  FaDivide,
+} from 'react-icons/fa'; // Import movement icons
+import './Sidebar.css';
 
 const Sidebar = () => {
   const onDragStart = (event, nodeType) => {
@@ -27,30 +44,39 @@ const Sidebar = () => {
     { type: 'end', label: 'End Block', color: '#f9d8d8', icon: <FaStop /> },
     { type: 'if', label: 'If-Then Block', color: '#d8d8f9', icon: <FaQuestion /> },
     { type: 'while', label: 'While Block', color: '#f9f7d8', icon: <FaSync /> },
-    { type: 'whileChecker', label: 'While Checker', color: '#f0f0f0', icon: <FaCheck /> }, // New block
-    { type: 'print', label: 'Print Block', color: '#ffeeba', icon: <FaPrint /> }, // Print Block
-    // { type: 'action', label: 'Action Block', color: '#d8f9f9', icon: <FaCog /> }, // Optional
-  ];
-
-  return (
-    <aside style={{ padding: '10px', backgroundColor: '#eee', width: '220px' }}>
-      <h3 style={{ textAlign: 'center' }}>Blocks</h3>
-      {blocks.map((block) => (
-        <div
-          key={block.type}
-          style={{
-            ...blockStyle,
-            backgroundColor: block.color,
-          }}
-          onDragStart={(event) => onDragStart(event, block.type)}
-          draggable
-        >
-          {block.icon}
-          <span style={{ marginLeft: '8px' }}>{block.label}</span>
-        </div>
-      ))}
-    </aside>
-  );
-};
-
-export default Sidebar;
+    { type: 'print', label: 'Print Block', color: '#ffeeba', icon: <FaPrint /> },
+    // Movement blocks
+    { type: 'moveUp', label: 'Move Up', color: '#d8f9f9', icon: <FaArrowUp /> },
+    { type: 'moveDown', label: 'Move Down', color: '#d8f9f9', icon: <FaArrowDown /> },
+    { type: 'moveLeft', label: 'Move Left', color: '#d8f9f9', icon: <FaArrowLeft /> },
+    { type: 'moveRight', label: 'Move Right', color: '#d8f9f9', icon: <FaArrowRight /> },
+    { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> }, // Generic move block
+      // Math operator blocks
+      { type: 'add', label: 'Add', color: '#f9d8f9', icon: <FaPlus /> },
+      { type: 'subtract', label: 'Subtract', color: '#f9d8f9', icon: <FaMinus /> },
+      { type: 'multiply', label: 'Multiply', color: '#f9d8f9', icon: <FaTimes /> },
+      { type: 'divide', label: 'Divide', color: '#f9d8f9', icon: <FaDivide /> },
+    ];
+  
+    return (
+      <aside style={{ padding: '10px', backgroundColor: '#eee', width: '220px' }}>
+        <h3 style={{ textAlign: 'center' }}>Blocks</h3>
+        {blocks.map((block) => (
+          <div
+            key={block.type}
+            style={{
+              ...blockStyle,
+              backgroundColor: block.color,
+            }}
+            onDragStart={(event) => onDragStart(event, block.type)}
+            draggable
+          >
+            {block.icon}
+            <span style={{ marginLeft: '8px' }}>{block.label}</span>
+          </div>
+        ))}
+      </aside>
+    );
+  };
+  
+  export default Sidebar;

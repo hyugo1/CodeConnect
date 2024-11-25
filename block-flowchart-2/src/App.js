@@ -38,6 +38,7 @@ function App() {
 
   const [consoleOutput, setConsoleOutput] = useState('');
 
+  const [characterPosition, setCharacterPosition] = useState({ x: 0, y: 0 });
   const [characterMessage, setCharacterMessage] = useState('');
 
   const onConnect = useCallback(
@@ -103,15 +104,24 @@ function App() {
   }, []);
 
   const onNodeChangeHandler = useCallback(
-    (id, label, action, message) => {
-      console.log('onNodeChangeHandler:', { id, label, action, message });
+    (id, label, action, message, distance, direction, operand1, operand2, resultVar) => {
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id === id) {
-            console.log('Updating node:', node);
-            const updatedNode = { ...node, data: { ...node.data, label, action, message } };
-            console.log('Updated node:', updatedNode);
-            return updatedNode;
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                label,
+                action,
+                message,
+                distance,
+                direction,
+                operand1,
+                operand2,
+                resultVar,
+              },
+            };
           }
           return node;
         })
@@ -219,6 +229,7 @@ function App() {
   const executeFlowchart = useCallback(() => {
     setConsoleOutput('');
     setCharacterMessage(''); // Reset character message
+    setCharacterPosition({ x: 0, y: 0 }); // Reset character position
   
     const currentNodes = nodes;
     const currentEdges = edges;
@@ -260,6 +271,43 @@ function App() {
           outputs.push('');
           setCharacterMessage('');
         }
+      }  else if (node.data.nodeType.startsWith('move')) {
+        // Handle movement blocks
+        let distance = parseInt(node.data.distance);
+        if (isNaN(distance)) {
+          distance = 10; // Default distance if not set
+        }
+        let dx = 0;
+        let dy = 0;
+
+        switch (node.data.nodeType) {
+          case 'moveUp':
+            dy = -distance;
+            break;
+          case 'moveDown':
+            dy = distance;
+            break;
+          case 'moveLeft':
+            dx = -distance;
+            break;
+          case 'moveRight':
+            dx = distance;
+            break;
+          case 'move':
+            // For generic move block, we can ask for direction and distance
+            // For simplicity, let's assume positive distance moves right, negative moves left
+            dx = distance;
+            break;
+          default:
+            break;
+        }
+
+        setCharacterPosition((prevPos) => {
+          const newPos = { x: prevPos.x + dx, y: prevPos.y + dy };
+          return newPos;
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for animation
       } else if (node.data.action) {
         // Provide context to the action
         try {
@@ -340,12 +388,16 @@ function App() {
 
   return (
     <div className="App">
-      <Sidebar />
-      <div
-        className="reactflow-wrapper"
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-      >
+      <div className="app-container">
+        {/* Left Sidebar */}
+        <Sidebar />
+
+        {/* Middle Flowchart Canvas */}
+        <div
+          className="flowchart-container"
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+        >
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -368,57 +420,37 @@ function App() {
           <Controls />
           <Background color="#aaa" gap={16} />
         </ReactFlow>
-        {/* Run Button */}
+        {/* Run and Delete Buttons */}
         <button
-          onClick={executeFlowchart}
-          style={{
-            position: 'absolute',
-            top: 20,
-            right: 100,
-            padding: '10px 20px',
-            backgroundColor: '#4CAF50',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            zIndex: 4,
-          }}
-        >
-          Run
-        </button>
-        {/* Delete Button */}
-        <button
-          onClick={() => {
-            setNodes((nds) => nds.filter((node) => !selectedNodes.includes(node)));
-            setEdges((eds) => eds.filter((edge) => !selectedEdges.includes(edge)));
-          }}
-          disabled={selectedNodes.length === 0 && selectedEdges.length === 0}
-          style={{
-            position: 'absolute',
-            top: 20,
-            right: 20,
-            padding: '10px 20px',
-            backgroundColor: '#f44336',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor:
-              selectedNodes.length > 0 || selectedEdges.length > 0
-                ? 'pointer'
-                : 'not-allowed',
-            zIndex: 4,
-          }}
-        >
-          Delete
-        </button>
-        {/* Console Area */}
-        <div className="console">
-          <h3>Console Output</h3>
-          <pre>{consoleOutput}</pre>
+            onClick={executeFlowchart}
+            className="run-button"
+          >
+            Run
+          </button>
+          <button
+            onClick={() => {
+              setNodes((nds) => nds.filter((node) => !selectedNodes.includes(node)));
+              setEdges((eds) => eds.filter((edge) => !selectedEdges.includes(edge)));
+            }}
+            disabled={selectedNodes.length === 0 && selectedEdges.length === 0}
+            className="delete-button"
+          >
+            Delete
+          </button>
         </div>
-        {/* Character Display Area */}
-        <div className="character-area">
-          <Character message={characterMessage} />
+
+        {/* Right Console and Character Area */}
+        <div className="right-panel">
+          {/* Character Display */}
+          <div className="character-area">
+            <Character message={characterMessage} position={characterPosition} />
+          </div>
+
+          {/* Console Area */}
+          <div className="console">
+            <h3>Console Output</h3>
+            <pre>{consoleOutput}</pre>
+          </div>
         </div>
       </div>
     </div>

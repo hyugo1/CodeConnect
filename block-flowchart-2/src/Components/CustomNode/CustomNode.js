@@ -10,8 +10,10 @@ import {
   FaQuestion,
   FaSync,
   FaCheck,
-  FaPrint, // Added FaPrint
-} from 'react-icons/fa'; // Removed FaCog
+  FaPrint,
+  FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaPlus, FaMinus, FaTimes, FaDivide
+} from 'react-icons/fa';
+import './CustomNode.css';
 
 const handleStyle = { background: '#555' };
 
@@ -25,28 +27,71 @@ const lineStyle = {
 const iconStyle = { marginRight: 5 };
 
 const CustomNode = ({ id, data, selected }) => {
-  const { label, nodeType, onChange, action, message } = data;
+  const { label, nodeType, onChange, action, message, distance, direction, operand1,operand2,resultVar} = data;
 
   const [currentAction, setCurrentAction] = useState(action || '');
   const [currentMessage, setCurrentMessage] = useState(message || '');
+  const [currentDistance, setCurrentDistance] = useState(distance || '');
+  const [currentDirection, setCurrentDirection] = useState(direction || '');
+
+  const [currentOperand1, setCurrentOperand1] = useState(operand1 || '');
+  const [currentOperand2, setCurrentOperand2] = useState(operand2 || '');
+  const [currentResultVar, setCurrentResultVar] = useState(resultVar || '');
 
 
   useEffect(() => {
     setCurrentAction(action || '');
     setCurrentMessage(message || '');
-  }, [action, message]);
+    setCurrentDistance(distance || '');
+    setCurrentDirection(direction || '');
+    setCurrentOperand1(operand1 || '');
+    setCurrentOperand2(operand2 || '');
+    setCurrentResultVar(resultVar || '');
+  }, [action, message, distance, direction, operand1, operand2, resultVar]);
 
   const handleActionChange = (e) => {
     const newAction = e.target.value;
     setCurrentAction(newAction);
-    onChange(id, label, newAction, currentMessage);
+    onChange(id, label, newAction, currentMessage, currentDistance);
   };
 
   const handleMessageChange = (e) => {
     const newMessage = e.target.value;
     setCurrentMessage(newMessage);
     console.log('handleMessageChange:', { id, newMessage });
-    onChange(id, label, currentAction, newMessage);
+    onChange(id, label, currentAction, newMessage, currentDistance);
+  };
+
+  const handleDistanceChange = (e) => {
+    const newDistance = e.target.value;
+    if (!isNaN(newDistance)) {
+      setCurrentDistance(newDistance);
+      onChange(id, label, currentAction, currentMessage, newDistance, currentDirection);
+    }
+  };
+
+  const handleDirectionChange = (e) => {
+    const newDirection = e.target.value;
+    setCurrentDirection(newDirection);
+    onChange(id, label, currentAction, currentMessage, currentDistance, newDirection);
+  };
+
+  const handleOperand1Change = (e) => {
+    const newOperand1 = e.target.value;
+    setCurrentOperand1(newOperand1);
+    onChange(id, label, action, message, distance, direction, newOperand1, currentOperand2, currentResultVar);
+  };
+
+  const handleOperand2Change = (e) => {
+    const newOperand2 = e.target.value;
+    setCurrentOperand2(newOperand2);
+    onChange(id, label, action, message, distance, direction, currentOperand1, newOperand2, currentResultVar);
+  };
+
+  const handleResultVarChange = (e) => {
+    const newResultVar = e.target.value;
+    setCurrentResultVar(newResultVar);
+    onChange(id, label, action, message, distance, direction, currentOperand1, currentOperand2, newResultVar);
   };
 
   console.log('CustomNode id:', id);
@@ -315,6 +360,395 @@ const CustomNode = ({ id, data, selected }) => {
         </>
       );
       break;
+
+      case 'moveUp':
+      nodeStyle = { ...nodeStyle, backgroundColor: '#d8f9f9' };
+      icon = <FaArrowUp style={iconStyle} />;
+      handles = (
+        <>
+          <Handle
+            type="target"
+            position={Position.Top}
+            id={`target-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-target`}
+            data-tooltip-content="Connect from another node"
+            isConnectable={true}
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id={`source-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-source`}
+            data-tooltip-content="Connect to another node"
+            isConnectable={true}
+          />
+          {/* Tooltips */}
+          <Tooltip id={`tooltip-${id}-target`} place="top" />
+          <Tooltip id={`tooltip-${id}-source`} place="top" />
+        </>
+      );
+      lines = (
+        <>
+          {/* Downward line */}
+          <div
+            style={{
+              ...lineStyle,
+              top: '100%',
+              left: '50%',
+              height: 50,
+              transform: 'translateX(-50%)',
+            }}
+          ></div>
+        </>
+      );
+      break;
+    case 'moveDown':
+      nodeStyle = { ...nodeStyle, backgroundColor: '#d8f9f9' };
+      icon = <FaArrowDown style={iconStyle} />;
+      handles = (
+        <>
+          <Handle
+            type="target"
+            position={Position.Top}
+            id={`target-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-target`}
+            data-tooltip-content="Connect from another node"
+            isConnectable={true}
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id={`source-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-source`}
+            data-tooltip-content="Connect to another node"
+            isConnectable={true}
+          />
+          {/* Tooltips */}
+          <Tooltip id={`tooltip-${id}-target`} place="top" />
+          <Tooltip id={`tooltip-${id}-source`} place="top" />
+        </>
+      );
+      lines = (
+        <>
+          {/* Downward line */}
+          <div
+            style={{
+              ...lineStyle,
+              top: '100%',
+              left: '50%',
+              height: 50,
+              transform: 'translateX(-50%)',
+            }}
+          ></div>
+        </>
+      );
+      break;
+    case 'moveLeft':
+      nodeStyle = { ...nodeStyle, backgroundColor: '#d8f9f9' };
+      icon = <FaArrowLeft style={iconStyle} />;
+      handles = (
+        <>
+          <Handle
+            type="target"
+            position={Position.Top}
+            id={`target-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-target`}
+            data-tooltip-content="Connect from another node"
+            isConnectable={true}
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id={`source-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-source`}
+            data-tooltip-content="Connect to another node"
+            isConnectable={true}
+          />
+          {/* Tooltips */}
+          <Tooltip id={`tooltip-${id}-target`} place="top" />
+          <Tooltip id={`tooltip-${id}-source`} place="top" />
+        </>
+      );
+      lines = (
+        <>
+          {/* Downward line */}
+          <div
+            style={{
+              ...lineStyle,
+              top: '100%',
+              left: '50%',
+              height: 50,
+              transform: 'translateX(-50%)',
+            }}
+          ></div>
+        </>
+      );
+      break;
+    case 'moveRight':
+      nodeStyle = { ...nodeStyle, backgroundColor: '#d8f9f9' };
+      icon = <FaArrowRight style={iconStyle} />;
+      handles = (
+        <>
+          <Handle
+            type="target"
+            position={Position.Top}
+            id={`target-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-target`}
+            data-tooltip-content="Connect from another node"
+            isConnectable={true}
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id={`source-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-source`}
+            data-tooltip-content="Connect to another node"
+            isConnectable={true}
+          />
+          {/* Tooltips */}
+          <Tooltip id={`tooltip-${id}-target`} place="top" />
+          <Tooltip id={`tooltip-${id}-source`} place="top" />
+        </>
+      );
+      lines = (
+        <>
+          {/* Downward line */}
+          <div
+            style={{
+              ...lineStyle,
+              top: '100%',
+              left: '50%',
+              height: 50,
+              transform: 'translateX(-50%)',
+            }}
+          ></div>
+        </>
+      );
+      break;
+    case 'move': // Generic move block
+      nodeStyle = { ...nodeStyle, backgroundColor: '#d8f9f9' };
+      icon = <FaArrowsAltH style={iconStyle} />;
+      handles = (
+        <>
+          <Handle
+            type="target"
+            position={Position.Top}
+            id={`target-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-target`}
+            data-tooltip-content="Connect from another node"
+            isConnectable={true}
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id={`source-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-source`}
+            data-tooltip-content="Connect to another node"
+            isConnectable={true}
+          />
+          {/* Tooltips */}
+          <Tooltip id={`tooltip-${id}-target`} place="top" />
+          <Tooltip id={`tooltip-${id}-source`} place="top" />
+        </>
+      );
+      lines = (
+        <>
+          {/* Downward line */}
+          <div
+            style={{
+              ...lineStyle,
+              top: '100%',
+              left: '50%',
+              height: 50,
+              transform: 'translateX(-50%)',
+            }}
+          ></div>
+        </>
+      );
+      break;
+
+      case 'add':
+        nodeStyle = { ...nodeStyle, backgroundColor: '#f9d8f9' };
+        icon = <FaPlus style={iconStyle} />;
+        handles = (
+          <>
+            <Handle
+              type="target"
+              position={Position.Top}
+              id={`target-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-target`}
+              data-tooltip-content="Connect from another node"
+              isConnectable={true}
+            />
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              id={`source-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-source`}
+              data-tooltip-content="Connect to another node"
+              isConnectable={true}
+            />
+            {/* Tooltips */}
+            <Tooltip id={`tooltip-${id}-target`} place="top" />
+            <Tooltip id={`tooltip-${id}-source`} place="top" />
+          </>
+        );
+        lines = (
+          <>
+            {/* Downward line */}
+            <div
+              style={{
+                ...lineStyle,
+                top: '100%',
+                left: '50%',
+                height: 50,
+                transform: 'translateX(-50%)',
+              }}
+            ></div>
+          </>
+        );
+        break;
+      case 'subtract':
+        nodeStyle = { ...nodeStyle, backgroundColor: '#f9d8f9' };
+        icon = <FaMinus style={iconStyle} />;
+        handles = (
+          <>
+            <Handle
+              type="target"
+              position={Position.Top}
+              id={`target-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-target`}
+              data-tooltip-content="Connect from another node"
+              isConnectable={true}
+            />
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              id={`source-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-source`}
+              data-tooltip-content="Connect to another node"
+              isConnectable={true}
+            />
+            {/* Tooltips */}
+            <Tooltip id={`tooltip-${id}-target`} place="top" />
+            <Tooltip id={`tooltip-${id}-source`} place="top" />
+          </>
+        );
+        lines = (
+          <>
+            {/* Downward line */}
+            <div
+              style={{
+                ...lineStyle,
+                top: '100%',
+                left: '50%',
+                height: 50,
+                transform: 'translateX(-50%)',
+              }}
+            ></div>
+          </>
+        );
+        break;
+      case 'multiply':
+        nodeStyle = { ...nodeStyle, backgroundColor: '#f9d8f9' };
+        icon = <FaTimes style={iconStyle} />;
+        handles = (
+          <>
+            <Handle
+              type="target"
+              position={Position.Top}
+              id={`target-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-target`}
+              data-tooltip-content="Connect from another node"
+              isConnectable={true}
+            />
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              id={`source-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-source`}
+              data-tooltip-content="Connect to another node"
+              isConnectable={true}
+            />
+            {/* Tooltips */}
+            <Tooltip id={`tooltip-${id}-target`} place="top" />
+            <Tooltip id={`tooltip-${id}-source`} place="top" />
+          </>
+        );
+        lines = (
+          <>
+            {/* Downward line */}
+            <div
+              style={{
+                ...lineStyle,
+                top: '100%',
+                left: '50%',
+                height: 50,
+                transform: 'translateX(-50%)',
+              }}
+            ></div>
+          </>
+        );
+        break;
+      case 'divide':
+        nodeStyle = { ...nodeStyle, backgroundColor: '#f9d8f9' };
+        icon = <FaDivide style={iconStyle} />;
+        handles = (
+          <>
+            <Handle
+              type="target"
+              position={Position.Top}
+              id={`target-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-target`}
+              data-tooltip-content="Connect from another node"
+              isConnectable={true}
+            />
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              id={`source-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-source`}
+              data-tooltip-content="Connect to another node"
+              isConnectable={true}
+            />
+            {/* Tooltips */}
+            <Tooltip id={`tooltip-${id}-target`} place="top" />
+            <Tooltip id={`tooltip-${id}-source`} place="top" />
+          </>
+        );
+        lines = (
+          <>
+            {/* Downward line */}
+            <div
+              style={{
+                ...lineStyle,
+                top: '100%',
+                left: '50%',
+                height: 50,
+                transform: 'translateX(-50%)',
+              }}
+            ></div>
+          </>
+        );
+        break;
     default:
       nodeStyle = { ...nodeStyle, backgroundColor: '#fff' };
       icon = null;
@@ -401,10 +835,99 @@ const CustomNode = ({ id, data, selected }) => {
           }}
         />
       )}
+      {nodeType === 'move' && (
+  <>
+    <input
+      type="number"
+      placeholder="Enter distance"
+      value={currentDistance}
+      onChange={handleDistanceChange}
+      style={{
+        width: '100%',
+        marginTop: 10,
+        padding: '5px',
+        borderRadius: '3px',
+        border: '1px solid #ccc',
+        fontSize: '12px',
+        boxSizing: 'border-box',
+      }}
+    />
+    <select
+      value={currentDirection}
+      onChange={handleDirectionChange}
+      style={{
+        width: '100%',
+        marginTop: 10,
+        padding: '5px',
+        borderRadius: '3px',
+        border: '1px solid #ccc',
+        fontSize: '12px',
+        boxSizing: 'border-box',
+      }}
+    >
+      <option value="">Select Direction</option>
+      <option value="up">Up</option>
+      <option value="down">Down</option>
+      <option value="left">Left</option>
+      <option value="right">Right</option>
+    </select>
+  </>
+)}
+      {/* Math Operator Inputs */}
+      {['add', 'subtract', 'multiply', 'divide'].includes(nodeType) && (
+        <>
+          <input
+            type="text"
+            placeholder="Operand 1"
+            value={currentOperand1}
+            onChange={handleOperand1Change}
+            style={{
+              width: '100%',
+              marginTop: 10,
+              padding: '5px',
+              borderRadius: '3px',
+              border: '1px solid #ccc',
+              fontSize: '12px',
+              boxSizing: 'border-box',
+            }}
+          />
+          <input
+            type="text"
+            placeholder="Operand 2"
+            value={currentOperand2}
+            onChange={handleOperand2Change}
+            style={{
+              width: '100%',
+              marginTop: 10,
+              padding: '5px',
+              borderRadius: '3px',
+              border: '1px solid #ccc',
+              fontSize: '12px',
+              boxSizing: 'border-box',
+            }}
+          />
+          <input
+            type="text"
+            placeholder="Result Variable"
+            value={currentResultVar}
+            onChange={handleResultVarChange}
+            style={{
+              width: '100%',
+              marginTop: 10,
+              padding: '5px',
+              borderRadius: '3px',
+              border: '1px solid #ccc',
+              fontSize: '12px',
+              boxSizing: 'border-box',
+            }}
+          />
+        </>
+      )}
       {handles}
       {lines}
     </div>
   );
 };
+
 
 export default CustomNode;

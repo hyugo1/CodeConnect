@@ -1,20 +1,17 @@
 /* src/Components/Sidebar/Sidebar.css */
 
-.sidebar {
+aside {
   padding: 10px;
   background-color: #eee;
   width: 220px;
   box-sizing: border-box;
-  overflow-y: auto;
-  height: 100vh;
 }
 
-.sidebar-title {
+aside h3 {
   text-align: center;
-  margin-bottom: 15px;
 }
 
-.block {
+.dndnode {
   margin: 10px 0;
   padding: 10px;
   cursor: grab;
@@ -27,6 +24,6 @@
   align-items: center;
 }
 
-.block-label {
+.dndnode span {
   margin-left: 8px;
 }
