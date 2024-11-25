@@ -1,0 +1,114 @@
+/* src/Components/CustomNode/CustomNode.css */
+
+.custom-node {
+  padding: 10px;
+  border: 2px solid #777;
+  border-radius: 5px;
+  position: relative;
+  min-width: 180px; /* Increased width for better layout */
+  text-align: center;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; /* Adjusted for vertical stacking */
+  background-color: #fff; /* Default background */
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.custom-node.executing {
+  border-color: #ff5722;
+  box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+  background-color: #ffe0b2;
+}
+
+.node-icon {
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.node-label {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.node-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.node-input {
+  width: 80%;
+  margin: 5px 0;
+  padding: 5px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.handle {
+  width: 12px;
+  height: 12px;
+  background: #555;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  position: absolute;
+  cursor: pointer;
+}
+
+.line {
+  position: absolute;
+  width: 3px;
+  background-color: #555;
+  z-index: -1;
+}
+
+.line-down {
+  top: 100%;
+  left: 50%;
+  height: 50px;
+  transform: translateX(-50%);
+}
+
+.line-right {
+  left: 100%;
+  top: 50%;
+  width: 50px;
+  height: 3px;
+  transform: translateY(-50%);
+}
+
+.line-bottom-25 {
+  top: 100%;
+  left: 25%;
+  height: 50px;
+  transform: translateX(-50%);
+}
+
+.line-bottom-75 {
+  top: 100%;
+  left: 75%;
+  height: 50px;
+  transform: translateX(-50%);
+}
+
+.line-right,
+.line-down,
+.line-bottom-25,
+.line-bottom-75 {
+  z-index: -1;
+}
+
+/* Specific styling for End Node */
+.end-node {
+  background-color: #f9d8d8; /* Example: Light red background */
+  border-color: #f44336; /* Example: Red border */
+}
+
+.end-node.executing {
+  border-color: #e53935; /* Darker red when executing */
+  box-shadow: 0 0 10px rgba(229, 57, 53, 0.5);
+  background-color: #ffcdd2;
+}

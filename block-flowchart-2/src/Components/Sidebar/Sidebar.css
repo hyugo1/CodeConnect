@@ -1,0 +1,32 @@
+/* src/Components/Sidebar/Sidebar.css */
+
+.sidebar {
+  padding: 10px;
+  background-color: #eee;
+  width: 220px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.sidebar-title {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.block {
+  margin: 10px 0;
+  padding: 10px;
+  cursor: grab;
+  border-radius: 5px;
+  color: #000;
+  font-weight: bold;
+  border: 2px solid #555;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.block-label {
+  margin-left: 8px;
+}

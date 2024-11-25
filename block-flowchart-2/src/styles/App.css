@@ -1,0 +1,51 @@
+/* src/App.css */
+
+.App {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.reactflow-wrapper {
+  flex-grow: 1;
+  position: relative;
+}
+
+.selected {
+  border-color: #ff5722 !important; /* Highlight border when selected */
+  box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+}
+
+.react-flow__edge.selected {
+  stroke: #ff5722 !important;
+  stroke-width: 4px !important;
+}
+
+.console {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  backgroundColor: '#000';
+  color: '#0f0';
+  padding: 10px;
+  overflow-y: auto;
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #000;
+  color: #0f0;
+}
+
+.console h3 {
+  margin: 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #333;
+}
+
+.console pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 12px;
+}

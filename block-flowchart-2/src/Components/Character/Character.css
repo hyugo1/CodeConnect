@@ -1,0 +1,45 @@
+/* src/Components/Character/Character.css */
+
+.character-container {
+    position: relative;
+    display: inline-block;
+    margin: 20px;
+  }
+  
+  .message-bubble {
+    position: absolute;
+    top: -60px; /* Adjust this value based on your image size */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    border: 2px solid #555;
+    border-radius: 10px;
+    padding: 10px;
+    min-width: 100px;
+    text-align: center;
+  }
+  
+  .message-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -15px; /* Adjust this value based on your bubble size */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 15px 10px 0;
+    border-style: solid;
+    border-color: white transparent;
+  }
+  
+  .character-image {
+    width: 100px; /* Adjust size as needed */
+    height: auto;
+  }
+
+  /* Position the character area appropriately */
+.character-area {
+    position: absolute;
+    bottom: 20px; /* Adjust based on your layout */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5; /* Ensure it's above other elements if necessary */
+  }
