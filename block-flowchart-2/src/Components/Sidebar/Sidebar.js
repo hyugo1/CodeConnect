@@ -6,7 +6,7 @@ import {
   FaStop,
   FaQuestion,
   FaSync,
-  FaCheck,
+  // FaCheck,
   FaPrint,
   FaArrowUp,
   FaArrowDown,
@@ -18,7 +18,8 @@ import {
   FaTimes,
   FaDivide,
   FaPenFancy, 
-} from 'react-icons/fa'; // Import movement icons
+  FaPlusCircle
+} from 'react-icons/fa';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -59,6 +60,7 @@ const Sidebar = () => {
     { type: 'divide', label: 'Divide', color: '#f9d8f9', icon: <FaDivide /> },
     //set variable
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy /> },
+    { type: 'incrementDecrement', label: 'Increment/Decrement', color: '#e0ffe0', icon: <FaPlusCircle /> },
     ];
   
     return (

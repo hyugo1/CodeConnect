@@ -1,6 +1,6 @@
 // src/App.js
 
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import ReactFlow, {
   addEdge,
   useEdgesState,
@@ -108,8 +108,22 @@ function App() {
   }, []);
 
   const onNodeChangeHandler = useCallback(
-    (id, label, action, message, distance, direction, operand1, operand2, resultVar, varName,
-      varValue, leftOperand, operator,rightOperand) => {
+    (
+      id,
+      label,
+      action,
+      message,
+      distance,
+      direction,
+      operand1,
+      operand2,
+      resultVar,
+      varName,
+      varValue,
+      leftOperand,
+      operator,
+      rightOperand
+    ) => {
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id === id) {
@@ -143,34 +157,97 @@ function App() {
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
-
+  
       const reactFlowBounds = event.target.getBoundingClientRect();
       const nodeType = event.dataTransfer.getData('application/reactflow');
-
+  
       if (!nodeType) return;
-
+  
       const position = {
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
       };
-
+  
       const snappedX = Math.round(position.x / 15) * 15;
       const snappedY = Math.round(position.y / 15) * 15;
+  
+      if (nodeType === 'while') {
+        // Create While Start and While End nodes
+        const whileStartNode = {
+          id: `${+new Date()}-start`,
+          type: 'custom',
+          position: { x: snappedX, y: snappedY },
+          data: {
+            label: 'While Start',
+            nodeType: 'whileStart',
+            onChange: onNodeChangeHandler,
+            condition: '',
+            whileEndNodeId: '', // Will set after creating whileEndNode
+          },
+        };
+  
+        const whileEndNode = {
+          id: `${+new Date()}-end`,
+          type: 'custom',
+          position: { x: snappedX + 200, y: snappedY }, // Adjust position as needed
+          data: {
+            label: 'While End',
+            nodeType: 'whileEnd',
+            onChange: onNodeChangeHandler,
+            condition: '',
+            whileStartNodeId: whileStartNode.id,
+          },
+        };
+  
+        // Set the IDs to reference each other
+        whileStartNode.data.whileEndNodeId = whileEndNode.id;
+        whileEndNode.data.whileStartNodeId = whileStartNode.id;
+  
+        setNodes((nds) => nds.concat([whileStartNode, whileEndNode]));
+  
+        // Connect While Start and While End nodes
+        const newEdge = {
+          id: `e${whileStartNode.id}-${whileEndNode.id}`,
+          source: whileStartNode.id,
+          target: whileEndNode.id,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: '#555', strokeWidth: 3 },
+          label: '',
+        };
+        setEdges((eds) => eds.concat(newEdge));
+  
+        // Connect While End back to While Start (Loop Back Edge)
+        const loopBackEdge = {
+          id: `e${whileEndNode.id}-${whileStartNode.id}`,
+          source: whileEndNode.id,
+          target: whileStartNode.id,
+          sourceHandle: `loopBack-${whileEndNode.id}`,
+          type: 'custom',
+          animated: true,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: '#555', strokeWidth: 3 },
+          label: 'Loop',
+        };
+        setEdges((eds) => eds.concat(loopBackEdge));
+      } else {
+        // Create the new node without auto-connecting edges
+        const newNode = {
+          id: `${+new Date()}`,
+          type: 'custom',
+          position: { x: snappedX, y: snappedY },
+          data: {
+            label: `${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)} Block`,
+            nodeType,
+            onChange: onNodeChangeHandler,
+            action: '',
+            message: '',
+          },
+        };
+  
+        setNodes((nds) => nds.concat(newNode));
 
-      const newNode = {
-        id: `${+new Date()}`,
-        type: 'custom',
-        position: { x: snappedX, y: snappedY },
-        data: {
-          label: `${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)} Block`,
-          nodeType,
-          onChange: onNodeChangeHandler,
-          action: '',
-          message: '', // For Print Block
-        },
-      };
-
-      setNodes((nds) => nds.concat(newNode));
 
       if (lastNodeId.current) {
         const newEdge = {
@@ -187,31 +264,32 @@ function App() {
       }
 
       lastNodeId.current = newNode.id;
-    },
-    [setNodes, setEdges, onNodeChangeHandler]
-  );
+    }
+  },
+  [setNodes, setEdges, onNodeChangeHandler]
+);
 
-  const onNodesRemove = useCallback(
-    (nodesToRemove) => {
-      const idsToRemove = nodesToRemove.map((node) => node.id);
-      setNodes((nds) => nds.filter((node) => !idsToRemove.includes(node.id)));
-      setEdges((eds) =>
-        eds.filter(
-          (edge) =>
-            !idsToRemove.includes(edge.source) && !idsToRemove.includes(edge.target)
-        )
-      );
-    },
-    [setNodes, setEdges]
-  );
+  // const onNodesRemove = useCallback(
+  //   (nodesToRemove) => {
+  //     const idsToRemove = nodesToRemove.map((node) => node.id);
+  //     setNodes((nds) => nds.filter((node) => !idsToRemove.includes(node.id)));
+  //     setEdges((eds) =>
+  //       eds.filter(
+  //         (edge) =>
+  //           !idsToRemove.includes(edge.source) && !idsToRemove.includes(edge.target)
+  //       )
+  //     );
+  //   },
+  //   [setNodes, setEdges]
+  // );
 
-  const onEdgesRemove = useCallback(
-    (edgesToRemove) => {
-      const idsToRemove = edgesToRemove.map((edge) => edge.id);
-      setEdges((eds) => eds.filter((edge) => !idsToRemove.includes(edge.id)));
-    },
-    [setEdges]
-  );
+  // const onEdgesRemove = useCallback(
+  //   (edgesToRemove) => {
+  //     const idsToRemove = edgesToRemove.map((edge) => edge.id);
+  //     setEdges((eds) => eds.filter((edge) => !idsToRemove.includes(edge.id)));
+  //   },
+  //   [setEdges]
+  // );
 
   const onSelectionChange = useCallback(({ nodes, edges }) => {
     setSelectedNodes(nodes);
@@ -235,8 +313,10 @@ function App() {
   //     window.removeEventListener('keydown', handleKeyDown);
   //   };
   // }, [onNodesRemove, onEdgesRemove, selectedNodes, selectedEdges]);
+  const MAX_ITERATIONS = 1000; // Adjust as needed
 
   const executeFlowchart = useCallback(async () => {
+    let iterationCount = 0;
     setConsoleOutput('');
     setCharacterMessage(''); // Reset character message
     setCharacterPosition({ x: 0, y: 0 }); // Reset character position
@@ -258,128 +338,200 @@ function App() {
     };
   
     const traverse = async (nodeId) => {
+      iterationCount++;
+      if (iterationCount > MAX_ITERATIONS) {
+        outputs.push('Error: Maximum iteration limit reached.');
+        return;
+      }
+  
       console.log(`Traversing node: ${nodeId}`);
-      // if (visitedNodes.has(nodeId)) {
-      //   return;
-      // }
-      // visitedNodes.add(nodeId);
+  
+      // Check for infinite recursion
+      if (visitedNodes.has(nodeId)) {
+        outputs.push(`Error: Detected infinite loop at node ${nodeId}`);
+        return;
+      }
+      visitedNodes.add(nodeId);
   
       const node = currentNodes.find((n) => n.id === nodeId);
       if (!node) return;
   
-      if (node.data.nodeType === 'setVariable') {
-        const { varName, varValue } = node.data;
-        if (varName) {
-          let value;
-          try {
-            const valueFunc = new Function(
-              'variables',
-              `with (variables) { return (${varValue}); }`
-            );
-            value = valueFunc(context.variables);
-          } catch (error) {
-            console.error(`Error evaluating value at node ${node.id}:`, error);
-            outputs.push(
-              `Error evaluating value in node ${node.id}: ${error.message}`
-            );
-            return; // Use return instead of continue
+      switch (node.data.nodeType) {
+        case 'setVariable': {
+          const { varName, varValue } = node.data;
+          if (varName) {
+            try {
+              // eslint-disable-next-line no-new-func
+              const valueFunc = new Function(
+                'variables',
+                `with (variables) { return (${varValue}); }`
+              );
+              const value = valueFunc(context.variables);
+              context.variables[varName] = value;
+              console.log(`Set variable ${varName} = ${value}`);
+            } catch (error) {
+              console.error(`Error evaluating value at node ${node.id}:`, error);
+              outputs.push(`Error evaluating value in node ${node.id}: ${error.message}`);
+              return;
+            }
           }
-          context.variables[varName] = value;
-          console.log(`Set variable ${varName} = ${value}`);
+          break;
         }
-      } else if (node.data.nodeType === 'if') {
-        // Evaluate condition for If node
-        const { leftOperand, operator, rightOperand } = node.data;
-        let conditionMet = false;
-        if (leftOperand && operator && rightOperand) {
-          try {
-            const condition = `${leftOperand} ${operator} ${rightOperand}`;
-            console.log(`Evaluating condition at node ${node.id}: ${condition}`);
-            const condFunc = new Function(
-              'variables',
-              `with (variables) { return (${condition}); }`
-            );
-            conditionMet = condFunc(context.variables);
-          } catch (error) {
-            console.error(`Error evaluating condition at node ${node.id}:`, error);
-            outputs.push(
-              `Error evaluating condition in node ${node.id}: ${error.message}`
-            );
-            return; // Use return instead of continue
+  
+        case 'incrementDecrement': {
+          const { varName, varValue } = node.data;
+          if (varName) {
+            const incrementValue = parseFloat(varValue);
+            if (isNaN(incrementValue)) {
+              outputs.push(`Invalid increment value at node ${node.id}`);
+              return;
+            }
+            if (context.variables.hasOwnProperty(varName)) {
+              context.variables[varName] += incrementValue;
+              console.log(`Incremented variable ${varName} by ${incrementValue}. New value: ${context.variables[varName]}`);
+            } else {
+              outputs.push(`Variable ${varName} is not defined at node ${node.id}`);
+              return;
+            }
           }
-        } else {
-          outputs.push(`Incomplete condition in node ${node.id}`);
-          return;
-        }
-        // Store conditionMet in the node's data for use in edge traversal
-        node.conditionMet = conditionMet;
-      } else if (node.data.nodeType === 'print') {
-        let message = node.data.message || '';
-        let evaluatedMessage;
-        try {
-          const messageFunc = new Function(
-            'variables',
-            `with (variables) { return (${JSON.stringify(message)}); }`
-          );
-          evaluatedMessage = messageFunc(context.variables);
-        } catch (error) {
-          console.error(`Error evaluating message at node ${node.id}:`, error);
-          outputs.push(
-            `Error evaluating message in node ${node.id}: ${error.message}`
-          );
-          return;
-        }
-        outputs.push(evaluatedMessage);
-        setCharacterMessage(evaluatedMessage);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setCharacterMessage('');
-      } else if (node.data.nodeType.startsWith('move')) {
-        // Handle movement blocks
-        let distance = parseInt(node.data.distance);
-        if (isNaN(distance)) {
-          distance = 10; // Default distance if not set
-        }
-        let dx = 0;
-        let dy = 0;
-  
-        switch (node.data.nodeType) {
-          case 'moveUp':
-            dy = -distance;
-            break;
-          case 'moveDown':
-            dy = distance;
-            break;
-          case 'moveLeft':
-            dx = -distance;
-            break;
-          case 'moveRight':
-            dx = distance;
-            break;
-          case 'move':
-            // For generic move block, we can ask for direction and distance
-            // For simplicity, let's assume positive distance moves right, negative moves left
-            dx = distance;
-            break;
-          default:
-            break;
+          break;
         }
   
-        setCharacterPosition((prevPos) => {
-          const newPos = { x: prevPos.x + dx, y: prevPos.y + dy };
-          return newPos;
-        });
-  
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for animation
-      } else if (node.data.action) {
-        // Provide context to the action
-        try {
-          const func = new Function('context', node.data.action);
-          func(context);
-        } catch (error) {
-          console.error(`Error executing node ${node.id}:`, error);
-          outputs.push(`Error in node ${node.id}: ${error.message}`);
-          return;
+        case 'if': {
+          const { leftOperand, operator, rightOperand } = node.data;
+          let conditionMet = false;
+          if (leftOperand && operator && rightOperand) {
+            try {
+              const condition = `${leftOperand} ${operator} ${rightOperand}`;
+              console.log(`Evaluating condition at node ${node.id}: ${condition}`);
+              // eslint-disable-next-line no-new-func
+              const condFunc = new Function(
+                'variables',
+                `with (variables) { return (${condition}); }`
+              );
+              conditionMet = condFunc(context.variables);
+            } catch (error) {
+              console.error(`Error evaluating condition at node ${node.id}:`, error);
+              outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
+              return;
+            }
+          } else {
+            outputs.push(`Incomplete condition in node ${node.id}`);
+            return;
+          }
+          // Store conditionMet in the node's data for use in edge traversal
+          node.conditionMet = conditionMet;
+          break;
         }
+  
+        case 'print': {
+          let message = node.data.message || '';
+          let evaluatedMessage;
+          try {
+            // eslint-disable-next-line no-new-func
+            const messageFunc = new Function(
+              'variables',
+              `with (variables) { return (${message}); }`
+            );
+            evaluatedMessage = messageFunc(context.variables);
+          } catch (error) {
+            // If an error occurs, treat message as a string literal
+            try {
+              // eslint-disable-next-line no-new-func
+              const messageFunc = new Function(
+                'variables',
+                `with (variables) { return (\`${message}\`); }`
+              );
+              evaluatedMessage = messageFunc(context.variables);
+            } catch (err) {
+              console.error(`Error evaluating message at node ${node.id}:`, err);
+              outputs.push(`Error evaluating message in node ${node.id}: ${err.message}`);
+              return;
+            }
+          }
+          outputs.push(evaluatedMessage);
+          setCharacterMessage(evaluatedMessage);
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          setCharacterMessage('');
+          break;
+        }
+  
+        case 'moveUp':
+        case 'moveDown':
+        case 'moveLeft':
+        case 'moveRight':
+        case 'move': {
+          let distance = parseInt(node.data.distance, 10);
+          if (isNaN(distance)) {
+            distance = 10; // Default distance if not set
+          }
+          let dx = 0;
+          let dy = 0;
+  
+          switch (node.data.nodeType) {
+            case 'moveUp':
+              dy = -distance;
+              break;
+            case 'moveDown':
+              dy = distance;
+              break;
+            case 'moveLeft':
+              dx = -distance;
+              break;
+            case 'moveRight':
+              dx = distance;
+              break;
+            case 'move':
+              // For generic move block, assume direction and distance
+              const { direction } = node.data;
+              switch (direction) {
+                case 'up':
+                  dy = -distance;
+                  break;
+                case 'down':
+                  dy = distance;
+                  break;
+                case 'left':
+                  dx = -distance;
+                  break;
+                case 'right':
+                  dx = distance;
+                  break;
+                default:
+                  dx = distance; // Default to right if direction is undefined
+              }
+              break;
+            default:
+              break;
+          }
+  
+          setCharacterPosition((prevPos) => ({
+            x: prevPos.x + dx,
+            y: prevPos.y + dy,
+          }));
+  
+          await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for animation
+          break;
+        }
+  
+        case 'action': {
+          if (node.data.action) {
+            try {
+              // eslint-disable-next-line no-new-func
+              const func = new Function('context', node.data.action);
+              func(context);
+            } catch (error) {
+              console.error(`Error executing node ${node.id}:`, error);
+              outputs.push(`Error in node ${node.id}: ${error.message}`);
+              return;
+            }
+          }
+          break;
+        }
+  
+        default:
+          // Handle other node types if necessary
+          break;
       }
   
       // Handle control flow
@@ -402,50 +554,53 @@ function App() {
           ) {
             await traverse(targetNodeId);
           }
-        } else if (node.data.nodeType === 'while') {
+        } else if (node.data.nodeType === 'whileStart') {
+          // Proceed to the next node(s)
+          await traverse(targetNodeId);
+        } else if (node.data.nodeType === 'whileEnd') {
+          // Evaluate the condition
+          const { leftOperand, operator, rightOperand } = node.data;
           let conditionMet = false;
-          let condFunc;
-          try {
-            condFunc = new Function(
-              'variables',
-              `with (variables) { return (${node.data.action}); }`
-            );
-            conditionMet = condFunc(context.variables);
-          } catch (error) {
-            console.error(`Error evaluating condition at node ${node.id}:`, error);
-            outputs.push(
-              `Error evaluating condition in node ${node.id}: ${error.message}`
-            );
-            break;
-          }
-  
-          while (conditionMet) {
-            await traverse(targetNodeId);
+          if (leftOperand && operator && rightOperand) {
             try {
+              const condition = `${leftOperand} ${operator} ${rightOperand}`;
+              console.log(`Evaluating condition at node ${node.id}: ${condition}`);
+              // eslint-disable-next-line no-new-func
+              const condFunc = new Function(
+                'variables',
+                `with (variables) { return (${condition}); }`
+              );
               conditionMet = condFunc(context.variables);
             } catch (error) {
-              console.error(
-                `Error re-evaluating condition at node ${node.id}:`,
-                error
-              );
-              outputs.push(
-                `Error re-evaluating condition in node ${node.id}: ${error.message}`
-              );
-              break;
+              console.error(`Error evaluating condition at node ${node.id}:`, error);
+              outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
+              return;
             }
+          } else {
+            outputs.push(`Incomplete condition in node ${node.id}`);
+            return;
+          }
+  
+          if (conditionMet) {
+            // Loop back to 'whileStart'
+            await traverse(node.data.whileStartNodeId);
+          } else {
+            // Proceed to the next node after 'whileEnd'
+            await traverse(targetNodeId);
           }
         } else {
           await traverse(targetNodeId);
         }
       }
+      visitedNodes.delete(nodeId);
     };
   
     await traverse(startNode.id);
   
     console.log('Outputs:', outputs);
     setConsoleOutput(outputs.join('\n'));
-  }, [nodes, edges]);
-
+  }, [nodes, edges, setConsoleOutput, setCharacterMessage, setCharacterPosition]); // Added missing dependencies
+  
   return (
     <div className="App">
       <div className="app-container">

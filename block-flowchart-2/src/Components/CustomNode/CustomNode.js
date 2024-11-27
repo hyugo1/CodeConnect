@@ -9,9 +9,9 @@ import {
   FaStop,
   FaQuestion,
   FaSync,
-  FaCheck,
+  // FaCheck,
   FaPrint,
-  FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaPlus, FaMinus, FaTimes, FaDivide, FaPenFancy
+  FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaPlus, FaMinus, FaTimes, FaDivide, FaPenFancy, FaPlusCircle
 } from 'react-icons/fa';
 import './CustomNode.css';
 
@@ -24,11 +24,63 @@ const lineStyle = {
   zIndex: -1,
 };
 
+const DownLineStyle = {...lineStyle,
+  top: '100%',
+  left: '50%',
+  height: 50,
+  transform: 'translateX(-50%)',
+};
+
+const inputStyle = {
+  width: '100%',
+  marginTop: 10,
+  padding: '5px',
+  borderRadius: '3px',
+  border: '1px solid #ccc',
+  fontSize: '12px',
+  boxSizing: 'border-box',
+};
+
+const bottomLeftStyle = {
+  ...lineStyle,
+  top: '100%',
+  left: '25%',
+  height: 50,
+  transform: 'translateX(-50%)',
+};
+
+const bottomRightStyle = {
+  ...lineStyle,
+  top: '100%',
+  left: '75%',
+  height: 50,
+  transform: 'translateX(-50%)',
+};
+
+const textStyle = {
+  width: '100%',
+  marginTop: 10,
+  padding: '5px',
+  borderRadius: '3px',
+  border: '1px solid #ccc',
+  fontSize: '12px',
+  boxSizing: 'border-box',
+}
+
+const mathStyle = {
+  width: '100%',
+  marginTop: 10,
+  padding: '5px',
+  borderRadius: '3px',
+  border: '1px solid #ccc',
+  fontSize: '12px',
+  boxSizing: 'border-box',
+}
+
 const iconStyle = { marginRight: 5 };
 
 const CustomNode = ({ id, data, selected }) => {
-  const { label, nodeType, onChange, action, message, distance, direction, operand1,operand2,resultVar, varName,
-    varValue, leftOperand, operator, rightOperand,} = data;
+  const { label, nodeType, onChange, action, message, distance, direction, operand1,operand2,resultVar, varName, varValue, leftOperand, operator, rightOperand,} = data;
 
   const [currentAction, setCurrentAction] = useState(action || '');
   const [currentMessage, setCurrentMessage] = useState(message || '');
@@ -72,20 +124,7 @@ const CustomNode = ({ id, data, selected }) => {
     const newMessage = e.target.value;
     setCurrentMessage(newMessage);
     onChange(
-      id,
-      label,
-      currentAction,
-      newMessage,
-      currentDistance,
-      currentDirection,
-      currentOperand1,
-      currentOperand2,
-      currentResultVar,
-      currentVarName,
-      currentVarValue,
-      currentLeftOperand,
-      currentOperator,
-      currentRightOperand
+      id, label, currentAction, newMessage, currentDistance, currentDirection, currentOperand1, currentOperand2, currentResultVar, currentVarName, currentVarValue, currentLeftOperand, currentOperator, currentRightOperand
     );
   };
 
@@ -124,99 +163,35 @@ const CustomNode = ({ id, data, selected }) => {
   const handleVarNameChange = (e) => {
     const newVarName = e.target.value;
     setCurrentVarName(newVarName);
-    onChange(
-      id,
-      label,
-      action,
-      message,
-      distance,
-      direction,
-      operand1,
-      operand2,
-      resultVar,
-      newVarName,
-      currentVarValue
+    onChange(id, label, action, message, distance, direction, operand1, operand2, resultVar, newVarName, currentVarValue
     );
   };
 
   const handleVarValueChange = (e) => {
     const newVarValue = e.target.value;
     setCurrentVarValue(newVarValue);
-    onChange(
-      id,
-      label,
-      action,
-      message,
-      distance,
-      direction,
-      operand1,
-      operand2,
-      resultVar,
-      currentVarName,
-      newVarValue
+    onChange(id, label, action, message, distance, direction, operand1, operand2, resultVar, currentVarName, newVarValue
     );
   };
 
   const handleLeftOperandChange = (e) => {
     const newLeftOperand = e.target.value;
     setCurrentLeftOperand(newLeftOperand);
-    onChange(
-      id,
-      label,
-      action,
-      message,
-      distance,
-      direction,
-      operand1,
-      operand2,
-      resultVar,
-      varName,
-      varValue,
-      newLeftOperand,
-      currentOperator,
-      currentRightOperand
+    onChange(id, label, action, message, distance, direction, operand1, operand2, resultVar, varName, varValue, newLeftOperand, currentOperator, currentRightOperand
     );
   };
 
   const handleOperatorChange = (e) => {
     const newOperator = e.target.value;
     setCurrentOperator(newOperator);
-    onChange(
-      id,
-      label,
-      currentAction,
-      currentMessage,
-      currentDistance,
-      currentDirection,
-      currentOperand1,
-      currentOperand2,
-      currentResultVar,
-      currentVarName,
-      currentVarValue,
-      currentLeftOperand,
-      newOperator,
-      currentRightOperand
+    onChange(id, label, currentAction, currentMessage, currentDistance, currentDirection, currentOperand1,currentOperand2, currentResultVar, currentVarName, currentVarValue, currentLeftOperand, newOperator, currentRightOperand
     );
   };
 
   const handleRightOperandChange = (e) => {
     const newRightOperand = e.target.value;
     setCurrentRightOperand(newRightOperand);
-    onChange(
-      id,
-      label,
-      action,
-      message,
-      distance,
-      direction,
-      operand1,
-      operand2,
-      resultVar,
-      varName,
-      varValue,
-      currentLeftOperand,
-      currentOperator,
-      newRightOperand
+    onChange(id, label, action, message, distance, direction, operand1, operand2, resultVar, varName, varValue, currentLeftOperand, currentOperator, newRightOperand
     );
   };
 
@@ -228,7 +203,7 @@ const CustomNode = ({ id, data, selected }) => {
     border: '2px solid #777',
     borderRadius: 5,
     position: 'relative',
-    minWidth: 180, // Increased width for better layout
+    minWidth: 180,
     textAlign: 'center',
     fontWeight: 'bold',
     display: 'flex',
@@ -240,6 +215,7 @@ const CustomNode = ({ id, data, selected }) => {
   let icon = null;
   let handles = null;
   let lines = null;
+
 
   switch (nodeType) {
     case 'start':
@@ -260,15 +236,7 @@ const CustomNode = ({ id, data, selected }) => {
         </>
       );
       lines = (
-        <div
-          style={{
-            ...lineStyle,
-            top: '100%',
-            left: '50%',
-            height: 50,
-            transform: 'translateX(-50%)',
-          }}
-        ></div>
+        <div style={DownLineStyle}></div>
       );
       break;
     case 'end':
@@ -334,115 +302,107 @@ const CustomNode = ({ id, data, selected }) => {
         <>
           {/* Yes branch line */}
           <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '25%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
+            style={bottomLeftStyle}
           ></div>
           {/* No branch line */}
           <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '75%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
+            style={bottomRightStyle}
           ></div>
         </>
       );
       break;
-    case 'while':
-      nodeStyle = { ...nodeStyle, backgroundColor: '#f9f7d8' };
-      icon = <FaSync style={iconStyle} />;
-      handles = (
-        <>
-          <Handle
-            type="target"
-            position={Position.Top}
-            id={`target-${id}`}
-            style={{ left: '50%', ...handleStyle }}
-            data-tooltip-id={`tooltip-${id}-target`}
-            data-tooltip-content="Connect from another node"
-            isConnectable={true}
-          />
-          {/* Loop back branch */}
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            id={`loop-${id}`}
-            style={{ left: '50%', ...handleStyle }}
-            data-tooltip-id={`tooltip-${id}-loop`}
-            data-tooltip-content="Loop Back"
-            isConnectable={true}
-          />
-          {/* Tooltips */}
-          <Tooltip id={`tooltip-${id}-target`} place="top" />
-          <Tooltip id={`tooltip-${id}-loop`} place="top" />
-        </>
-      );
-      lines = (
-        <>
-          {/* Loop back line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
-        </>
-      );
-      break;
-    case 'whileChecker':
-      nodeStyle = { ...nodeStyle, backgroundColor: '#d8d8f9' };
-      icon = <FaCheck style={iconStyle} />;
-      handles = (
-        <>
-          <Handle
-            type="target"
-            position={Position.Top}
-            id={`target-${id}`}
-            style={{ left: '50%', ...handleStyle }}
-            data-tooltip-id={`tooltip-${id}-target`}
-            data-tooltip-content="Connect from another node"
-            isConnectable={true}
-          />
-          {/* Loop back branch */}
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            id={`loop-${id}`}
-            style={{ left: '50%', ...handleStyle }}
-            data-tooltip-id={`tooltip-${id}-loop`}
-            data-tooltip-content="Loop Ends"
-            isConnectable={true}
-          />
-          {/* Tooltips */}
-          <Tooltip id={`tooltip-${id}-target`} place="top" />
-          <Tooltip id={`tooltip-${id}-loop`} place="top" />
-        </>
-      );
-      lines = (
-        <>
-          {/* Loop back line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
-        </>
-      );
-      break;
+
+      case 'whileStart':
+        nodeStyle = { ...nodeStyle, backgroundColor: '#f9f7d8' };
+        icon = <FaSync style={iconStyle} />;
+        handles = (
+          <>
+            <Handle
+              type="target"
+              position={Position.Top}
+              id={`target-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-target`}
+              data-tooltip-content="Connect from another node"
+              isConnectable={true}
+            />
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              id={`source-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-source`}
+              data-tooltip-content="Connect to the first node inside the loop"
+              isConnectable={true}
+            />
+            <Tooltip id={`tooltip-${id}-target`} place="top" />
+            <Tooltip id={`tooltip-${id}-source`} place="top" />
+          </>
+        );
+        lines = (
+          <>
+            {/* Downward line */}
+            <div style={DownLineStyle}></div>
+          </>
+        );
+        break;
+  
+      case 'whileEnd':
+        nodeStyle = { ...nodeStyle, backgroundColor: '#f9f7d8' };
+        icon = <FaSync style={iconStyle} />;
+        handles = (
+          <>
+            <Handle
+              type="target"
+              position={Position.Top}
+              id={`target-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-target`}
+              data-tooltip-content="Connect from the last node inside the loop"
+              isConnectable={true}
+            />
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              id={`source-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-source`}
+              data-tooltip-content="Connect to the next node after the loop"
+              isConnectable={true}
+            />
+            {/* Loop back handle */}
+            <Handle
+              type="source"
+              position={Position.Right}
+              id={`loopBack-${id}`}
+              style={{ top: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-loopBack`}
+              data-tooltip-content="Loop back to While Start"
+              isConnectable={true}
+            />
+            <Tooltip id={`tooltip-${id}-target`} place="top" />
+            <Tooltip id={`tooltip-${id}-source`} place="top" />
+            <Tooltip id={`tooltip-${id}-loopBack`} place="top" />
+          </>
+        );
+        lines = (
+          <>
+            {/* Downward line */}
+            <div style={DownLineStyle}></div>
+            {/* Loop back line */}
+            <div
+              style={{
+                ...lineStyle,
+                top: '50%',
+                right: '-50px',
+                width: 50,
+                height: 3,
+                transform: 'translateY(-50%)',
+              }}
+            ></div>
+          </>
+        );
+        break;
     case 'print': // New Print Block
       nodeStyle = { ...nodeStyle, backgroundColor: '#ffeeba' };
       icon = <FaPrint style={iconStyle} />;
@@ -474,15 +434,7 @@ const CustomNode = ({ id, data, selected }) => {
       lines = (
         <>
           {/* Downward line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
+          <div style={DownLineStyle}></div>
         </>
       );
       break;
@@ -518,15 +470,7 @@ const CustomNode = ({ id, data, selected }) => {
       lines = (
         <>
           {/* Downward line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
+          <div style={DownLineStyle}></div>
         </>
       );
       break;
@@ -561,15 +505,7 @@ const CustomNode = ({ id, data, selected }) => {
       lines = (
         <>
           {/* Downward line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
+          <div style={DownLineStyle}></div>
         </>
       );
       break;
@@ -604,15 +540,7 @@ const CustomNode = ({ id, data, selected }) => {
       lines = (
         <>
           {/* Downward line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
+          <div style={DownLineStyle}></div>
         </>
       );
       break;
@@ -647,15 +575,7 @@ const CustomNode = ({ id, data, selected }) => {
       lines = (
         <>
           {/* Downward line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
+          <div style={DownLineStyle}></div>
         </>
       );
       break;
@@ -690,15 +610,7 @@ const CustomNode = ({ id, data, selected }) => {
       lines = (
         <>
           {/* Downward line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
+          <div style={DownLineStyle}></div>
         </>
       );
       break;
@@ -734,15 +646,7 @@ const CustomNode = ({ id, data, selected }) => {
         lines = (
           <>
             {/* Downward line */}
-            <div
-              style={{
-                ...lineStyle,
-                top: '100%',
-                left: '50%',
-                height: 50,
-                transform: 'translateX(-50%)',
-              }}
-            ></div>
+            <div style={DownLineStyle}></div>
           </>
         );
         break;
@@ -777,15 +681,7 @@ const CustomNode = ({ id, data, selected }) => {
         lines = (
           <>
             {/* Downward line */}
-            <div
-              style={{
-                ...lineStyle,
-                top: '100%',
-                left: '50%',
-                height: 50,
-                transform: 'translateX(-50%)',
-              }}
-            ></div>
+            <div style={DownLineStyle} ></div>
           </>
         );
         break;
@@ -820,15 +716,7 @@ const CustomNode = ({ id, data, selected }) => {
         lines = (
           <>
             {/* Downward line */}
-            <div
-              style={{
-                ...lineStyle,
-                top: '100%',
-                left: '50%',
-                height: 50,
-                transform: 'translateX(-50%)',
-              }}
-            ></div>
+            <div style={DownLineStyle}></div>
           </>
         );
         break;
@@ -863,15 +751,7 @@ const CustomNode = ({ id, data, selected }) => {
         lines = (
           <>
             {/* Downward line */}
-            <div
-              style={{
-                ...lineStyle,
-                top: '100%',
-                left: '50%',
-                height: 50,
-                transform: 'translateX(-50%)',
-              }}
-            ></div>
+            <div style={DownLineStyle}></div>
           </>
         );
         break;
@@ -904,18 +784,44 @@ const CustomNode = ({ id, data, selected }) => {
       );
       lines = (
         <>
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
+          <div style={DownLineStyle}></div>
         </>
       );
       break;
+      case 'incrementDecrement':
+        nodeStyle = { ...nodeStyle, backgroundColor: '#e0ffe0' };
+        icon = <FaPlusCircle style={iconStyle} />;
+        handles = (
+          <>
+            <Handle
+              type="target"
+              position={Position.Top}
+              id={`target-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-target`}
+              data-tooltip-content="Connect from another node"
+              isConnectable={true}
+            />
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              id={`source-${id}`}
+              style={{ left: '50%', ...handleStyle }}
+              data-tooltip-id={`tooltip-${id}-source`}
+              data-tooltip-content="Connect to another node"
+              isConnectable={true}
+            />
+            <Tooltip id={`tooltip-${id}-target`} place="top" />
+            <Tooltip id={`tooltip-${id}-source`} place="top" />
+          </>
+        );
+        lines = (
+          <>
+            {/* Downward line */}
+            <div style={DownLineStyle}></div>
+          </>
+        );
+        break;
     default:
       nodeStyle = { ...nodeStyle, backgroundColor: '#fff' };
       icon = null;
@@ -947,15 +853,7 @@ const CustomNode = ({ id, data, selected }) => {
       lines = (
         <>
           {/* Downward line */}
-          <div
-            style={{
-              ...lineStyle,
-              top: '100%',
-              left: '50%',
-              height: 50,
-              transform: 'translateX(-50%)',
-            }}
-          ></div>
+          <div style={DownLineStyle}></div>
         </>
       );
       break;
@@ -1034,27 +932,77 @@ const CustomNode = ({ id, data, selected }) => {
             </div>
           </>
         )}
-        {(nodeType === 'while') && (
+        {nodeType === 'whileEnd' && (
         <>
-          <label style={{ marginTop: 10, fontSize: '12px', fontWeight: 'bold' }}>Condition:</label>
-          <textarea
-            placeholder="Enter condition here (e.g., X > 10)"
-            value={currentAction}
-            onChange={handleActionChange}
-            style={{
-              width: '100%',
-              marginTop: 10,
-              resize: 'vertical',
-              minHeight: '50px',
-              padding: '5px',
-              borderRadius: '3px',
-              border: '1px solid #ccc',
-              fontSize: '12px',
-              boxSizing: 'border-box',
-            }}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', marginTop: 10 }}>
+            <input
+              type="text"
+              placeholder="Left Operand"
+              value={currentLeftOperand}
+              onChange={handleLeftOperandChange}
+              style={{
+                flex: 1,
+                padding: '5px',
+                borderRadius: '3px',
+                border: '1px solid #ccc',
+                fontSize: '12px',
+                marginRight: '5px',
+              }}
+            />
+            <select
+              value={currentOperator}
+              onChange={handleOperatorChange}
+              style={{
+                padding: '5px',
+                borderRadius: '3px',
+                border: '1px solid #ccc',
+                fontSize: '12px',
+                marginRight: '5px',
+              }}
+            >
+              <option value="">Op</option>
+              <option value="<">&lt;</option>
+              <option value=">">&gt;</option>
+              <option value="==">==</option>
+              <option value="!=">!=</option>
+            </select>
+            <input
+              type="text"
+              placeholder="Right Operand"
+              value={currentRightOperand}
+              onChange={handleRightOperandChange}
+              style={{
+                flex: 1,
+                padding: '5px',
+                borderRadius: '3px',
+                border: '1px solid #ccc',
+                fontSize: '12px',
+              }}
+            />
+          </div>
         </>
       )}
+        {/* {nodeType === 'whileStart' && (
+          <>
+            <label style={{ marginTop: 10, fontSize: '12px', fontWeight: 'bold' }}>Condition:</label>
+            <textarea
+              placeholder="Enter condition here (e.g., X > 10)"
+              value={currentAction}
+              onChange={handleActionChange}
+              style={{
+                width: '100%',
+                marginTop: 10,
+                resize: 'vertical',
+                minHeight: '50px',
+                padding: '5px',
+                borderRadius: '3px',
+                border: '1px solid #ccc',
+                fontSize: '12px',
+                boxSizing: 'border-box',
+              }}
+            />
+          </>
+        )} */}
       {/* Print Message Input */}
       {nodeType === 'print' && (
         <input
@@ -1062,15 +1010,7 @@ const CustomNode = ({ id, data, selected }) => {
           placeholder="Enter message to print"
           value={currentMessage}
           onChange={handleMessageChange}
-          style={{
-            width: '100%',
-            marginTop: 10,
-            padding: '5px',
-            borderRadius: '3px',
-            border: '1px solid #ccc',
-            fontSize: '12px',
-            boxSizing: 'border-box',
-          }}
+          style={textStyle}
         />
       )}
       {nodeType === 'move' && (
@@ -1119,45 +1059,21 @@ const CustomNode = ({ id, data, selected }) => {
             placeholder="Operand 1"
             value={currentOperand1}
             onChange={handleOperand1Change}
-            style={{
-              width: '100%',
-              marginTop: 10,
-              padding: '5px',
-              borderRadius: '3px',
-              border: '1px solid #ccc',
-              fontSize: '12px',
-              boxSizing: 'border-box',
-            }}
+            style={mathStyle}
           />
           <input
             type="text"
             placeholder="Operand 2"
             value={currentOperand2}
             onChange={handleOperand2Change}
-            style={{
-              width: '100%',
-              marginTop: 10,
-              padding: '5px',
-              borderRadius: '3px',
-              border: '1px solid #ccc',
-              fontSize: '12px',
-              boxSizing: 'border-box',
-            }}
+            style={mathStyle}
           />
           <input
             type="text"
             placeholder="Result Variable"
             value={currentResultVar}
             onChange={handleResultVarChange}
-            style={{
-              width: '100%',
-              marginTop: 10,
-              padding: '5px',
-              borderRadius: '3px',
-              border: '1px solid #ccc',
-              fontSize: '12px',
-              boxSizing: 'border-box',
-            }}
+            style={mathStyle}
           />
         </>
       )}
@@ -1168,34 +1084,35 @@ const CustomNode = ({ id, data, selected }) => {
           placeholder="Variable Name"
           value={currentVarName}
           onChange={handleVarNameChange}
-          style={{
-            width: '100%',
-            marginTop: 10,
-            padding: '5px',
-            borderRadius: '3px',
-            border: '1px solid #ccc',
-            fontSize: '12px',
-            boxSizing: 'border-box',
-          }}
+          style={textStyle}
         />
         <input
           type="text"
           placeholder="Value"
           value={currentVarValue}
           onChange={handleVarValueChange}
-          style={{
-            width: '100%',
-            marginTop: 10,
-            padding: '5px',
-            borderRadius: '3px',
-            border: '1px solid #ccc',
-            fontSize: '12px',
-            boxSizing: 'border-box',
-          }}
+          style={textStyle}
         />
       </>
     )}
-    
+        {nodeType === 'incrementDecrement' && (
+      <>
+        <input
+          type="text"
+          placeholder="Variable Name"
+          value={currentVarName}
+          onChange={handleVarNameChange}
+          style={inputStyle}
+        />
+        <input
+          type="number"
+          placeholder="Increment/Decrement Value"
+          value={currentVarValue}
+          onChange={handleVarValueChange}
+          style={inputStyle}
+        />
+      </>
+    )}
       {handles}
       {lines}
     </div>
