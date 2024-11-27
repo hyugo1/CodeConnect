@@ -44,15 +44,19 @@ function App() {
   const onConnect = useCallback(
     (params) => {
       console.log('onConnect params:', params);
-      let { sourceHandle } = params;
-      // Adjust sourceHandle to remove node id
-      if (sourceHandle) {
-        sourceHandle = sourceHandle.split('-')[0];
+  
+      const originalSourceHandle = params.sourceHandle; // Keep the original sourceHandle with node ID
+      let sourceHandleType = params.sourceHandle;
+  
+      // Extract the handle type without the node ID for labeling and styling
+      if (sourceHandleType) {
+        sourceHandleType = sourceHandleType.split('-')[0];
       }
+  
       let label = '';
       let edgeStyle = { stroke: '#555', strokeWidth: 3 };
   
-      switch (sourceHandle) {
+      switch (sourceHandleType) {
         case 'yes':
           label = 'True';
           edgeStyle = { stroke: 'green', strokeWidth: 3 };
@@ -77,9 +81,9 @@ function App() {
         addEdge(
           {
             ...params,
-            sourceHandle: sourceHandle, // Use the adjusted sourceHandle
+            sourceHandle: originalSourceHandle, // Use the original sourceHandle
             label,
-            animated: sourceHandle === 'yes' || sourceHandle === 'no',
+            animated: sourceHandleType === 'yes' || sourceHandleType === 'no',
             style: edgeStyle,
             labelBgStyle: {
               fill: 'white',
@@ -104,7 +108,8 @@ function App() {
   }, []);
 
   const onNodeChangeHandler = useCallback(
-    (id, label, action, message, distance, direction, operand1, operand2, resultVar) => {
+    (id, label, action, message, distance, direction, operand1, operand2, resultVar, varName,
+      varValue, leftOperand, operator,rightOperand) => {
       setNodes((nds) =>
         nds.map((node) => {
           if (node.id === id) {
@@ -120,6 +125,11 @@ function App() {
                 operand1,
                 operand2,
                 resultVar,
+                varName,
+                varValue,
+                leftOperand,
+                operator,
+                rightOperand,
               },
             };
           }
@@ -208,25 +218,25 @@ function App() {
     setSelectedEdges(edges);
   }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Delete' || event.key === 'Backspace') {
-        if (selectedNodes.length > 0) {
-          onNodesRemove(selectedNodes);
-        }
-        if (selectedEdges.length > 0) {
-          onEdgesRemove(selectedEdges);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const handleKeyDown = (event) => {
+  //     if (event.key === 'Delete' || event.key === 'Backspace') {
+  //       if (selectedNodes.length > 0) {
+  //         onNodesRemove(selectedNodes);
+  //       }
+  //       if (selectedEdges.length > 0) {
+  //         onEdgesRemove(selectedEdges);
+  //       }
+  //     }
+  //   };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [onNodesRemove, onEdgesRemove, selectedNodes, selectedEdges]);
+  //   window.addEventListener('keydown', handleKeyDown);
+  //   return () => {
+  //     window.removeEventListener('keydown', handleKeyDown);
+  //   };
+  // }, [onNodesRemove, onEdgesRemove, selectedNodes, selectedEdges]);
 
-  const executeFlowchart = useCallback(() => {
+  const executeFlowchart = useCallback(async () => {
     setConsoleOutput('');
     setCharacterMessage(''); // Reset character message
     setCharacterPosition({ x: 0, y: 0 }); // Reset character position
@@ -249,29 +259,81 @@ function App() {
   
     const traverse = async (nodeId) => {
       console.log(`Traversing node: ${nodeId}`);
-      if (visitedNodes.has(nodeId)) {
-        return;
-      }
-      visitedNodes.add(nodeId);
+      // if (visitedNodes.has(nodeId)) {
+      //   return;
+      // }
+      // visitedNodes.add(nodeId);
   
       const node = currentNodes.find((n) => n.id === nodeId);
       if (!node) return;
   
-      if (node.data.nodeType === 'print') {
-        console.log(`Executing print node ${node.id} with message:`, node.data.message);
-        if (node.data.message) {
-          outputs.push(node.data.message);
-          // Update character message
-          setCharacterMessage(node.data.message);
-  
-          // Wait for a short duration to display the message
-          await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds
-          setCharacterMessage('');
-        } else {
-          outputs.push('');
-          setCharacterMessage('');
+      if (node.data.nodeType === 'setVariable') {
+        const { varName, varValue } = node.data;
+        if (varName) {
+          let value;
+          try {
+            const valueFunc = new Function(
+              'variables',
+              `with (variables) { return (${varValue}); }`
+            );
+            value = valueFunc(context.variables);
+          } catch (error) {
+            console.error(`Error evaluating value at node ${node.id}:`, error);
+            outputs.push(
+              `Error evaluating value in node ${node.id}: ${error.message}`
+            );
+            return; // Use return instead of continue
+          }
+          context.variables[varName] = value;
+          console.log(`Set variable ${varName} = ${value}`);
         }
-      }  else if (node.data.nodeType.startsWith('move')) {
+      } else if (node.data.nodeType === 'if') {
+        // Evaluate condition for If node
+        const { leftOperand, operator, rightOperand } = node.data;
+        let conditionMet = false;
+        if (leftOperand && operator && rightOperand) {
+          try {
+            const condition = `${leftOperand} ${operator} ${rightOperand}`;
+            console.log(`Evaluating condition at node ${node.id}: ${condition}`);
+            const condFunc = new Function(
+              'variables',
+              `with (variables) { return (${condition}); }`
+            );
+            conditionMet = condFunc(context.variables);
+          } catch (error) {
+            console.error(`Error evaluating condition at node ${node.id}:`, error);
+            outputs.push(
+              `Error evaluating condition in node ${node.id}: ${error.message}`
+            );
+            return; // Use return instead of continue
+          }
+        } else {
+          outputs.push(`Incomplete condition in node ${node.id}`);
+          return;
+        }
+        // Store conditionMet in the node's data for use in edge traversal
+        node.conditionMet = conditionMet;
+      } else if (node.data.nodeType === 'print') {
+        let message = node.data.message || '';
+        let evaluatedMessage;
+        try {
+          const messageFunc = new Function(
+            'variables',
+            `with (variables) { return (${JSON.stringify(message)}); }`
+          );
+          evaluatedMessage = messageFunc(context.variables);
+        } catch (error) {
+          console.error(`Error evaluating message at node ${node.id}:`, error);
+          outputs.push(
+            `Error evaluating message in node ${node.id}: ${error.message}`
+          );
+          return;
+        }
+        outputs.push(evaluatedMessage);
+        setCharacterMessage(evaluatedMessage);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setCharacterMessage('');
+      } else if (node.data.nodeType.startsWith('move')) {
         // Handle movement blocks
         let distance = parseInt(node.data.distance);
         if (isNaN(distance)) {
@@ -279,7 +341,7 @@ function App() {
         }
         let dx = 0;
         let dy = 0;
-
+  
         switch (node.data.nodeType) {
           case 'moveUp':
             dy = -distance;
@@ -301,17 +363,16 @@ function App() {
           default:
             break;
         }
-
+  
         setCharacterPosition((prevPos) => {
           const newPos = { x: prevPos.x + dx, y: prevPos.y + dy };
           return newPos;
         });
-
+  
         await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for animation
       } else if (node.data.action) {
         // Provide context to the action
         try {
-          // eslint-disable-next-line no-new-func
           const func = new Function('context', node.data.action);
           func(context);
         } catch (error) {
@@ -331,56 +392,55 @@ function App() {
         if (!targetNode) continue;
   
         if (node.data.nodeType === 'if') {
-          // Evaluate condition for If node
-          let conditionMet = false;
-          try {
-            // eslint-disable-next-line no-new-func
-            const condFunc = new Function('context', `return (${node.data.action});`);
-            conditionMet = condFunc(context);
-          } catch (error) {
-            console.error(`Error evaluating condition at node ${node.id}:`, error);
-            outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
-            continue;
-          }
-  
+          const conditionMet = node.conditionMet;
+          const sourceHandleType = edge.sourceHandle
+            ? edge.sourceHandle.split('-')[0]
+            : '';
           if (
-            (edge.sourceHandle && edge.sourceHandle.startsWith('yes') && conditionMet) ||
-            (edge.sourceHandle && edge.sourceHandle.startsWith('no') && !conditionMet)
+            (sourceHandleType === 'yes' && conditionMet) ||
+            (sourceHandleType === 'no' && !conditionMet)
           ) {
             await traverse(targetNodeId);
           }
         } else if (node.data.nodeType === 'while') {
-          // Evaluate condition for While node
           let conditionMet = false;
           let condFunc;
           try {
-            // eslint-disable-next-line no-new-func
-            condFunc = new Function('context', `return (${node.data.action});`);
-            conditionMet = condFunc(context);
+            condFunc = new Function(
+              'variables',
+              `with (variables) { return (${node.data.action}); }`
+            );
+            conditionMet = condFunc(context.variables);
           } catch (error) {
             console.error(`Error evaluating condition at node ${node.id}:`, error);
-            outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
+            outputs.push(
+              `Error evaluating condition in node ${node.id}: ${error.message}`
+            );
             break;
           }
   
           while (conditionMet) {
             await traverse(targetNodeId);
             try {
-              conditionMet = condFunc(context);
+              conditionMet = condFunc(context.variables);
             } catch (error) {
-              console.error(`Error re-evaluating condition at node ${node.id}:`, error);
-              outputs.push(`Error re-evaluating condition in node ${node.id}: ${error.message}`);
+              console.error(
+                `Error re-evaluating condition at node ${node.id}:`,
+                error
+              );
+              outputs.push(
+                `Error re-evaluating condition in node ${node.id}: ${error.message}`
+              );
               break;
             }
           }
         } else {
-          // For other node types
           await traverse(targetNodeId);
         }
       }
     };
   
-    traverse(startNode.id);
+    await traverse(startNode.id);
   
     console.log('Outputs:', outputs);
     setConsoleOutput(outputs.join('\n'));

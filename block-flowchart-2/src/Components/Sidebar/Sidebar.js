@@ -17,6 +17,7 @@ import {
   FaMinus,
   FaTimes,
   FaDivide,
+  FaPenFancy, 
 } from 'react-icons/fa'; // Import movement icons
 import './Sidebar.css';
 
@@ -51,11 +52,13 @@ const Sidebar = () => {
     { type: 'moveLeft', label: 'Move Left', color: '#d8f9f9', icon: <FaArrowLeft /> },
     { type: 'moveRight', label: 'Move Right', color: '#d8f9f9', icon: <FaArrowRight /> },
     { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> }, // Generic move block
-      // Math operator blocks
-      { type: 'add', label: 'Add', color: '#f9d8f9', icon: <FaPlus /> },
-      { type: 'subtract', label: 'Subtract', color: '#f9d8f9', icon: <FaMinus /> },
-      { type: 'multiply', label: 'Multiply', color: '#f9d8f9', icon: <FaTimes /> },
-      { type: 'divide', label: 'Divide', color: '#f9d8f9', icon: <FaDivide /> },
+    // Math operator blocks
+    { type: 'add', label: 'Add', color: '#f9d8f9', icon: <FaPlus /> },
+    { type: 'subtract', label: 'Subtract', color: '#f9d8f9', icon: <FaMinus /> },
+    { type: 'multiply', label: 'Multiply', color: '#f9d8f9', icon: <FaTimes /> },
+    { type: 'divide', label: 'Divide', color: '#f9d8f9', icon: <FaDivide /> },
+    //set variable
+    { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy /> },
     ];
   
     return (

@@ -11,7 +11,7 @@ import {
   FaSync,
   FaCheck,
   FaPrint,
-  FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaPlus, FaMinus, FaTimes, FaDivide
+  FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaPlus, FaMinus, FaTimes, FaDivide, FaPenFancy
 } from 'react-icons/fa';
 import './CustomNode.css';
 
@@ -27,7 +27,8 @@ const lineStyle = {
 const iconStyle = { marginRight: 5 };
 
 const CustomNode = ({ id, data, selected }) => {
-  const { label, nodeType, onChange, action, message, distance, direction, operand1,operand2,resultVar} = data;
+  const { label, nodeType, onChange, action, message, distance, direction, operand1,operand2,resultVar, varName,
+    varValue, leftOperand, operator, rightOperand,} = data;
 
   const [currentAction, setCurrentAction] = useState(action || '');
   const [currentMessage, setCurrentMessage] = useState(message || '');
@@ -38,6 +39,13 @@ const CustomNode = ({ id, data, selected }) => {
   const [currentOperand2, setCurrentOperand2] = useState(operand2 || '');
   const [currentResultVar, setCurrentResultVar] = useState(resultVar || '');
 
+  const [currentVarName, setCurrentVarName] = useState(varName || '');
+  const [currentVarValue, setCurrentVarValue] = useState(varValue || '');
+
+  const [currentLeftOperand, setCurrentLeftOperand] = useState(leftOperand || '');
+  const [currentOperator, setCurrentOperator] = useState(operator || '');
+  const [currentRightOperand, setCurrentRightOperand] = useState(rightOperand || '');
+
 
   useEffect(() => {
     setCurrentAction(action || '');
@@ -47,7 +55,12 @@ const CustomNode = ({ id, data, selected }) => {
     setCurrentOperand1(operand1 || '');
     setCurrentOperand2(operand2 || '');
     setCurrentResultVar(resultVar || '');
-  }, [action, message, distance, direction, operand1, operand2, resultVar]);
+    setCurrentVarName(varName || '');
+    setCurrentVarValue(varValue || '');
+    setCurrentLeftOperand(leftOperand || '');
+    setCurrentOperator(operator || '');
+    setCurrentRightOperand(rightOperand || '');
+  }, [action, message, distance, direction, operand1, operand2, resultVar, varName, varValue, leftOperand, operator, rightOperand]);
 
   const handleActionChange = (e) => {
     const newAction = e.target.value;
@@ -58,8 +71,22 @@ const CustomNode = ({ id, data, selected }) => {
   const handleMessageChange = (e) => {
     const newMessage = e.target.value;
     setCurrentMessage(newMessage);
-    console.log('handleMessageChange:', { id, newMessage });
-    onChange(id, label, currentAction, newMessage, currentDistance);
+    onChange(
+      id,
+      label,
+      currentAction,
+      newMessage,
+      currentDistance,
+      currentDirection,
+      currentOperand1,
+      currentOperand2,
+      currentResultVar,
+      currentVarName,
+      currentVarValue,
+      currentLeftOperand,
+      currentOperator,
+      currentRightOperand
+    );
   };
 
   const handleDistanceChange = (e) => {
@@ -92,6 +119,105 @@ const CustomNode = ({ id, data, selected }) => {
     const newResultVar = e.target.value;
     setCurrentResultVar(newResultVar);
     onChange(id, label, action, message, distance, direction, currentOperand1, currentOperand2, newResultVar);
+  };
+
+  const handleVarNameChange = (e) => {
+    const newVarName = e.target.value;
+    setCurrentVarName(newVarName);
+    onChange(
+      id,
+      label,
+      action,
+      message,
+      distance,
+      direction,
+      operand1,
+      operand2,
+      resultVar,
+      newVarName,
+      currentVarValue
+    );
+  };
+
+  const handleVarValueChange = (e) => {
+    const newVarValue = e.target.value;
+    setCurrentVarValue(newVarValue);
+    onChange(
+      id,
+      label,
+      action,
+      message,
+      distance,
+      direction,
+      operand1,
+      operand2,
+      resultVar,
+      currentVarName,
+      newVarValue
+    );
+  };
+
+  const handleLeftOperandChange = (e) => {
+    const newLeftOperand = e.target.value;
+    setCurrentLeftOperand(newLeftOperand);
+    onChange(
+      id,
+      label,
+      action,
+      message,
+      distance,
+      direction,
+      operand1,
+      operand2,
+      resultVar,
+      varName,
+      varValue,
+      newLeftOperand,
+      currentOperator,
+      currentRightOperand
+    );
+  };
+
+  const handleOperatorChange = (e) => {
+    const newOperator = e.target.value;
+    setCurrentOperator(newOperator);
+    onChange(
+      id,
+      label,
+      currentAction,
+      currentMessage,
+      currentDistance,
+      currentDirection,
+      currentOperand1,
+      currentOperand2,
+      currentResultVar,
+      currentVarName,
+      currentVarValue,
+      currentLeftOperand,
+      newOperator,
+      currentRightOperand
+    );
+  };
+
+  const handleRightOperandChange = (e) => {
+    const newRightOperand = e.target.value;
+    setCurrentRightOperand(newRightOperand);
+    onChange(
+      id,
+      label,
+      action,
+      message,
+      distance,
+      direction,
+      operand1,
+      operand2,
+      resultVar,
+      varName,
+      varValue,
+      currentLeftOperand,
+      currentOperator,
+      newRightOperand
+    );
   };
 
   console.log('CustomNode id:', id);
@@ -749,6 +875,47 @@ const CustomNode = ({ id, data, selected }) => {
           </>
         );
         break;
+    case 'setVariable':
+      nodeStyle = { ...nodeStyle, backgroundColor: '#e0e0e0' };
+      icon = <FaPenFancy style={iconStyle} />;
+      handles = (
+        <>
+          <Handle
+            type="target"
+            position={Position.Top}
+            id={`target-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-target`}
+            data-tooltip-content="Connect from another node"
+            isConnectable={true}
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id={`source-${id}`}
+            style={{ left: '50%', ...handleStyle }}
+            data-tooltip-id={`tooltip-${id}-source`}
+            data-tooltip-content="Connect to another node"
+            isConnectable={true}
+          />
+          <Tooltip id={`tooltip-${id}-target`} place="top" />
+          <Tooltip id={`tooltip-${id}-source`} place="top" />
+        </>
+      );
+      lines = (
+        <>
+          <div
+            style={{
+              ...lineStyle,
+              top: '100%',
+              left: '50%',
+              height: 50,
+              transform: 'translateX(-50%)',
+            }}
+          ></div>
+        </>
+      );
+      break;
     default:
       nodeStyle = { ...nodeStyle, backgroundColor: '#fff' };
       icon = null;
@@ -799,9 +966,9 @@ const CustomNode = ({ id, data, selected }) => {
       {icon}
       <div>{label}</div>
       {/* Action Input */}
-      {(nodeType === 'action' || nodeType === 'if' || nodeType === 'while') && (
+      {(nodeType === 'action') && (
         <textarea
-          placeholder="Enter action or condition here"
+          placeholder="Enter action here"
           value={currentAction}
           onChange={handleActionChange}
           style={{
@@ -816,6 +983,77 @@ const CustomNode = ({ id, data, selected }) => {
             boxSizing: 'border-box',
           }}
         />
+      )}
+        {nodeType === 'if' && (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: 10 }}>
+              <input
+                type="text"
+                placeholder="Left Operand"
+                value={currentLeftOperand}
+                onChange={handleLeftOperandChange}
+                style={{
+                  flex: 1,
+                  padding: '5px',
+                  borderRadius: '3px',
+                  border: '1px solid #ccc',
+                  fontSize: '12px',
+                  marginRight: '5px',
+                }}
+              />
+             <select
+              value={currentOperator}
+              onChange={handleOperatorChange}
+              style={{
+                padding: '5px',
+                borderRadius: '3px',
+                border: '1px solid #ccc',
+                fontSize: '12px',
+                marginRight: '5px',
+              }}
+            >
+              <option value="">Op</option>
+              <option value="<">&lt;</option>
+              <option value=">">&gt;</option>
+              <option value="==">==</option>
+              <option value="!=">!=</option>
+            </select>
+              <input
+                type="text"
+                placeholder="Right Operand"
+                value={currentRightOperand}
+                onChange={handleRightOperandChange}
+                style={{
+                  flex: 1,
+                  padding: '5px',
+                  borderRadius: '3px',
+                  border: '1px solid #ccc',
+                  fontSize: '12px',
+                }}
+              />
+            </div>
+          </>
+        )}
+        {(nodeType === 'while') && (
+        <>
+          <label style={{ marginTop: 10, fontSize: '12px', fontWeight: 'bold' }}>Condition:</label>
+          <textarea
+            placeholder="Enter condition here (e.g., X > 10)"
+            value={currentAction}
+            onChange={handleActionChange}
+            style={{
+              width: '100%',
+              marginTop: 10,
+              resize: 'vertical',
+              minHeight: '50px',
+              padding: '5px',
+              borderRadius: '3px',
+              border: '1px solid #ccc',
+              fontSize: '12px',
+              boxSizing: 'border-box',
+            }}
+          />
+        </>
       )}
       {/* Print Message Input */}
       {nodeType === 'print' && (
@@ -923,6 +1161,41 @@ const CustomNode = ({ id, data, selected }) => {
           />
         </>
       )}
+      {nodeType === 'setVariable' && (
+      <>
+        <input
+          type="text"
+          placeholder="Variable Name"
+          value={currentVarName}
+          onChange={handleVarNameChange}
+          style={{
+            width: '100%',
+            marginTop: 10,
+            padding: '5px',
+            borderRadius: '3px',
+            border: '1px solid #ccc',
+            fontSize: '12px',
+            boxSizing: 'border-box',
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Value"
+          value={currentVarValue}
+          onChange={handleVarValueChange}
+          style={{
+            width: '100%',
+            marginTop: 10,
+            padding: '5px',
+            borderRadius: '3px',
+            border: '1px solid #ccc',
+            fontSize: '12px',
+            boxSizing: 'border-box',
+          }}
+        />
+      </>
+    )}
+    
       {handles}
       {lines}
     </div>
