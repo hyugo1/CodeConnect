@@ -41,6 +41,13 @@ function App() {
   const [characterPosition, setCharacterPosition] = useState({ x: 0, y: 0 });
   const [characterMessage, setCharacterMessage] = useState('');
 
+  const resetExecution = useCallback(() => {
+    setConsoleOutput('');
+    setCharacterPosition({ x: 0, y: 0 });
+    setCharacterMessage('');
+    console.log('Console and Character have been reset.');
+  }, [setConsoleOutput, setCharacterPosition, setCharacterMessage]);
+
   const onConnect = useCallback(
     (params) => {
       console.log('onConnect params:', params);
@@ -81,7 +88,7 @@ function App() {
         addEdge(
           {
             ...params,
-            sourceHandle: originalSourceHandle, // Use the original sourceHandle
+            sourceHandle: originalSourceHandle,
             label,
             animated: sourceHandleType === 'yes' || sourceHandleType === 'no',
             style: edgeStyle,
@@ -172,7 +179,7 @@ function App() {
       const snappedY = Math.round(position.y / 15) * 15;
   
       if (nodeType === 'while') {
-        // Create While Start and While End nodes
+        //while start and end nodes
         const whileStartNode = {
           id: `${+new Date()}-start`,
           type: 'custom',
@@ -182,14 +189,14 @@ function App() {
             nodeType: 'whileStart',
             onChange: onNodeChangeHandler,
             condition: '',
-            whileEndNodeId: '', // Will set after creating whileEndNode
+            whileEndNodeId: '',
           },
         };
   
         const whileEndNode = {
           id: `${+new Date()}-end`,
           type: 'custom',
-          position: { x: snappedX + 200, y: snappedY }, // Adjust position as needed
+          position: { x: snappedX + 200, y: snappedY },
           data: {
             label: 'While End',
             nodeType: 'whileEnd',
@@ -217,7 +224,7 @@ function App() {
           label: '',
         };
         setEdges((eds) => eds.concat(newEdge));
-  
+
         // Connect While End back to While Start (Loop Back Edge)
         const loopBackEdge = {
           id: `e${whileEndNode.id}-${whileStartNode.id}`,
@@ -313,7 +320,9 @@ function App() {
   //     window.removeEventListener('keydown', handleKeyDown);
   //   };
   // }, [onNodesRemove, onEdgesRemove, selectedNodes, selectedEdges]);
-  const MAX_ITERATIONS = 1000; // Adjust as needed
+    // Helper function to determine if a node is part of a loop
+
+  const MAX_ITERATIONS = 1000;
 
   const executeFlowchart = useCallback(async () => {
     let iterationCount = 0;
@@ -324,6 +333,12 @@ function App() {
     const currentNodes = nodes;
     const currentEdges = edges;
   
+    // Define isLoopNode inside executeFlowchart to access currentNodes
+    const isLoopNode = (nodeId) => {
+      const node = currentNodes.find((n) => n.id === nodeId);
+      return node && (node.data.nodeType === 'whileStart' || node.data.nodeType === 'whileEnd');
+    };
+  
     const startNode = currentNodes.find((node) => node.data.nodeType === 'start');
     if (!startNode) {
       alert('No Start node found');
@@ -331,7 +346,6 @@ function App() {
     }
   
     const outputs = [];
-    const visitedNodes = new Set();
     const context = {
       outputs,
       variables: {},
@@ -346,13 +360,6 @@ function App() {
   
       console.log(`Traversing node: ${nodeId}`);
   
-      // Check for infinite recursion
-      if (visitedNodes.has(nodeId)) {
-        outputs.push(`Error: Detected infinite loop at node ${nodeId}`);
-        return;
-      }
-      visitedNodes.add(nodeId);
-  
       const node = currentNodes.find((n) => n.id === nodeId);
       if (!node) return;
   
@@ -361,11 +368,12 @@ function App() {
           const { varName, varValue } = node.data;
           if (varName) {
             try {
-              // eslint-disable-next-line no-new-func
+              /* eslint-disable no-new-func */
               const valueFunc = new Function(
                 'variables',
                 `with (variables) { return (${varValue}); }`
               );
+              /* eslint-enable no-new-func */
               const value = valueFunc(context.variables);
               context.variables[varName] = value;
               console.log(`Set variable ${varName} = ${value}`);
@@ -404,11 +412,12 @@ function App() {
             try {
               const condition = `${leftOperand} ${operator} ${rightOperand}`;
               console.log(`Evaluating condition at node ${node.id}: ${condition}`);
-              // eslint-disable-next-line no-new-func
+              /* eslint-disable no-new-func */
               const condFunc = new Function(
                 'variables',
                 `with (variables) { return (${condition}); }`
               );
+              /* eslint-enable no-new-func */
               conditionMet = condFunc(context.variables);
             } catch (error) {
               console.error(`Error evaluating condition at node ${node.id}:`, error);
@@ -428,20 +437,22 @@ function App() {
           let message = node.data.message || '';
           let evaluatedMessage;
           try {
-            // eslint-disable-next-line no-new-func
+            /* eslint-disable no-new-func */
             const messageFunc = new Function(
               'variables',
               `with (variables) { return (${message}); }`
             );
+            /* eslint-enable no-new-func */
             evaluatedMessage = messageFunc(context.variables);
           } catch (error) {
             // If an error occurs, treat message as a string literal
             try {
-              // eslint-disable-next-line no-new-func
+              /* eslint-disable no-new-func */
               const messageFunc = new Function(
                 'variables',
                 `with (variables) { return (\`${message}\`); }`
               );
+              /* eslint-enable no-new-func */
               evaluatedMessage = messageFunc(context.variables);
             } catch (err) {
               console.error(`Error evaluating message at node ${node.id}:`, err);
@@ -517,13 +528,56 @@ function App() {
         case 'action': {
           if (node.data.action) {
             try {
-              // eslint-disable-next-line no-new-func
+              /* eslint-disable no-new-func */
               const func = new Function('context', node.data.action);
+              /* eslint-enable no-new-func */
               func(context);
             } catch (error) {
               console.error(`Error executing node ${node.id}:`, error);
               outputs.push(`Error in node ${node.id}: ${error.message}`);
               return;
+            }
+          }
+          break;
+        }
+  
+        case 'whileEnd': {
+          // Evaluate the condition
+          const { leftOperand, operator, rightOperand } = node.data;
+          let conditionMet = false;
+          if (leftOperand && operator && rightOperand) {
+            try {
+              const condition = `${leftOperand} ${operator} ${rightOperand}`;
+              console.log(`Evaluating condition at node ${node.id}: ${condition}`);
+              /* eslint-disable no-new-func */
+              const condFunc = new Function(
+                'variables',
+                `with (variables) { return (${condition}); }`
+              );
+              /* eslint-enable no-new-func */
+              conditionMet = condFunc(context.variables);
+            } catch (error) {
+              console.error(`Error evaluating condition at node ${node.id}:`, error);
+              outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
+              return;
+            }
+          } else {
+            outputs.push(`Incomplete condition in node ${node.id}`);
+            return;
+          }
+  
+          if (conditionMet) {
+            // Loop back to 'whileStart'
+            await traverse(node.data.whileStartNodeId);
+          } else {
+            // Proceed to the next node after 'whileEnd'
+            const exitEdge = currentEdges.find(
+              (e) => e.source === node.id && (!e.sourceHandle || !e.sourceHandle.startsWith('loopBack-'))
+            );
+            if (exitEdge) {
+              await traverse(exitEdge.target);
+            } else {
+              outputs.push(`No exit edge found for node ${node.id}`);
             }
           }
           break;
@@ -558,49 +612,19 @@ function App() {
           // Proceed to the next node(s)
           await traverse(targetNodeId);
         } else if (node.data.nodeType === 'whileEnd') {
-          // Evaluate the condition
-          const { leftOperand, operator, rightOperand } = node.data;
-          let conditionMet = false;
-          if (leftOperand && operator && rightOperand) {
-            try {
-              const condition = `${leftOperand} ${operator} ${rightOperand}`;
-              console.log(`Evaluating condition at node ${node.id}: ${condition}`);
-              // eslint-disable-next-line no-new-func
-              const condFunc = new Function(
-                'variables',
-                `with (variables) { return (${condition}); }`
-              );
-              conditionMet = condFunc(context.variables);
-            } catch (error) {
-              console.error(`Error evaluating condition at node ${node.id}:`, error);
-              outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
-              return;
-            }
-          } else {
-            outputs.push(`Incomplete condition in node ${node.id}`);
-            return;
-          }
-  
-          if (conditionMet) {
-            // Loop back to 'whileStart'
-            await traverse(node.data.whileStartNodeId);
-          } else {
-            // Proceed to the next node after 'whileEnd'
-            await traverse(targetNodeId);
-          }
+          // Already handled above
         } else {
           await traverse(targetNodeId);
         }
       }
-      visitedNodes.delete(nodeId);
     };
   
     await traverse(startNode.id);
   
     console.log('Outputs:', outputs);
     setConsoleOutput(outputs.join('\n'));
-  }, [nodes, edges, setConsoleOutput, setCharacterMessage, setCharacterPosition]); // Added missing dependencies
-  
+  }, [nodes, edges, setConsoleOutput, setCharacterMessage, setCharacterPosition]);
+
   return (
     <div className="App">
       <div className="app-container">
@@ -635,23 +659,31 @@ function App() {
           <Controls />
           <Background color="#aaa" gap={16} />
         </ReactFlow>
-        {/* Run and Delete Buttons */}
-        <button
-            onClick={executeFlowchart}
-            className="run-button"
-          >
-            Run
-          </button>
-          <button
-            onClick={() => {
-              setNodes((nds) => nds.filter((node) => !selectedNodes.includes(node)));
-              setEdges((eds) => eds.filter((edge) => !selectedEdges.includes(edge)));
-            }}
-            disabled={selectedNodes.length === 0 && selectedEdges.length === 0}
-            className="delete-button"
-          >
-            Delete
-          </button>
+        {/* Run, Reset, and Delete Buttons */}
+        <div className="button-group">
+            <button
+              onClick={executeFlowchart}
+              className="run-button"
+            >
+              Run
+            </button>
+            <button
+              onClick={resetExecution}
+              className="reset-button"
+            >
+              Reset
+            </button>
+            <button
+              onClick={() => {
+                setNodes((nds) => nds.filter((node) => !selectedNodes.includes(node)));
+                setEdges((eds) => eds.filter((edge) => !selectedEdges.includes(edge)));
+              }}
+              disabled={selectedNodes.length === 0 && selectedEdges.length === 0}
+              className="delete-button"
+            >
+              Delete
+            </button>
+          </div>
         </div>
 
         {/* Right Console and Character Area */}

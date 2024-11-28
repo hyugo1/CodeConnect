@@ -1,7 +1,6 @@
 /* src/styles/App.css */
 
-/* Ensure this file is imported in your App.js */
-
+/* General App Styles */
 .App {
   height: 100vh;
   display: flex;
@@ -16,7 +15,7 @@
 
 /* Left Sidebar */
 aside {
-  width: 220px; /* Keep the width consistent with your Sidebar */
+  width: 220px; /* Consistent width */
   background-color: #eee;
   overflow-y: auto;
 }
@@ -24,8 +23,15 @@ aside {
 /* Middle Flowchart Container */
 .flowchart-container {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Full height */
+}
+
+/* ReactFlow Wrapper */
+.reactflow-wrapper {
+  flex: 1;
   position: relative;
-  height: 100%; /* Ensure it fills the vertical space */
 }
 
 /* Right Panel */
@@ -55,28 +61,50 @@ aside {
   overflow-y: auto;
 }
 
-/* Run and Delete Buttons */
+/* Button Group Styles */
+.button-group {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  gap: 10px; /* Space between buttons */
+}
+
+/* Common Button Styles */
 .run-button,
+.reset-button,
 .delete-button {
-  position: absolute;
-  top: 20px;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  z-index: 4;
+  font-size: 14px;
+  color: white; /* Text color */
 }
 
+/* Specific Button Styles */
 .run-button {
-  right: 140px; /* Adjusted to account for the right panel */
-  background-color: #4caf50;
-  color: #fff;
+  background-color: #4CAF50; /* Green */
+}
+
+.reset-button {
+  background-color: #f0ad4e; /* Orange */
 }
 
 .delete-button {
-  right: 20px;
-  background-color: #f44336;
-  color: #fff;
+  background-color: #d9534f; /* Red */
+}
+
+/* Hover Effects */
+.run-button:hover {
+  background-color: #45a049;
+}
+
+.reset-button:hover {
+  background-color: #ec971f;
+}
+
+.delete-button:hover {
+  background-color: #c9302c;
 }
 
 /* Character Component Styles */

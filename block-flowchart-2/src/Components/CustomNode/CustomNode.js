@@ -4,14 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Handle, Position } from 'reactflow';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
-import {
-  FaPlay,
-  FaStop,
-  FaQuestion,
-  FaSync,
-  // FaCheck,
-  FaPrint,
-  FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaPlus, FaMinus, FaTimes, FaDivide, FaPenFancy, FaPlusCircle
+import { FaPlay, FaStop, FaQuestion, FaSync, FaPrint, FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaPlus, FaMinus, FaTimes, FaDivide, FaPenFancy, FaPlusCircle
 } from 'react-icons/fa';
 import './CustomNode.css';
 
