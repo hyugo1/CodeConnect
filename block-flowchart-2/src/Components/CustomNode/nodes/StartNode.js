@@ -5,6 +5,7 @@ import { Handle, Position } from 'reactflow';
 import { FaPlay } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import './node.css';
 
 const handleStyle = { background: '#555' };
 const DownLineStyle = {
@@ -27,6 +28,8 @@ const StartNode = ({ id, data, selected }) => {
         borderRadius: 5,
         position: 'relative',
         minWidth: 180,
+        width: 200,   
+        height: 40, 
         textAlign: 'center',
         fontWeight: 'bold',
         backgroundColor: '#d3f9d8',
@@ -42,7 +45,8 @@ const StartNode = ({ id, data, selected }) => {
         type="source"
         position={Position.Bottom}
         id={`source-${id}`}
-        style={{ left: '50%', ...handleStyle }}
+        className="handle-source-square"
+        style={{ left: '50%', top: '90%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-source`}
         data-tooltip-content="Connect to another node"
         isConnectable={true}

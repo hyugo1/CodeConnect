@@ -5,7 +5,7 @@ import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
-import './IfNode.css';
+import './node.css';
 
 const handleStyle = { background: '#555' };
 const bottomLeftStyle = {
@@ -130,12 +130,8 @@ const IfNode = ({ id, data, selected }) => {
         type="target"
         position={Position.Top}
         id={`target-${id}`}
-        className="handle-target-star" // Use .handle-target-circle if using circle
-        style={{
-          left: '50%', // Adjust as needed
-          top: '0px',  // Adjust as needed
-          ...handleStyle,
-        }}
+        className="handle-target-circle"
+        style={{left: '50%', top: '0px', ...handleStyle}}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
@@ -144,7 +140,8 @@ const IfNode = ({ id, data, selected }) => {
         type="source"
         position={Position.Bottom}
         id={`yes-${id}`}
-        style={{ left: '25%', ...handleStyle }}
+        className="handle-source-square"
+        style={{ left: '25%', top: '100%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-yes`}
         data-tooltip-content="True Branch"
         isConnectable={true}
@@ -153,7 +150,8 @@ const IfNode = ({ id, data, selected }) => {
         type="source"
         position={Position.Bottom}
         id={`no-${id}`}
-        style={{ left: '75%', ...handleStyle }}
+        className="handle-source-square"
+        style={{ left: '75%', top: '100%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-no`}
         data-tooltip-content="False Branch"
         isConnectable={true}

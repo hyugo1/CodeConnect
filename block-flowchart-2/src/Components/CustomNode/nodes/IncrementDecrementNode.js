@@ -59,7 +59,8 @@ const IncrementDecrementNode = ({ id, data, selected }) => {
         type="target"
         position={Position.Top}
         id={`target-${id}`}
-        style={{ left: '50%', ...handleStyle }}
+        className="handle-target-circle"
+        style={{left: '50%', top: '0px', ...handleStyle}}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}

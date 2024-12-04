@@ -5,6 +5,7 @@ import { Handle, Position } from 'reactflow';
 import { FaStopCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import './node.css';
 
 const handleStyle = { background: '#555' };
 
@@ -32,9 +33,10 @@ const EndNode = ({ id, data, selected }) => {
         type="target"
         position={Position.Top}
         id={`target-${id}`}
-        style={{ left: '50%', ...handleStyle }}
+        className="handle-target-circle"
+        style={{left: '50%', top: '0px', ...handleStyle}}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from the last node inside the loop"
+        data-tooltip-content="Connect from another node"
         isConnectable={true}
       />
       {/* No source handles as it's an end node */}

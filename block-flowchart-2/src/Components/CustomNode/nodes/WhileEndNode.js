@@ -5,6 +5,7 @@ import { Handle, Position } from 'reactflow';
 import { FaSync } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import './node.css';
 
 const handleStyle = { background: '#555' };
 const DownLineStyle = {
@@ -19,8 +20,8 @@ const DownLineStyle = {
 };
 const loopBackLineStyle = {
   position: 'absolute',
-  top: '50%',
-  right: '-50px',
+  top: '57.5%',
+  right: '-25px',
   width: 50,
   height: 3,
   backgroundColor: '#555',
@@ -129,18 +130,20 @@ const WhileEndNode = ({ id, data, selected }) => {
         type="target"
         position={Position.Top}
         id={`target-${id}`}
-        style={{ left: '50%', ...handleStyle }}
+        className="handle-target-circle"
+        style={{left: '50%', top: '0px', ...handleStyle}}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from the last node inside the loop"
+        data-tooltip-content="Connect from another node"
         isConnectable={true}
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id={`source-${id}`}
-        style={{ left: '50%', ...handleStyle }}
+        className="handle-source-square"
+        style={{ left: '50%', top: '93%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to the next node after the loop"
+        data-tooltip-content="Connect to the next node if the loop condition ends"
         isConnectable={true}
       />
       {/* Loop Back Handle */}
@@ -148,9 +151,10 @@ const WhileEndNode = ({ id, data, selected }) => {
         type="source"
         position={Position.Right}
         id={`loopBack-${id}`}
-        style={{ top: '50%', ...handleStyle }}
+        className="handle-source-square"
+        style={{ left: '100%', top: '50%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-loopBack`}
-        data-tooltip-content="Loop back to While Start"
+        data-tooltip-content="Loop back to While Start block"
         isConnectable={true}
       />
       {/* Tooltips */}

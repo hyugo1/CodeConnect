@@ -5,6 +5,7 @@ import { Handle, Position } from 'reactflow';
 import { FaSync } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import './node.css';
 
 const handleStyle = { background: '#555' };
 const DownLineStyle = {
@@ -42,7 +43,8 @@ const WhileStartNode = ({ id, data, selected }) => {
         type="target"
         position={Position.Top}
         id={`target-${id}`}
-        style={{ left: '50%', ...handleStyle }}
+        className="handle-target-circle"
+        style={{left: '50%', top: '0px', ...handleStyle}}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
@@ -51,7 +53,8 @@ const WhileStartNode = ({ id, data, selected }) => {
         type="source"
         position={Position.Bottom}
         id={`source-${id}`}
-        style={{ left: '50%', ...handleStyle }}
+        className="handle-source-square"
+        style={{ left: '50%', top: '90%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-source`}
         data-tooltip-content="Connect to the first node inside the loop"
         isConnectable={true}

@@ -1,0 +1,59 @@
+/* Target handles styled as circles */
+.handle-target-circle {
+    width: 13px;
+    height: 13px;
+    background: transparent;
+    background-size: cover;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    /* Center the handle */
+    position: absolute;
+    top: 50%;
+    left: 100%; 
+    transform: translate(-50%, -50%);
+    border-radius: 50%; 
+    border: 2px solid #555;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  /* Source handles styled as squares */
+  .handle-source-square {
+    width: 13px;
+    height: 13px;
+    background: #555;
+    background-size: cover;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    /* Center the handle */
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, 0%);
+    border-radius: 0;
+    transition: background-color 0.3s;
+  }
+  
+  .handle-source-square.no-handle {
+    left: 75%;
+  }
+  
+  /* Active state when the square is hovered (circle turns red) */
+  .handle-target-circle.active {
+    background-color: red;
+    border-color: red;
+  }
+  
+  /* Active state when the circle is hovered (square turns red) */
+  .handle-source-square.active {
+    background-color: red;
+  }
+  
+  /* Optional: Additional styling for hover or active states */
+  .handle-target-circle:hover,
+  .handle-source-square:hover {
+    background-color: rgba(85, 85, 85, 0.1);
+  }
+  
+  /* Ensure the container positions the handles correctly */
+  .custom-node {
+    position: relative;
+  }

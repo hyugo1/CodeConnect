@@ -7,10 +7,6 @@ import {
   FaQuestion,
   FaSync,
   FaPrint,
-  FaArrowUp,
-  FaArrowDown,
-  FaArrowLeft,
-  FaArrowRight,
   FaArrowsAltH,
   FaPlus,
   FaMinus,
@@ -47,11 +43,7 @@ const Sidebar = ({ selectedBlockType, onSelectBlock }) => {
     { type: 'while', label: 'While Block', color: '#f9f7d8', icon: <FaSync /> },
     { type: 'print', label: 'Print Block', color: '#ffeeba', icon: <FaPrint /> },
     // Movement blocks
-    { type: 'moveUp', label: 'Move Up', color: '#d8f9f9', icon: <FaArrowUp /> },
-    { type: 'moveDown', label: 'Move Down', color: '#d8f9f9', icon: <FaArrowDown /> },
-    { type: 'moveLeft', label: 'Move Left', color: '#d8f9f9', icon: <FaArrowLeft /> },
-    { type: 'moveRight', label: 'Move Right', color: '#d8f9f9', icon: <FaArrowRight /> },
-    { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> }, // Generic move block
+    { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> },
     // Math operator blocks
     { type: 'add', label: 'Add', color: '#f9d8f9', icon: <FaPlus /> },
     { type: 'subtract', label: 'Subtract', color: '#f9d8f9', icon: <FaMinus /> },
