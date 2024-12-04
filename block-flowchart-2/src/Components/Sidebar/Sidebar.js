@@ -6,7 +6,6 @@ import {
   FaStop,
   FaQuestion,
   FaSync,
-  // FaCheck,
   FaPrint,
   FaArrowUp,
   FaArrowDown,
@@ -17,12 +16,12 @@ import {
   FaMinus,
   FaTimes,
   FaDivide,
-  FaPenFancy, 
-  FaPlusCircle
+  FaPenFancy,
+  FaPlusCircle,
 } from 'react-icons/fa';
 import './Sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ selectedBlockType, onSelectBlock }) => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -31,7 +30,7 @@ const Sidebar = () => {
   const blockStyle = {
     margin: '10px 0',
     padding: '10px',
-    cursor: 'grab',
+    cursor: 'pointer', // Change cursor to indicate both click and drag
     borderRadius: '5px',
     color: '#000',
     fontWeight: 'bold',
@@ -58,30 +57,33 @@ const Sidebar = () => {
     { type: 'subtract', label: 'Subtract', color: '#f9d8f9', icon: <FaMinus /> },
     { type: 'multiply', label: 'Multiply', color: '#f9d8f9', icon: <FaTimes /> },
     { type: 'divide', label: 'Divide', color: '#f9d8f9', icon: <FaDivide /> },
-    //set variable
+    // Set variable
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy /> },
     { type: 'incrementDecrement', label: 'Increment/Decrement', color: '#e0ffe0', icon: <FaPlusCircle /> },
-    ];
-  
-    return (
-      <aside style={{ padding: '10px', backgroundColor: '#eee', width: '220px' }}>
-        <h3 style={{ textAlign: 'center' }}>Blocks</h3>
-        {blocks.map((block) => (
-          <div
-            key={block.type}
-            style={{
-              ...blockStyle,
-              backgroundColor: block.color,
-            }}
-            onDragStart={(event) => onDragStart(event, block.type)}
-            draggable
-          >
-            {block.icon}
-            <span style={{ marginLeft: '8px' }}>{block.label}</span>
-          </div>
-        ))}
-      </aside>
-    );
-  };
-  
-  export default Sidebar;
+  ];
+
+  return (
+    <aside style={{ padding: '10px', backgroundColor: '#eee', width: '220px' }}>
+      <h3 style={{ textAlign: 'center' }}>Blocks</h3>
+      {blocks.map((block) => (
+        <div
+          key={block.type}
+          style={{
+            ...blockStyle,
+            backgroundColor: block.color,
+            border: selectedBlockType === block.type ? '3px solid blue' : blockStyle.border,
+            cursor: 'pointer',
+          }}
+          onClick={() => onSelectBlock(block.type)}
+          onDragStart={(event) => onDragStart(event, block.type)}
+          draggable
+        >
+          {block.icon}
+          <span style={{ marginLeft: '8px' }}>{block.label}</span>
+        </div>
+      ))}
+    </aside>
+  );
+};
+
+export default Sidebar;
