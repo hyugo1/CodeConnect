@@ -3,7 +3,7 @@ export {SubtractNode} from "./SubtractNode";
 export {MultiplyNode} from "./MultiplyNode";
 export {DivideNode} from "./DivideNode";
 export {SetVariableNode} from "./SetVariableNode";
-export {IncrementDecrementNode} from "./IncrementDecrementNode";
+export {ChangeVariable} from "./ChangeVariable";
 export {DummyNode} from "./DummyNode";
 export {IfNode} from "./IfNode";
 export {StartNode} from "./StartNode";

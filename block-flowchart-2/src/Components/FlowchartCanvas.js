@@ -11,8 +11,10 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode/CustomNode';
-import CustomEdge from './CustomEdge/CustomEdge'
+import CustomEdge from './CustomEdge/CustomEdge';
 import ControlPanel from './ControlPanel';
+import BlockPalette from './BlockPalette/BlockPalette';
+import OperatorNode from './CustomNode/nodes/OperatorNode'; 
 import { useFlowchartExecutor } from '../hooks/useFlowchartExecutor';
 
 const edgeTypes = {
@@ -21,6 +23,7 @@ const edgeTypes = {
 
 const nodeTypes = {
   custom: CustomNode,
+  operator: OperatorNode,
 };
 
 function FlowchartCanvas({
@@ -41,6 +44,10 @@ function FlowchartCanvas({
 
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [selectedEdges, setSelectedEdges] = useState([]);
+
+  // State for BlockPalette modal
+  const [paletteVisible, setPaletteVisible] = useState(false);
+  const [currentDummyNodeId, setCurrentDummyNodeId] = useState(null);
 
   // Use the custom hook for executing the flowchart
   const { executeFlowchart, resetExecution } = useFlowchartExecutor(
@@ -160,6 +167,80 @@ function FlowchartCanvas({
     [setNodes]
   );
 
+  // Handler for selecting a block from the palette
+  const onSelectBlock = useCallback(
+    (selectedBlockType) => {
+      if (!currentDummyNodeId) return;
+
+      // Find the dummy node to replace
+      const nodeToReplace = nodes.find((node) => node.id === currentDummyNodeId);
+      if (!nodeToReplace) {
+        console.error(`No node found with id: ${currentDummyNodeId}`);
+        setPaletteVisible(false);
+        setCurrentDummyNodeId(null);
+        return;
+      }
+
+      let newNode = null;
+
+      if (selectedBlockType === 'operator') {
+        // If it's a generic operator block, you might want to prompt user to select operator
+        // For simplicity, we'll assume operator type is selected within the node
+        newNode = {
+          id: `${+new Date()}`,
+          type: 'operator', // Use 'operator' type
+          position: nodeToReplace.position,
+          data: {
+            label: 'Operator',
+            nodeType: 'operator',
+            operator: '', // Initially no operator selected
+            onChange: onNodeChangeHandler,
+            operand1: '',
+            operand2: '',
+            resultVar: '',
+            varName: '',
+            varValue: '',
+            leftOperand: '',
+            rightOperand: '',
+          },
+        };
+      } else {
+        // For other block types, create as per previous logic
+        newNode = {
+          id: `${+new Date()}`,
+          type: 'custom',
+          position: nodeToReplace.position,
+          data: {
+            label: `${selectedBlockType.charAt(0).toUpperCase() + selectedBlockType.slice(1)}`,
+            nodeType: selectedBlockType,
+            onChange: onNodeChangeHandler,
+            // Add any other necessary data fields based on block type
+          },
+        };
+      }
+
+      // Replace the dummy node with the new node
+      setNodes((nds) =>
+        nds.map((node) => (node.id === currentDummyNodeId ? newNode : node))
+      );
+
+      // Optionally, update edges connected to the dummy node
+      // This depends on how you want the flow to continue after replacement
+      // For simplicity, we'll leave existing edges as they are
+
+      // Reset palette state
+      setPaletteVisible(false);
+      setCurrentDummyNodeId(null);
+    },
+    [currentDummyNodeId, nodes, onNodeChangeHandler, setNodes]
+  );
+  
+  // Handler for opening the palette when a dummy node is clicked
+  const handleSelectBlock = useCallback((nodeId) => {
+    setCurrentDummyNodeId(nodeId);
+    setPaletteVisible(true);
+  }, []);
+
   // Handler for dropping nodes onto the canvas
   const onDrop = useCallback(
     (event) => {
@@ -190,6 +271,7 @@ function FlowchartCanvas({
             onChange: onNodeChangeHandler,
             condition: '',
             whileEndNodeId: '',
+            onSelectBlock: handleSelectBlock, // Pass the handler
           },
         };
 
@@ -203,6 +285,7 @@ function FlowchartCanvas({
             onChange: onNodeChangeHandler,
             condition: '',
             whileStartNodeId: whileStartNode.id,
+            onSelectBlock: handleSelectBlock, // Pass the handler
           },
         };
 
@@ -216,9 +299,10 @@ function FlowchartCanvas({
           type: 'custom',
           position: { x: snappedX + 100, y: snappedY + 150 },
           data: {
-            label: 'Dummy Block',
+            label: 'Dummy',
             nodeType: 'dummy',
             onChange: onNodeChangeHandler,
+            onSelectBlock: handleSelectBlock, // Pass the handler
           },
         };
 
@@ -262,6 +346,44 @@ function FlowchartCanvas({
         };
 
         setEdges((eds) => eds.concat([edgeStartToDummy, edgeDummyToEnd, loopBackEdge]));
+      } else if (nodeType === 'operator') {
+        // Create an OperatorNode
+        const newNode = {
+          id: `${+new Date()}`,
+          type: 'operator', // Use 'operator' type
+          position: { x: snappedX, y: snappedY },
+          data: {
+            label: 'Operator',
+            nodeType: 'operator',
+            operator: '', // Operator to be selected within the node
+            onChange: onNodeChangeHandler,
+            operand1: '',
+            operand2: '',
+            resultVar: '',
+            varName: '',
+            varValue: '',
+            leftOperand: '',
+            rightOperand: '',
+          },
+        };
+
+        setNodes((nds) => nds.concat(newNode));
+
+        if (lastNodeId.current) {
+          const newEdge = {
+            id: `e${lastNodeId.current}-${newNode.id}`,
+            source: lastNodeId.current,
+            target: newNode.id,
+            type: 'custom',
+            animated: true,
+            markerEnd: { type: MarkerType.ArrowClosed },
+            style: { stroke: '#555', strokeWidth: 3 },
+            label: '',
+          };
+          setEdges((eds) => eds.concat(newEdge));
+        }
+
+        lastNodeId.current = newNode.id;
       } else if (nodeType === 'if') {
         // Create the 'if' node
         const ifNode = {
@@ -269,9 +391,10 @@ function FlowchartCanvas({
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
-            label: 'If Block',
+            label: 'If Then',
             nodeType: 'if',
             onChange: onNodeChangeHandler,
+            onSelectBlock: handleSelectBlock, // Pass the handler
           },
         };
 
@@ -284,6 +407,7 @@ function FlowchartCanvas({
             label: 'True Action',
             nodeType: 'dummy',
             onChange: onNodeChangeHandler,
+            onSelectBlock: handleSelectBlock, // Pass the handler
           },
         };
 
@@ -295,6 +419,7 @@ function FlowchartCanvas({
             label: 'False Action',
             nodeType: 'dummy',
             onChange: onNodeChangeHandler,
+            onSelectBlock: handleSelectBlock, // Pass the handler
           },
         };
 
@@ -326,16 +451,59 @@ function FlowchartCanvas({
         };
 
         setEdges((eds) => eds.concat([edgeIfToTrue, edgeIfToFalse]));
-      } else {
+      }
+      //  else if (['add', 'subtract', 'multiply', 'divide'].includes(nodeType)) {
+      //   const operatorLabels = {
+      //     add: 'Add',
+      //     subtract: 'Subtract',
+      //     multiply: 'Multiply',
+      //     divide: 'Divide',
+      //   };
+      
+      //   const newNode = {
+      //     id: `${+new Date()}`,
+      //     type: 'operator', // Use 'operator' type
+      //     position: { x: snappedX, y: snappedY },
+      //     data: {
+      //       label: `${operatorLabels[nodeType]} Block`,
+      //       nodeType,
+      //       operator: nodeType, // Pass the operator type
+      //       onChange: onNodeChangeHandler,
+      //       operand1: '',
+      //       operand2: '',
+      //       resultVar: '',
+      //     },
+      //   };
+      
+      //   setNodes((nds) => nds.concat(newNode));
+      
+      //   if (lastNodeId.current) {
+      //     const newEdge = {
+      //       id: `e${lastNodeId.current}-${newNode.id}`,
+      //       source: lastNodeId.current,
+      //       target: newNode.id,
+      //       type: 'custom',
+      //       animated: true,
+      //       markerEnd: { type: MarkerType.ArrowClosed },
+      //       style: { stroke: '#555', strokeWidth: 3 },
+      //       label: '',
+      //     };
+      //     setEdges((eds) => eds.concat(newEdge));
+      //   }
+      
+      //   lastNodeId.current = newNode.id;
+      // } 
+      else {
         // Create the new node without auto-connecting edges
         const newNode = {
           id: `${+new Date()}`,
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
-            label: `${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)} Block`,
+            label: `${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)}`,
             nodeType,
             onChange: onNodeChangeHandler,
+            onSelectBlock: handleSelectBlock, // Pass the handler if needed
             action: '',
             message: '',
           },
@@ -360,7 +528,7 @@ function FlowchartCanvas({
         lastNodeId.current = newNode.id;
       }
     },
-    [setNodes, setEdges, onNodeChangeHandler]
+    [setNodes, setEdges, onNodeChangeHandler, handleSelectBlock]
   );
 
   // Handler for selection changes
@@ -374,6 +542,7 @@ function FlowchartCanvas({
       className="flowchart-container"
       onDragOver={onDragOver}
       onDrop={onDrop}
+      style={{ width: '100%', height: '100vh', position: 'relative' }}
     >
       <ReactFlow
         nodes={nodes}
@@ -404,6 +573,16 @@ function FlowchartCanvas({
         setNodes={setNodes}
         setEdges={setEdges}
       />
+      {/* Block Palette Modal */}
+      {paletteVisible && (
+        <BlockPalette
+          onSelect={onSelectBlock}
+          onClose={() => {
+            setPaletteVisible(false);
+            setCurrentDummyNodeId(null);
+          }}
+        />
+      )}
     </div>
   );
 }

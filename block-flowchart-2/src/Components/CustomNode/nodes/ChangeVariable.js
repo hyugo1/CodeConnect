@@ -1,8 +1,8 @@
-// src/Components/CustomNode/nodes/AddNode.js
+// src/Components/CustomNode/nodes/ChangeVariable.js
 
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlusCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
@@ -18,8 +18,7 @@ const DownLineStyle = {
   transform: 'translateX(-50%)',
   zIndex: -1,
 };
-
-const mathStyle = {
+const inputStyle = {
   width: '100%',
   marginTop: 10,
   padding: '5px',
@@ -29,17 +28,13 @@ const mathStyle = {
   boxSizing: 'border-box',
 };
 
-const AddNode = ({ id, data, selected }) => {
-  const handleOperand1Change = (e) => {
-    data.onChange(id, data.label, data.action, data.message, data.distance, data.direction, e.target.value, data.operand2, data.resultVar);
+const ChangeVariable = ({ id, data, selected }) => {
+  const handleVarNameChange = (e) => {
+    data.onChange(id, data.label, data.action, data.message, data.distance, data.direction, data.operand1, data.operand2, data.resultVar, e.target.value, data.varValue);
   };
 
-  const handleOperand2Change = (e) => {
-    data.onChange(id, data.label, data.action, data.message, data.distance, data.direction, data.operand1, e.target.value, data.resultVar);
-  };
-
-  const handleResultVarChange = (e) => {
-    data.onChange(id, data.label, data.action, data.message, data.distance, data.direction, data.operand1, data.operand2, e.target.value);
+  const handleVarValueChange = (e) => {
+    data.onChange(id, data.label, data.action, data.message, data.distance, data.direction, data.operand1, data.operand2, data.resultVar, data.varName, e.target.value);
   };
 
   return (
@@ -52,14 +47,14 @@ const AddNode = ({ id, data, selected }) => {
         minWidth: 180,
         textAlign: 'center',
         fontWeight: 'bold',
-        backgroundColor: '#f9d8f9',
+        backgroundColor: '#e0ffe0',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       }}
       className={selected ? 'selected' : ''}
     >
-      <FaPlus style={{ marginBottom: 5 }} />
+      <FaPlusCircle style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
       <Handle
         type="target"
@@ -71,12 +66,12 @@ const AddNode = ({ id, data, selected }) => {
         data-tooltip-content="Connect from another node"
         isConnectable={true}
       />
-      <Handle
+       <Handle
         type="source"
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '90%', ...handleStyle }}
+        style={{ left: '50%', top: '95%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-source`}
         data-tooltip-content="Connect to another node"
         isConnectable={true}
@@ -85,28 +80,21 @@ const AddNode = ({ id, data, selected }) => {
       <Tooltip id={`tooltip-${id}-source`} place="top" />
       <input
         type="text"
-        placeholder="Operand 1"
-        value={data.operand1}
-        onChange={handleOperand1Change}
-        style={mathStyle}
+        placeholder="Variable Name"
+        value={data.varName}
+        onChange={handleVarNameChange}
+        style={inputStyle}
       />
       <input
-        type="text"
-        placeholder="Operand 2"
-        value={data.operand2}
-        onChange={handleOperand2Change}
-        style={mathStyle}
-      />
-      <input
-        type="text"
-        placeholder="Result Variable"
-        value={data.resultVar}
-        onChange={handleResultVarChange}
-        style={mathStyle}
+        type="number"
+        placeholder="Change Value"
+        value={data.varValue}
+        onChange={handleVarValueChange}
+        style={inputStyle}
       />
       <div style={DownLineStyle}></div>
     </div>
   );
 };
 
-export default AddNode;
+export default ChangeVariable;

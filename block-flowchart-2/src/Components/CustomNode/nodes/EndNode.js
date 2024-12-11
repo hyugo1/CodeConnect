@@ -7,7 +7,11 @@ import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
 
-const handleStyle = { background: '#555' };
+const handleStyle = { 
+  background: '#555', 
+  // width: 10, 
+  // height: 10 
+};
 
 const EndNode = ({ id, data, selected }) => {
   return (
@@ -25,21 +29,27 @@ const EndNode = ({ id, data, selected }) => {
         flexDirection: 'column',
         alignItems: 'center',
       }}
-      className={selected ? 'selected' : ''}
+      className={`end-node ${selected ? 'selected' : ''}`}
     >
-      <FaStopCircle style={{ marginBottom: 5 }} />
-      <div>{data.label}</div>
+      <FaStopCircle style={{ marginBottom: 5, }}/>
+        {data.label}
       <Handle
         type="target"
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{left: '50%', top: '0px', ...handleStyle}}
+        style={{
+          left: '50%',
+          top: '0px',
+          transform: 'translate(-50%, -50%)',
+          ...handleStyle
+        }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
       />
       {/* No source handles as it's an end node */}
+      {/* Tooltips */}
       <Tooltip id={`tooltip-${id}-target`} place="top" />
     </div>
   );

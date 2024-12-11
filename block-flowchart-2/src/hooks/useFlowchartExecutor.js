@@ -74,7 +74,7 @@ export function useFlowchartExecutor(
           break;
         }
 
-        case 'incrementDecrement': {
+        case 'ChangeVariable': {
           const { varName, varValue } = node.data;
           if (varName) {
             const incrementValue = parseFloat(varValue);
@@ -154,6 +154,59 @@ export function useFlowchartExecutor(
           setCharacterMessage(evaluatedMessage);
           await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds
           setCharacterMessage('');
+          break;
+        }
+
+        case 'operator': {
+          const { operator, operand1, operand2, resultVar } = node.data;
+          if (!operator || !resultVar) {
+            outputs.push(`Incomplete operator configuration in node ${node.id}`);
+            return;
+          }
+
+          let value1 = 0;
+          let value2 = 0;
+
+          // Retrieve operand values from variables or parse as numbers
+          try {
+            value1 = isNaN(parseFloat(operand1)) ? context.variables[operand1] : parseFloat(operand1);
+            value2 = isNaN(parseFloat(operand2)) ? context.variables[operand2] : parseFloat(operand2);
+          } catch (error) {
+            outputs.push(`Error retrieving operands in node ${node.id}: ${error.message}`);
+            return;
+          }
+
+          if (value1 === undefined || value2 === undefined) {
+            outputs.push(`Undefined operands in node ${node.id}`);
+            return;
+          }
+
+          let result = 0;
+          switch (operator) {
+            case 'add':
+              result = value1 + value2;
+              break;
+            case 'subtract':
+              result = value1 - value2;
+              break;
+            case 'multiply':
+              result = value1 * value2;
+              break;
+            case 'divide':
+              if (value2 === 0) {
+                outputs.push(`Division by zero in node ${node.id}`);
+                return;
+              }
+              result = value1 / value2;
+              break;
+            default:
+              outputs.push(`Unknown operator "${operator}" in node ${node.id}`);
+              return;
+          }
+
+          context.variables[resultVar] = result;
+          outputs.push(`Variable "${resultVar}" set to ${result}`);
+          console.log(`Operator "${operator}": ${operand1} ${operator} ${operand2} = ${result}`);
           break;
         }
 
@@ -237,20 +290,19 @@ export function useFlowchartExecutor(
         }
 
         case 'whileEnd': {
-          // Evaluate the condition
           const { leftOperand, operator, rightOperand } = node.data;
           let conditionMet = false;
           if (leftOperand && operator && rightOperand) {
             try {
               const condition = `${leftOperand} ${operator} ${rightOperand}`;
               console.log(`Evaluating condition at node ${node.id}: ${condition}`);
-              /* eslint-disable no-new-func */
               const condFunc = new Function(
                 'variables',
                 `with (variables) { return (${condition}); }`
               );
-              /* eslint-enable no-new-func */
               conditionMet = condFunc(context.variables);
+              context.variables[`conditionMet_${node.id}`] = conditionMet; // Store condition
+              console.log(`Condition met: ${conditionMet}`);
             } catch (error) {
               console.error(`Error evaluating condition at node ${node.id}:`, error);
               outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
@@ -260,9 +312,17 @@ export function useFlowchartExecutor(
             outputs.push(`Incomplete condition in node ${node.id}`);
             return;
           }
-
+        
           if (conditionMet) {
-            // Loop back to 'whileStart'
+            // Optionally update a loop counter
+            if (!context.variables.loopCounter) {
+              context.variables.loopCounter = 1;
+            } else {
+              context.variables.loopCounter += 1;
+            }
+            console.log(`Loop Counter: ${context.variables.loopCounter}`);
+            
+            // Traverse back to whileStart
             const whileStartNodeId = node.data.whileStartNodeId;
             if (whileStartNodeId) {
               await traverse(whileStartNodeId);
@@ -270,7 +330,7 @@ export function useFlowchartExecutor(
               outputs.push(`No matching While Start node for node ${node.id}`);
             }
           } else {
-            // Proceed to the next node after 'whileEnd'
+            // Exit loop
             const exitEdge = currentEdges.find(
               (e) =>
                 e.source === node.id &&
@@ -282,7 +342,7 @@ export function useFlowchartExecutor(
               outputs.push(`No exit edge found for node ${node.id}`);
             }
           }
-          return; // Exit the function to prevent further traversal
+          return; // Prevent further traversal
         }
 
         default:

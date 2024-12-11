@@ -28,8 +28,6 @@ const StartNode = ({ id, data, selected }) => {
         borderRadius: 5,
         position: 'relative',
         minWidth: 180,
-        width: 200,   
-        height: 40, 
         textAlign: 'center',
         fontWeight: 'bold',
         backgroundColor: '#d3f9d8',

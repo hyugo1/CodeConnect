@@ -71,7 +71,7 @@ const SetVariableNode = ({ id, data, selected }) => {
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '90%', ...handleStyle }}
+        style={{ left: '50%', top: '95%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-source`}
         data-tooltip-content="Connect to another node"
         isConnectable={true}

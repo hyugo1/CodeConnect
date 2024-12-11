@@ -1,7 +1,7 @@
 // src/App.js
 
 import React, { useState } from 'react';
-import Sidebar from './Components/Sidebar/Sidebar';
+import BlockPalette from './Components/BlockPalette/BlockPalette';
 import FlowchartCanvas from './Components/FlowchartCanvas';
 import CharacterDisplay from './Components/CharacterDisplay';
 import Console from './Components/Console';
@@ -15,9 +15,9 @@ function App() {
 
   return (
     <div className="App">
-      <div className="app-container">
-        {/* Left Sidebar */}
-        <Sidebar />
+      <div className="app-container" style={{ display: 'flex', height: '100vh' }}>
+        {/* Left BlockPalette */}
+        <BlockPalette onSelectBlock={() => {}} /> {/* Pass the actual onSelectBlock handler as needed */}
 
         {/* Middle Flowchart Canvas */}
         <FlowchartCanvas
@@ -30,7 +30,7 @@ function App() {
         />
 
         {/* Right Panel */}
-        <div className="right-panel">
+        <div className="right-panel" style={{ backgroundColor: '#f0f0f0' }}>
           <CharacterDisplay
             characterMessage={characterMessage}
             characterPosition={characterPosition}

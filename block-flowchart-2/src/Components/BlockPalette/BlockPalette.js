@@ -1,4 +1,4 @@
-// src/Components/Sidebar/Sidebar.js
+// src/Components/BlockPalette/BlockPalette.js
 
 import React from 'react';
 import {
@@ -8,16 +8,12 @@ import {
   FaSync,
   FaPrint,
   FaArrowsAltH,
-  FaPlus,
-  FaMinus,
-  FaTimes,
-  FaDivide,
   FaPenFancy,
   FaPlusCircle,
 } from 'react-icons/fa';
-import './Sidebar.css';
+import './BlockPalette.css';
 
-const Sidebar = ({ selectedBlockType, onSelectBlock }) => {
+const BlockPalette = ({ onSelectBlock }) => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -26,7 +22,7 @@ const Sidebar = ({ selectedBlockType, onSelectBlock }) => {
   const blockStyle = {
     margin: '10px 0',
     padding: '10px',
-    cursor: 'pointer', // Change cursor to indicate both click and drag
+    cursor: 'grab', // Indicate draggable
     borderRadius: '5px',
     color: '#000',
     fontWeight: 'bold',
@@ -37,25 +33,22 @@ const Sidebar = ({ selectedBlockType, onSelectBlock }) => {
   };
 
   const blocks = [
-    { type: 'start', label: 'Start Block', color: '#d3f9d8', icon: <FaPlay /> },
-    { type: 'end', label: 'End Block', color: '#f9d8d8', icon: <FaStop /> },
-    { type: 'if', label: 'If-Then Block', color: '#d8d8f9', icon: <FaQuestion /> },
-    { type: 'while', label: 'While Block', color: '#f9f7d8', icon: <FaSync /> },
-    { type: 'print', label: 'Print Block', color: '#ffeeba', icon: <FaPrint /> },
+    { type: 'start', label: 'Start', color: '#d3f9d8', icon: <FaPlay /> },
+    { type: 'end', label: 'End', color: '#f9d8d8', icon: <FaStop /> },
+    { type: 'if', label: 'If-Then', color: '#d8d8f9', icon: <FaQuestion /> },
+    { type: 'while', label: 'While', color: '#f9f7d8', icon: <FaSync /> },
+    { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint /> },
     // Movement blocks
     { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> },
-    // Math operator blocks
-    { type: 'add', label: 'Add', color: '#f9d8f9', icon: <FaPlus /> },
-    { type: 'subtract', label: 'Subtract', color: '#f9d8f9', icon: <FaMinus /> },
-    { type: 'multiply', label: 'Multiply', color: '#f9d8f9', icon: <FaTimes /> },
-    { type: 'divide', label: 'Divide', color: '#f9d8f9', icon: <FaDivide /> },
+    // Operator block
+    { type: 'operator', label: 'Operator', color: '#f9d8f9', icon: <FaPlusCircle /> },
     // Set variable
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy /> },
-    { type: 'incrementDecrement', label: 'Increment/Decrement', color: '#e0ffe0', icon: <FaPlusCircle /> },
+    { type: 'ChangeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle /> },
   ];
 
   return (
-    <aside style={{ padding: '10px', backgroundColor: '#eee', width: '220px' }}>
+    <aside style={{ padding: '10px', backgroundColor: '#eee', width: '220px', overflowY: 'auto', height: '100vh' }}>
       <h3 style={{ textAlign: 'center' }}>Blocks</h3>
       {blocks.map((block) => (
         <div
@@ -63,8 +56,7 @@ const Sidebar = ({ selectedBlockType, onSelectBlock }) => {
           style={{
             ...blockStyle,
             backgroundColor: block.color,
-            border: selectedBlockType === block.type ? '3px solid blue' : blockStyle.border,
-            cursor: 'pointer',
+            border: '2px solid #555',
           }}
           onClick={() => onSelectBlock(block.type)}
           onDragStart={(event) => onDragStart(event, block.type)}
@@ -78,4 +70,4 @@ const Sidebar = ({ selectedBlockType, onSelectBlock }) => {
   );
 };
 
-export default Sidebar;
+export default BlockPalette;

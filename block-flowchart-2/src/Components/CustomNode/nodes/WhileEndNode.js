@@ -154,7 +154,7 @@ const WhileEndNode = ({ id, data, selected }) => {
         className="handle-source-square"
         style={{ left: '100%', top: '50%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-loopBack`}
-        data-tooltip-content="Loop back to While Start block"
+        data-tooltip-content="Loop back to While Start"
         isConnectable={true}
       />
       {/* Tooltips */}
