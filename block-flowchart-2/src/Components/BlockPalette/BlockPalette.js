@@ -1,6 +1,6 @@
 // src/Components/BlockPalette/BlockPalette.js
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   FaPlay,
   FaStop,
@@ -13,10 +13,17 @@ import {
 } from 'react-icons/fa';
 import './BlockPalette.css';
 
-const BlockPalette = ({ onSelectBlock }) => {
+const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag }) => {
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
+    setIsDragging(true);
+    setCancelDrag(false);
+  };
+
+  const onDragEnd = () => {
+    setIsDragging(false);
+    setCancelDrag(false);
   };
 
   const blockStyle = {
@@ -47,6 +54,17 @@ const BlockPalette = ({ onSelectBlock }) => {
     { type: 'ChangeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle /> },
   ];
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isDragging && e.key === 'Escape') {
+        setCancelDrag(true);
+        setIsDragging(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDragging, setCancelDrag, setIsDragging]);
+
   return (
     <aside style={{ padding: '10px', backgroundColor: '#eee', width: '220px', overflowY: 'auto', height: '100vh' }}>
       <h3 style={{ textAlign: 'center' }}>Blocks</h3>
@@ -60,6 +78,7 @@ const BlockPalette = ({ onSelectBlock }) => {
           }}
           onClick={() => onSelectBlock(block.type)}
           onDragStart={(event) => onDragStart(event, block.type)}
+          onDragEnd={onDragEnd}
           draggable
         >
           {block.icon}

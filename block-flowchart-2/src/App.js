@@ -13,13 +13,28 @@ function App() {
   const [characterPosition, setCharacterPosition] = useState({ x: 0, y: 0 });
   const [characterMessage, setCharacterMessage] = useState('');
 
+  // **Drag State**
+  const [isDragging, setIsDragging] = useState(false);
+  const [cancelDrag, setCancelDrag] = useState(false);
+
+  // Handler for selecting a block from the palette
+  const handleSelectBlock = (blockType) => {
+    // Implement logic if needed when a block is selected from the left palette
+    console.log(`Block selected from left palette: ${blockType}`);
+  };
+
   return (
     <div className="App">
       <div className="app-container" style={{ display: 'flex', height: '100vh' }}>
-        {/* Left BlockPalette */}
-        <BlockPalette onSelectBlock={() => {}} /> {/* Pass the actual onSelectBlock handler as needed */}
+        {/* **Left BlockPalette** */}
+        <BlockPalette
+          onSelectBlock={handleSelectBlock} // Update this as needed
+          isDragging={isDragging}
+          setIsDragging={setIsDragging}
+          setCancelDrag={setCancelDrag}
+        />
 
-        {/* Middle Flowchart Canvas */}
+        {/* **Middle Flowchart Canvas** */}
         <FlowchartCanvas
           consoleOutput={consoleOutput}
           setConsoleOutput={setConsoleOutput}
@@ -27,9 +42,13 @@ function App() {
           setCharacterPosition={setCharacterPosition}
           characterMessage={characterMessage}
           setCharacterMessage={setCharacterMessage}
+          isDragging={isDragging}
+          cancelDrag={cancelDrag}
+          setCancelDrag={setCancelDrag}
+          setIsDragging={setIsDragging} // **Added this line**
         />
 
-        {/* Right Panel */}
+        {/* **Right Panel** */}
         <div className="right-panel" style={{ backgroundColor: '#f0f0f0' }}>
           <CharacterDisplay
             characterMessage={characterMessage}
