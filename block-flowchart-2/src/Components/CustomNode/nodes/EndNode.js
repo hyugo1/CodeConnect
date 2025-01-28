@@ -7,10 +7,16 @@ import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
 
-const handleStyle = { 
-  background: '#555', 
-  // width: 10, 
-  // height: 10 
+const handleStyle = { background: '#555' };
+const DownLineStyle = {
+  position: 'absolute',
+  width: 3,
+  backgroundColor: '#555',
+  top: '100%',
+  left: '50%',
+  height: 50,
+  transform: 'translateX(-50%)',
+  zIndex: -1,
 };
 
 const EndNode = ({ id, data, selected }) => {
@@ -31,8 +37,8 @@ const EndNode = ({ id, data, selected }) => {
       }}
       className={`end-node ${selected ? 'selected' : ''}`}
     >
-      <FaStopCircle style={{ marginBottom: 5, }}/>
-        {data.label}
+      <FaStopCircle style={{ marginBottom: 5, }} />
+      {data.label}
       <Handle
         type="target"
         position={Position.Top}

@@ -11,6 +11,7 @@ import PrintNode from './nodes/PrintNode';
 import MoveNode from './nodes/MoveNode';
 import SetVariableNode from './nodes/SetVariableNode';
 import ChangeVariable from './nodes/ChangeVariable';
+import OperatorNode from './nodes/OperatorNode'; // Ensure OperatorNode is imported
 import DummyNode from './nodes/DummyNode';
 
 const nodeMapping = {
@@ -21,12 +22,9 @@ const nodeMapping = {
   whileEnd: WhileEndNode,
   print: PrintNode,
   move: MoveNode,
-  // add: AddNode,
-  // subtract: SubtractNode,
-  // multiply: MultiplyNode,
-  // divide: DivideNode,
   setVariable: SetVariableNode,
-  ChangeVariable: ChangeVariable,
+  changeVariable: ChangeVariable, // Ensure this line exists
+  operator: OperatorNode, // Ensure this line exists
   dummy: DummyNode,
 };
 

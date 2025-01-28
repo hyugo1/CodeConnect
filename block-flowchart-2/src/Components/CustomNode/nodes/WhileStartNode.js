@@ -44,7 +44,7 @@ const WhileStartNode = ({ id, data, selected }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{left: '50%', top: '0px', ...handleStyle}}
+        style={{ left: '50%', top: '0px', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}

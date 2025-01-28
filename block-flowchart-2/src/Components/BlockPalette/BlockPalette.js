@@ -51,7 +51,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
     { type: 'operator', label: 'Operator', color: '#f9d8f9', icon: <FaPlusCircle /> },
     // Set variable
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy /> },
-    { type: 'ChangeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle /> },
+    { type: 'changeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle /> },
   ];
 
   useEffect(() => {

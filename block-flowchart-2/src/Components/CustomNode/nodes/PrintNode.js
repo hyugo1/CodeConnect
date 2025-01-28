@@ -1,7 +1,7 @@
 // src/Components/CustomNode/nodes/PrintNode.js
 
 import React from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useReactFlow } from 'reactflow';
 import { FaPrint } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -20,8 +20,24 @@ const DownLineStyle = {
 };
 
 const PrintNode = ({ id, data, selected }) => {
+  const { setNodes } = useReactFlow();
+
   const handleChange = (e) => {
-    data.onChange(id, data.label, data.action, e.target.value);
+    const newMessage = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              message: newMessage,
+            },
+          };
+        }
+        return node;
+      })
+    );
   };
 
   return (
@@ -48,7 +64,7 @@ const PrintNode = ({ id, data, selected }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{left: '50%', top: '0px', ...handleStyle}}
+        style={{ left: '50%', top: '0px', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
@@ -58,7 +74,7 @@ const PrintNode = ({ id, data, selected }) => {
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '90%', ...handleStyle }}
+        style={{ left: '50%', top: '95%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-source`}
         data-tooltip-content="Connect to another node"
         isConnectable={true}
@@ -68,7 +84,7 @@ const PrintNode = ({ id, data, selected }) => {
       <input
         type="text"
         placeholder="Enter message to print"
-        value={data.message}
+        value={data.message || ''}
         onChange={handleChange}
         style={{
           width: '100%',

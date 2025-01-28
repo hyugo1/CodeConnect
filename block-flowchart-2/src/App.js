@@ -1,10 +1,11 @@
 // src/App.js
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import BlockPalette from './Components/BlockPalette/BlockPalette';
 import FlowchartCanvas from './Components/FlowchartCanvas';
-import CharacterDisplay from './Components/CharacterDisplay';
-import Console from './Components/Console';
+import CharacterDisplay from './Components/CharacterDisplay/CharacterDisplay';
+import Console from './Components/Console/Console';
+import Navbar from './Components/Navbar/Navbar'; // Import Navbar
 import './styles/App.css';
 
 function App() {
@@ -17,18 +18,31 @@ function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [cancelDrag, setCancelDrag] = useState(false);
 
+  // **Flowchart State**
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
+
   // Handler for selecting a block from the palette
-  const handleSelectBlock = (blockType) => {
+  const handleSelectBlock = useCallback((blockType) => {
     // Implement logic if needed when a block is selected from the left palette
     console.log(`Block selected from left palette: ${blockType}`);
-  };
+  }, []);
 
   return (
     <div className="App">
-      <div className="app-container" style={{ display: 'flex', height: '100vh' }}>
+      {/* **Navbar at the Top** */}
+      <Navbar
+        nodes={nodes}
+        edges={edges}
+        setNodes={setNodes}
+        setEdges={setEdges}
+      />
+
+      {/* **Main Content** */}
+      <div className="app-container">
         {/* **Left BlockPalette** */}
         <BlockPalette
-          onSelectBlock={handleSelectBlock} // Update this as needed
+          onSelectBlock={handleSelectBlock}
           isDragging={isDragging}
           setIsDragging={setIsDragging}
           setCancelDrag={setCancelDrag}
@@ -36,6 +50,10 @@ function App() {
 
         {/* **Middle Flowchart Canvas** */}
         <FlowchartCanvas
+          nodes={nodes}
+          setNodes={setNodes}
+          edges={edges}
+          setEdges={setEdges}
           consoleOutput={consoleOutput}
           setConsoleOutput={setConsoleOutput}
           characterPosition={characterPosition}
@@ -45,11 +63,11 @@ function App() {
           isDragging={isDragging}
           cancelDrag={cancelDrag}
           setCancelDrag={setCancelDrag}
-          setIsDragging={setIsDragging} // **Added this line**
+          setIsDragging={setIsDragging}
         />
 
         {/* **Right Panel** */}
-        <div className="right-panel" style={{ backgroundColor: '#f0f0f0' }}>
+        <div className="right-panel">
           <CharacterDisplay
             characterMessage={characterMessage}
             characterPosition={characterPosition}

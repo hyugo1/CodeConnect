@@ -1,3 +1,5 @@
+// src/hooks/useFlowchartExecutor.js
+
 import { useCallback, useRef } from 'react';
 import { evaluate } from 'mathjs';
 
@@ -30,7 +32,9 @@ export function useFlowchartExecutor(
     const currentNodes = nodes;
     const currentEdges = edges;
 
-    const startNode = currentNodes.find((node) => node.data.nodeType === 'start');
+    const startNode = currentNodes.find(
+      (node) => node.type === 'custom' && node.data.nodeType === 'start'
+    );
     if (!startNode) {
       alert('No Start node found');
       return;
@@ -38,10 +42,14 @@ export function useFlowchartExecutor(
 
     const outputs = [];
     const context = {
-      outputs,
       variables: {},
+      outputs,
     };
 
+    /**
+     * Recursive function to traverse and execute nodes
+     * @param {string} nodeId - Current node ID
+     */
     const traverse = async (nodeId) => {
       if (visitedNodesRef.current.has(nodeId)) {
         return;
@@ -55,16 +63,31 @@ export function useFlowchartExecutor(
       }
 
       const node = currentNodes.find((n) => n.id === nodeId);
-      if (!node) return;
+      if (!node) {
+        outputs.push(`Error: Node with ID ${nodeId} not found.`);
+        return;
+      }
 
       switch (node.data.nodeType) {
+        case 'start':
+          // Move to the next node
+          executeNextNode(node.id);
+          break;
+
+        case 'end':
+          setConsoleOutput(context.outputs.join('\n'));
+          setCharacterPosition(context.characterPos || { x: 0, y: 0 });
+          setCharacterMessage(context.characterMsg || '');
+          break;
+
         case 'setVariable': {
           const { varName, varValue } = node.data;
           if (varName) {
             try {
-              // Use math.js to safely evaluate the expression
+              // Safely evaluate the variable value
               const value = evaluate(varValue, context.variables);
               context.variables[varName] = value;
+              outputs.push(`Set variable ${varName} = ${value}`);
               console.log(`Set variable ${varName} = ${value}`);
             } catch (error) {
               console.error(`Error evaluating value at node ${node.id}:`, error);
@@ -75,12 +98,36 @@ export function useFlowchartExecutor(
           break;
         }
 
+        case 'changeVariable': {
+          const { varName, varValue } = node.data;
+          if (varName && context.variables.hasOwnProperty(varName)) {
+            try {
+              const value = evaluate(varValue, context.variables);
+              context.variables[varName] += value;
+              outputs.push(
+                `Changed variable ${varName} by ${value}, new value: ${context.variables[varName]}`
+              );
+              console.log(
+                `Changed variable ${varName} by ${value}, new value: ${context.variables[varName]}`
+              );
+            } catch (error) {
+              console.error(`Error changing variable at node ${node.id}:`, error);
+              outputs.push(`Error changing variable in node ${node.id}: ${error.message}`);
+              return;
+            }
+          } else {
+            outputs.push(`Variable "${varName}" not found in node ${node.id}.`);
+            return;
+          }
+          break;
+        }
+
         case 'if': {
           const { leftOperand, operator, rightOperand } = node.data;
           let conditionMet = false;
           if (leftOperand && operator && rightOperand) {
             try {
-              // Use math.js to evaluate the condition
+              // Safely evaluate the condition
               const condition = `${leftOperand} ${operator} ${rightOperand}`;
               console.log(`Evaluating condition at node ${node.id}: ${condition}`);
               conditionMet = evaluate(condition, context.variables);
@@ -90,7 +137,7 @@ export function useFlowchartExecutor(
               return;
             }
           } else {
-            outputs.push(`Incomplete condition in node ${node.id}`);
+            outputs.push(`Incomplete condition in node ${node.id}.`);
             return;
           }
           node.conditionMet = conditionMet;
@@ -110,7 +157,7 @@ export function useFlowchartExecutor(
               return;
             }
           } else {
-            outputs.push(`Incomplete condition in node ${node.id}`);
+            outputs.push(`Incomplete condition in node ${node.id}.`);
             return;
           }
 
@@ -121,22 +168,70 @@ export function useFlowchartExecutor(
         }
 
         case 'print': {
-          let message = node.data.message || '';
-          try {
-            // Use math.js to evaluate the message
-            const evaluatedMessage = evaluate(message, context.variables);
+          const message = node.data.message || '';
+          if (!message) {
+            outputs.push(`Error: No message set in Print node "${node.id}".`);
+            return;
+          }
+
+          // Check if the message is a variable name
+          if (context.variables.hasOwnProperty(message)) {
+            const value = context.variables[message];
+            outputs.push(value);
+            setCharacterMessage(value.toString());
+            console.log(`Print: ${value}`);
+            // Optional: Delay to show the message
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            setCharacterMessage('');
+          } else {
+            // If message contains variable references like ${varName}, replace them
+            const evaluatedMessage = message.replace(/\$\{(\w+)\}/g, (match, p1) => {
+              return context.variables[p1] !== undefined ? context.variables[p1] : match;
+            });
             outputs.push(evaluatedMessage);
             setCharacterMessage(evaluatedMessage);
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            console.log(`Print: ${evaluatedMessage}`);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             setCharacterMessage('');
-          } catch (error) {
-            console.error(`Error evaluating message at node ${node.id}:`, error);
-            outputs.push(`Error evaluating message in node ${node.id}: ${error.message}`);
           }
           break;
         }
 
+        case 'move': {
+          const { distance, direction } = node.data;
+          if (distance && direction) {
+            let newX = context.characterPos?.x || 0;
+            let newY = context.characterPos?.y || 0;
+
+            switch (direction) {
+              case 'left':
+                newX -= distance;
+                break;
+              case 'right':
+                newX += distance;
+                break;
+              case 'up':
+                newY -= distance;
+                break;
+              case 'down':
+                newY += distance;
+                break;
+              default:
+                break;
+            }
+
+            context.characterPos = { x: newX, y: newY };
+            outputs.push(`Moved ${direction} by ${distance} units to (${newX}, ${newY})`);
+            setCharacterPosition({ x: newX, y: newY });
+            console.log(`Moved ${direction} by ${distance} units to (${newX}, ${newY})`);
+          }
+          break;
+        }
+
+        // Implement other node types like 'while', etc.
+
         default:
+          console.warn(`Unknown node type: ${node.data.nodeType}`);
           break;
       }
 
@@ -163,16 +258,32 @@ export function useFlowchartExecutor(
       }
     };
 
-    await traverse(startNode.id);
+    /**
+     * Execute the next node connected to the current node
+     * @param {string} currentNodeId
+     */
+    const executeNextNode = (currentNodeId) => {
+      // Find the outgoing edge
+      const outgoingEdge = edges.find((edge) => edge.source === currentNodeId);
+      if (outgoingEdge) {
+        traverse(outgoingEdge.target);
+      } else {
+        setConsoleOutput(context.outputs.join('\n') + '\nExecution ended.');
+        setCharacterPosition(context.characterPos || { x: 0, y: 0 });
+        setCharacterMessage(context.characterMsg || '');
+      }
+    };
 
-    console.log('Outputs:', outputs);
-    setConsoleOutput(outputs.join('\n'));
+    // Start traversal
+    traverse(startNode.id);
+
+    setConsoleOutput(context.outputs.join('\n'));
   }, [
     nodes,
     edges,
     setConsoleOutput,
-    setCharacterMessage,
     setCharacterPosition,
+    setCharacterMessage,
   ]);
 
   return {

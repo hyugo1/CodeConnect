@@ -1,7 +1,7 @@
 // src/Components/CustomNode/nodes/WhileEndNode.js
 
 import React from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useReactFlow } from 'reactflow';
 import { FaSync } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -50,60 +50,59 @@ const selectStyle = {
 };
 
 const WhileEndNode = ({ id, data, selected }) => {
+  const { setNodes } = useReactFlow();
+
   const handleLeftOperandChange = (e) => {
-    data.onChange(
-      id,
-      data.label,
-      data.action,
-      data.message,
-      data.distance,
-      data.direction,
-      data.operand1,
-      data.operand2,
-      data.resultVar,
-      data.varName,
-      data.varValue,
-      e.target.value,
-      data.operator,
-      data.rightOperand
+    const newLeftOperand = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              leftOperand: newLeftOperand,
+            },
+          };
+        }
+        return node;
+      })
     );
   };
 
   const handleOperatorChange = (e) => {
-    data.onChange(
-      id,
-      data.label,
-      data.action,
-      data.message,
-      data.distance,
-      data.direction,
-      data.operand1,
-      data.operand2,
-      data.resultVar,
-      data.varName,
-      data.varValue,
-      data.leftOperand,
-      e.target.value,
-      data.rightOperand
+    const newOperator = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              operator: newOperator,
+            },
+          };
+        }
+        return node;
+      })
     );
   };
 
   const handleRightOperandChange = (e) => {
-    data.onChange(
-      id,
-      data.label,
-      data.action,
-      data.message,
-      data.distance,
-      data.direction,
-      data.operand1,
-      data.operand2,
-      data.resultVar,
-      data.varName,
-      data.varValue,
-      data.leftOperand,
-      data.operator,
-      e.target.value
+    const newRightOperand = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              rightOperand: newRightOperand,
+            },
+          };
+        }
+        return node;
+      })
     );
   };
 
@@ -131,7 +130,7 @@ const WhileEndNode = ({ id, data, selected }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{left: '50%', top: '0px', ...handleStyle}}
+        style={{ left: '50%', top: '0px', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}

@@ -1,89 +1,96 @@
 /* src/Components/Navbar/Navbar.css */
 
 .navbar {
-    width: 250px;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 20px;
-    box-sizing: border-box;
-    height: 100vh;
-    overflow-y: auto;
-  }
-  
-  .navbar h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .save-load-section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .project-name-input {
-    padding: 8px;
-    border-radius: 4px;
-    border: none;
-    font-size: 14px;
-  }
-  
-  .save-button,
-  .clear-button,
-  .load-button,
-  .delete-button {
-    padding: 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .save-button {
-    background-color: #27ae60;
-    color: #fff;
-  }
-  
-  .clear-button {
-    background-color: #e74c3c;
-    color: #fff;
-  }
-  
-  .load-button {
-    background-color: #2980b9;
-    color: #fff;
-    margin-right: 5px;
-  }
-  
-  .delete-button {
-    background-color: #c0392b;
-    color: #fff;
-  }
-  
-  .project-list-section {
-    margin-top: 30px;
-  }
-  
-  .project-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .project-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #34495e;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-  }
-  
-  .project-list li span {
-    flex: 1;
-  }
-  
-  .project-actions button {
-    margin-left: 5px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #2d2d2d;
+  padding: 10px 20px;
+  color: #fff;
+}
+
+.save-load-section {
+  display: flex;
+  align-items: center;
+}
+
+.project-name-input {
+  padding: 5px;
+  margin-right: 10px;
+  border-radius: 4px;
+  border: none;
+}
+
+.save-button,
+.clear-button,
+.dropdown-button,
+.load-button,
+.delete-button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 2px 1px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.clear-button {
+  background-color: #f44336; /* Red */
+}
+
+.dropdown-button {
+  background-color: #555; /* Dark Gray */
+}
+
+.project-list-section {
+  position: relative;
+}
+
+.project-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #3d3d3d;
+  list-style: none;
+  padding: 10px;
+  margin: 5px 0 0 0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.project-dropdown li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.project-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.load-button {
+  background-color: #2196F3; /* Blue */
+}
+
+.delete-button {
+  background-color: #f44336; /* Red */
+}
+
+.project-dropdown li:hover {
+  background-color: #555;
+}
+
+.project-dropdown li span {
+  flex-grow: 1;
+}

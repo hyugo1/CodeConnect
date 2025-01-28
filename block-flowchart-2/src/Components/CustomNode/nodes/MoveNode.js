@@ -1,7 +1,7 @@
 // src/Components/CustomNode/nodes/MoveNode.js
 
 import React from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useReactFlow } from 'reactflow';
 import {
   FaArrowUp,
   FaArrowDown,
@@ -26,16 +26,42 @@ const DownLineStyle = {
 };
 
 const MoveNode = ({ id, data, selected }) => {
+  const { setNodes } = useReactFlow();
+
   const handleDistanceChange = (e) => {
-    const newDistance = e.target.value;
-    if (!isNaN(newDistance)) {
-      data.onChange(id, data.label, data.action, data.message, newDistance, data.direction);
-    }
+    const newDistance = parseInt(e.target.value, 10) || 0;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              distance: newDistance,
+            },
+          };
+        }
+        return node;
+      })
+    );
   };
 
   const handleDirectionChange = (e) => {
     const newDirection = e.target.value;
-    data.onChange(id, data.label, data.action, data.message, data.distance, newDirection);
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              direction: newDirection,
+            },
+          };
+        }
+        return node;
+      })
+    );
   };
 
   let icon = null;
@@ -80,7 +106,7 @@ const MoveNode = ({ id, data, selected }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{left: '50%', top: '0px', ...handleStyle}}
+        style={{ left: '50%', top: '0px', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
@@ -90,7 +116,7 @@ const MoveNode = ({ id, data, selected }) => {
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '90%', ...handleStyle }}
+        style={{ left: '50%', top: '95%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-source`}
         data-tooltip-content="Connect to another node"
         isConnectable={true}
@@ -100,7 +126,7 @@ const MoveNode = ({ id, data, selected }) => {
       <input
         type="number"
         placeholder="Enter distance"
-        value={data.distance}
+        value={data.distance || ''}
         onChange={handleDistanceChange}
         style={{
           width: '100%',
@@ -113,7 +139,7 @@ const MoveNode = ({ id, data, selected }) => {
         }}
       />
       <select
-        value={data.direction}
+        value={data.direction || ''}
         onChange={handleDirectionChange}
         style={{
           width: '100%',

@@ -1,7 +1,7 @@
 // src/Components/CustomNode/nodes/ChangeVariable.js
 
 import React from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useReactFlow } from 'reactflow';
 import { FaPlusCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -29,12 +29,42 @@ const inputStyle = {
 };
 
 const ChangeVariable = ({ id, data, selected }) => {
+  const { setNodes } = useReactFlow();
+
   const handleVarNameChange = (e) => {
-    data.onChange(id, data.label, data.action, data.message, data.distance, data.direction, data.operand1, data.operand2, data.resultVar, e.target.value, data.varValue);
+    const newVarName = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              varName: newVarName,
+            },
+          };
+        }
+        return node;
+      })
+    );
   };
 
   const handleVarValueChange = (e) => {
-    data.onChange(id, data.label, data.action, data.message, data.distance, data.direction, data.operand1, data.operand2, data.resultVar, data.varName, e.target.value);
+    const newVarValue = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              varValue: newVarValue,
+            },
+          };
+        }
+        return node;
+      })
+    );
   };
 
   return (
@@ -61,12 +91,12 @@ const ChangeVariable = ({ id, data, selected }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{left: '50%', top: '0px', ...handleStyle}}
+        style={{ left: '50%', top: '0px', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
       />
-       <Handle
+      <Handle
         type="source"
         position={Position.Bottom}
         id={`source-${id}`}
@@ -81,14 +111,14 @@ const ChangeVariable = ({ id, data, selected }) => {
       <input
         type="text"
         placeholder="Variable Name"
-        value={data.varName}
+        value={data.varName || ''}
         onChange={handleVarNameChange}
         style={inputStyle}
       />
       <input
         type="number"
         placeholder="Change Value"
-        value={data.varValue}
+        value={data.varValue || ''}
         onChange={handleVarValueChange}
         style={inputStyle}
       />

@@ -1,7 +1,7 @@
 // src/Components/CustomNode/nodes/OperatorNode.js
 
 import React from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useReactFlow } from 'reactflow';
 import {
   FaPlus,
   FaMinus,
@@ -41,80 +41,77 @@ const operatorIcons = {
 };
 
 const OperatorNode = ({ id, data, selected }) => {
+  const { setNodes } = useReactFlow();
+
   const handleOperand1Change = (e) => {
-    data.onChange(
-      id,
-      data.label,
-      data.action,
-      data.message,
-      data.distance,
-      data.direction,
-      e.target.value,
-      data.operand2,
-      data.resultVar,
-      data.varName,
-      data.varValue,
-      data.leftOperand,
-      data.operator,
-      data.rightOperand
+    const newOperand1 = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              operand1: newOperand1,
+            },
+          };
+        }
+        return node;
+      })
     );
   };
 
   const handleOperand2Change = (e) => {
-    data.onChange(
-      id,
-      data.label,
-      data.action,
-      data.message,
-      data.distance,
-      data.direction,
-      data.operand1,
-      e.target.value,
-      data.resultVar,
-      data.varName,
-      data.varValue,
-      data.leftOperand,
-      data.operator,
-      data.rightOperand
+    const newOperand2 = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              operand2: newOperand2,
+            },
+          };
+        }
+        return node;
+      })
     );
   };
 
   const handleResultVarChange = (e) => {
-    data.onChange(
-      id,
-      data.label,
-      data.action,
-      data.message,
-      data.distance,
-      data.direction,
-      data.operand1,
-      data.operand2,
-      e.target.value,
-      data.varName,
-      data.varValue,
-      data.leftOperand,
-      data.operator,
-      data.rightOperand
+    const newResultVar = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              resultVar: newResultVar,
+            },
+          };
+        }
+        return node;
+      })
     );
   };
 
   const handleOperatorChange = (e) => {
     const newOperator = e.target.value;
-    data.onChange(
-      id,
-      data.label,
-      data.action,
-      data.message,
-      data.distance,
-      data.direction,
-      data.operand1,
-      data.operand2,
-      data.resultVar,
-      data.varName,
-      data.varValue,
-      data.leftOperand,
-      newOperator,
-      data.rightOperand
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              operator: newOperator,
+            },
+          };
+        }
+        return node;
+      })
     );
   };
 
@@ -163,7 +160,7 @@ const OperatorNode = ({ id, data, selected }) => {
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-source`} place="top" />
       <select
-        value={operator}
+        value={operator || ''}
         onChange={handleOperatorChange}
         style={{
           ...mathStyle,
@@ -180,21 +177,21 @@ const OperatorNode = ({ id, data, selected }) => {
       <input
         type="text"
         placeholder="Operand 1"
-        value={data.operand1}
+        value={data.operand1 || ''}
         onChange={handleOperand1Change}
         style={mathStyle}
       />
       <input
         type="text"
         placeholder="Operand 2"
-        value={data.operand2}
+        value={data.operand2 || ''}
         onChange={handleOperand2Change}
         style={mathStyle}
       />
       <input
         type="text"
         placeholder="Result Variable"
-        value={data.resultVar}
+        value={data.resultVar || ''}
         onChange={handleResultVarChange}
         style={mathStyle}
       />
