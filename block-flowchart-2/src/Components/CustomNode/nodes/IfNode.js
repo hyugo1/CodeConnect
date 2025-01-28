@@ -9,24 +9,24 @@ import './node.css';
 
 const handleStyle = { background: '#555' };
 const bottomLeftStyle = {
-  position: 'absolute',
-  width: 3,
-  backgroundColor: '#555',
-  top: '100%',
-  left: '25%',
-  height: 50,
-  transform: 'translateX(-50%)',
-  zIndex: -1,
+  // position: 'absolute',
+  // width: 3,
+  // backgroundColor: '#555',
+  // top: '100%',
+  // left: '25%',
+  // height: 50,
+  // transform: 'translateX(-50%)',
+  // zIndex: -1,
 };
 const bottomRightStyle = {
-  position: 'absolute',
-  width: 3,
-  backgroundColor: '#555',
-  top: '100%',
-  left: '75%',
-  height: 50,
-  transform: 'translateX(-50%)',
-  zIndex: -1,
+  // position: 'absolute',
+  // width: 3,
+  // backgroundColor: '#555',
+  // top: '100%',
+  // left: '75%',
+  // height: 50,
+  // transform: 'translateX(-50%)',
+  // zIndex: -1,
 };
 const conditionStyle = {
   display: 'flex',

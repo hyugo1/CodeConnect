@@ -1,7 +1,7 @@
 // src/Components/CustomEdge/CustomEdge.js
 
 import React from 'react';
-import { BaseEdge, getSmoothStepPath } from 'reactflow';
+import { getBezierPath, getMarkerEnd } from 'reactflow';
 
 const CustomEdge = ({
   id,
@@ -11,78 +11,36 @@ const CustomEdge = ({
   targetY,
   sourcePosition,
   targetPosition,
-  style = {},
+  style,
   markerEnd,
   label,
-  labelStyle,
-  labelBgStyle,
-  source,
-  target,
 }) => {
-  let edgePath;
-  let labelX;
-  let labelY;
+  const [edgePath] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
 
-  if (source === target) {
-    // Handle loopback edge
-    const loopOffset = 50; // Adjust for loop size
-    edgePath = `
-      M${sourceX},${sourceY}
-      C${sourceX - loopOffset},${sourceY - loopOffset}
-       ${targetX + loopOffset},${targetY - loopOffset}
-       ${targetX},${targetY}
-    `;
-    labelX = sourceX;
-    labelY = sourceY - loopOffset;
-  } else {
-    // Use getSmoothStepPath for regular edges
-    [edgePath, labelX, labelY] = getSmoothStepPath({
-      sourceX,
-      sourceY,
-      sourcePosition,
-      targetX,
-      targetY,
-      targetPosition,
-      borderRadius: 5,
-    });
-  }
-
-  const labelWidth = label ? label.length * 7 : 0;
-  const labelHeight = 16;
+  const marker = getMarkerEnd(markerEnd, 'end');
 
   return (
     <>
-      <BaseEdge
+      <path
         id={id}
-        path={edgePath}
-        markerEnd={markerEnd}
         style={style}
+        className="react-flow__edge-path"
+        d={edgePath}
+        markerEnd={marker}
       />
       {label && (
-        <g>
-          <rect
-            x={labelX - labelWidth / 2}
-            y={labelY - labelHeight / 2}
-            width={labelWidth}
-            height={labelHeight}
-            fill="white"
-            stroke="none"
-          />
-          <text
-            x={labelX}
-            y={labelY}
-            fill={labelStyle?.color || '#000'}
-            style={{
-              fontSize: 12,
-              textAnchor: 'middle',
-              dominantBaseline: 'central',
-              pointerEvents: 'none',
-              ...labelStyle,
-            }}
-          >
+        <text>
+          <textPath href={`#${id}`} style={{ fontSize: 12 }} startOffset="50%" textAnchor="middle">
             {label}
-          </text>
-        </g>
+          </textPath>
+        </text>
       )}
     </>
   );
