@@ -1,7 +1,8 @@
 // src/Components/CustomEdge/CustomEdge.js
 
-import React from 'react';
+import React, { useState } from 'react';
 import { getBezierPath, getMarkerEnd } from 'reactflow';
+import './CustomEdge.css';
 
 const CustomEdge = ({
   id,
@@ -14,6 +15,7 @@ const CustomEdge = ({
   style,
   markerEnd,
   label,
+  selected,
 }) => {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -24,16 +26,40 @@ const CustomEdge = ({
     targetPosition,
   });
 
-  const marker = getMarkerEnd(markerEnd, 'end');
+  const markerType = getMarkerEnd(markerEnd, 'end');
+
+  const [isHovered, setIsHovered] = useState(false);
+
+  const invisiblePathStyle = {
+    stroke: 'transparent',
+    strokeWidth: 20,
+    cursor: 'pointer',
+    fill: 'none',
+  };
 
   return (
     <>
+      {/* Invisible path for easier clicking */}
+      <path
+        id={`${id}-invisible`}
+        d={edgePath}
+        style={invisiblePathStyle}
+        pointerEvents="stroke"
+        fill="none"
+        onClick={(event) => {
+          event.stopPropagation();
+          // The actual selection is handled by FlowchartCanvas via onEdgeClick
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      />
+      {/* Visible edge path */}
       <path
         id={id}
-        style={style}
-        className="react-flow__edge-path"
+        style={{ ...style, fill: 'none' }}
+        className={`react-flow__edge-path ${selected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
         d={edgePath}
-        markerEnd={marker}
+        markerEnd={markerType}
       />
       {label && (
         <text>

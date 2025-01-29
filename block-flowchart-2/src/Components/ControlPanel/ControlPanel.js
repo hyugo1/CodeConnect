@@ -1,39 +1,57 @@
-// src/Components/ControlPanel.js
+// src/Components/ControlPanel/ControlPanel.js
 
 import React from 'react';
+import './ControlPanel.css';
+import { FaPlay, FaRedo, FaTrash } from 'react-icons/fa'; // Import icons for better UI
+import PropTypes from 'prop-types'; // For prop type checking
 
-function ControlPanel({
+const ControlPanel = ({
   executeFlowchart,
   resetExecution,
-  selectedNodes,
-  selectedEdges,
+  selectedNodes, // Array of node IDs
+  selectedEdges, // Array of edge IDs
   setNodes,
   setEdges,
-}) {
+}) => {
+  const handleDelete = () => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedNodes.length} selected node(s) and ${selectedEdges.length} edge(s)?`
+      )
+    ) {
+      // Filter out nodes and edges based on IDs
+      setNodes((nds) => nds.filter((node) => !selectedNodes.includes(node.id)));
+      setEdges((eds) => eds.filter((edge) => !selectedEdges.includes(edge.id)));
+
+      console.log(`Deleted ${selectedNodes.length} nodes and ${selectedEdges.length} edges.`);
+    }
+  };
+
   return (
-    <div className="button-group">
-      <button onClick={executeFlowchart} className="run-button">
-        Run
+    <div className="control-panel">
+      <button onClick={executeFlowchart} className="execute-button" title="Run Flowchart">
+        <FaPlay /> Run
       </button>
-      <button onClick={resetExecution} className="reset-button">
-        Reset
+      <button onClick={resetExecution} className="reset-button" title="Reset Execution">
+        <FaRedo /> Reset
       </button>
-      <button
-        onClick={() => {
-          setNodes((nds) =>
-            nds.filter((node) => !selectedNodes.includes(node))
-          );
-          setEdges((eds) =>
-            eds.filter((edge) => !selectedEdges.includes(edge))
-          );
-        }}
-        disabled={selectedNodes.length === 0 && selectedEdges.length === 0}
-        className="delete-button"
-      >
-        Delete
-      </button>
+      {(selectedNodes.length > 0 || selectedEdges.length > 0) && (
+        <button onClick={handleDelete} className="delete-button" title="Delete Selected">
+          <FaTrash /> Delete Selected
+        </button>
+      )}
     </div>
   );
-}
+};
+
+// Define prop types for better type checking
+ControlPanel.propTypes = {
+  executeFlowchart: PropTypes.func.isRequired,
+  resetExecution: PropTypes.func.isRequired,
+  selectedNodes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedEdges: PropTypes.arrayOf(PropTypes.string).isRequired,
+  setNodes: PropTypes.func.isRequired,
+  setEdges: PropTypes.func.isRequired,
+};
 
 export default ControlPanel;

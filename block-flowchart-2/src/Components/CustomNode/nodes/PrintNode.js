@@ -8,16 +8,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
 
 const handleStyle = { background: '#555' };
-const DownLineStyle = {
-  // position: 'absolute',
-  // width: 3,
-  // backgroundColor: '#555',
-  // top: '100%',
-  // left: '50%',
-  // height: 50,
-  // transform: 'translateX(-50%)',
-  // zIndex: -1,
-};
+const DownLineStyle = {};
 
 const PrintNode = ({ id, data, selected }) => {
   const { setNodes } = useReactFlow();
@@ -83,7 +74,7 @@ const PrintNode = ({ id, data, selected }) => {
       <Tooltip id={`tooltip-${id}-source`} place="top" />
       <input
         type="text"
-        placeholder="Enter message to print"
+        placeholder="Enter message to print (e.g., $resultVARIABLE)"
         value={data.message || ''}
         onChange={handleChange}
         style={{

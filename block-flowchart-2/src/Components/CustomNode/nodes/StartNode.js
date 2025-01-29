@@ -35,7 +35,7 @@ const StartNode = ({ id, data, selected }) => {
         flexDirection: 'column',
         alignItems: 'center',
       }}
-      className={selected ? 'selected' : ''}
+      className={`end-node ${selected ? 'selected' : ''}`}
     >
       <FaPlay style={{ marginBottom: 5 }} />
       <div>{data.label}</div>

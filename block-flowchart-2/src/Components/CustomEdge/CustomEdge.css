@@ -1,0 +1,17 @@
+/* src/Components/CustomEdge/CustomEdge.css */
+
+.react-flow__edge-path.selected,
+.react-flow__edge-path.hovered {
+  stroke: #ff5722 !important;
+  stroke-width: 10 !important;
+}
+
+.react-flow__edge-path {
+  transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+.react-flow__edge-path:hover {
+  stroke: #ff5722 !important;
+  stroke-width: 10 !important; 
+  cursor: pointer;
+}

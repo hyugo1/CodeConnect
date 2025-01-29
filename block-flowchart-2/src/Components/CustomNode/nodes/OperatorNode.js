@@ -2,27 +2,13 @@
 
 import React from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
-import {
-  FaPlus,
-  FaMinus,
-  FaTimes,
-  FaDivide,
-} from 'react-icons/fa';
+import { FaPlus, FaMinus, FaTimes, FaDivide } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
 
 const handleStyle = { background: '#555' };
-const DownLineStyle = {
-  // position: 'absolute',
-  // width: 3,
-  // backgroundColor: '#555',
-  // top: '100%',
-  // left: '50%',
-  // height: 50,
-  // transform: 'translateX(-50%)',
-  // zIndex: -1,
-};
+const DownLineStyle = {};
 const mathStyle = {
   width: '100%',
   marginTop: 10,
@@ -88,7 +74,7 @@ const OperatorNode = ({ id, data, selected }) => {
             ...node,
             data: {
               ...node.data,
-              resultVar: newResultVar,
+              resultVar: newResultVar, // Ensure this is set to 'result'
             },
           };
         }

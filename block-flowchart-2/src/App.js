@@ -7,6 +7,8 @@ import CharacterDisplay from './Components/CharacterDisplay/CharacterDisplay';
 import Console from './Components/Console/Console';
 import Navbar from './Components/Navbar/Navbar'; // Import Navbar
 import './styles/App.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   // State for character and console
@@ -37,6 +39,9 @@ function App() {
         setNodes={setNodes}
         setEdges={setEdges}
       />
+
+      {/* **Toast Notifications** */}
+      <ToastContainer />
 
       {/* **Main Content** */}
       <div className="app-container">

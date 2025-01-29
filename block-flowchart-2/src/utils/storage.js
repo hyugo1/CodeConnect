@@ -24,8 +24,8 @@ const serializeEdges = (edges) => {
     id,
     source,
     target,
-    sourceHandle,    // Include sourceHandle
-    targetHandle,    // Include targetHandle if necessary
+    sourceHandle,
+    targetHandle,
     type,
     animated,
     markerEnd,

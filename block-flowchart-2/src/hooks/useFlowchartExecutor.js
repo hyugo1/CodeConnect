@@ -44,6 +44,8 @@ export function useFlowchartExecutor(
     const context = {
       variables: {},
       outputs,
+      characterPos: { x: 0, y: 0 },
+      characterMsg: '',
     };
 
     /**

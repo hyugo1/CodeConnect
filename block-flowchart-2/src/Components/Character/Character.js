@@ -9,7 +9,7 @@
         className="character-container"
         style={{
           transform: `translate(${x}px, ${y}px)`,
-          transition: 'transform 0.5s ease', // Smooth movement
+          transition: 'transform 0.5s ease',
         }}
       >
         {message && (

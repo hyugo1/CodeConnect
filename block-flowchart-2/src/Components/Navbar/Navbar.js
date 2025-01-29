@@ -54,10 +54,12 @@ const Navbar = ({ nodes, edges, setNodes, setEdges }) => {
         position,
         data,
       }));
-      const serializedEdges = edges.map(({ id, source, target, type, animated, markerEnd, style, label }) => ({
+      const serializedEdges = edges.map(({ id, source, target, sourceHandle, targetHandle, type, animated, markerEnd, style, label }) => ({
         id,
         source,
         target,
+        sourceHandle,
+        targetHandle,
         type,
         animated,
         markerEnd,
@@ -65,7 +67,7 @@ const Navbar = ({ nodes, edges, setNodes, setEdges }) => {
         label,
       }));
 
-      // **Optionally, you can verify serialized data**
+      // **Optionally, verify serialized data**
       console.log('Serialized nodes:', JSON.stringify(serializedNodes, null, 2));
       console.log('Serialized edges:', JSON.stringify(serializedEdges, null, 2));
 

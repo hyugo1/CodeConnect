@@ -8,16 +8,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
 
 const handleStyle = { background: '#555' };
-const DownLineStyle = {
-  // position: 'absolute',
-  // width: 3,
-  // backgroundColor: '#555',
-  // top: '100%',
-  // left: '50%',
-  // height: 50,
-  // transform: 'translateX(-50%)',
-  // zIndex: -1,
-};
+const DownLineStyle = {};
 const inputStyle = {
   width: '100%',
   marginTop: 10,
