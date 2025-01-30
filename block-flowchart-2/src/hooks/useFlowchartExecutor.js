@@ -146,27 +146,46 @@ export function useFlowchartExecutor(
           break;
         }
 
-        case 'whileEnd': {
-          const { leftOperand, operator, rightOperand, whileStartNodeId } = node.data;
+        case 'whileStart': {
+          const { leftOperand, operator, rightOperand } = node.data;
           let conditionMet = false;
           if (leftOperand && operator && rightOperand) {
             try {
               const condition = `${leftOperand} ${operator} ${rightOperand}`;
+              console.log(`Evaluating while condition at node ${node.id}: ${condition}`);
               conditionMet = evaluate(condition, context.variables);
             } catch (error) {
-              console.error(`Error evaluating condition at node ${node.id}:`, error);
-              outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
+              console.error(`Error evaluating while condition at node ${node.id}:`, error);
+              outputs.push(`Error evaluating while condition in node ${node.id}: ${error.message}`);
               return;
             }
           } else {
-            outputs.push(`Incomplete condition in node ${node.id}.`);
+            outputs.push(`Incomplete while condition in node ${node.id}.`);
             return;
           }
 
-          if (conditionMet && whileStartNodeId) {
-            await traverse(whileStartNodeId);
+          if (conditionMet) {
+            // Proceed to loop body
+            await executeNextNode(node.id, 'body');
+          } else {
+            // Proceed to exit
+            await executeNextNode(node.id, 'exit');
           }
-          return;
+          break;
+        }
+        case 'whileEnd': {
+          // FIND the "Loop" edge from this whileEnd node
+          const loopEdge = currentEdges.find(
+            (edge) => edge.source === node.id && edge.label === 'Loop'
+          );
+        
+          if (loopEdge) {
+            // Follow that edge back to the whileStart
+            await traverse(loopEdge.target);
+          } else {
+            console.warn(`No "Loop" edge found from whileEnd node ${node.id}.`);
+          }
+          break;
         }
 
         case 'print': {
@@ -230,7 +249,7 @@ export function useFlowchartExecutor(
           break;
         }
 
-        // Implement other node types like 'while', etc.
+        // Implement other node types like 'operator', 'dummy', etc.
 
         default:
           console.warn(`Unknown node type: ${node.data.nodeType}`);
@@ -254,6 +273,13 @@ export function useFlowchartExecutor(
           ) {
             await traverse(targetNodeId);
           }
+        } else if (targetNode && node.data.nodeType === 'whileStart') {
+          // Handle the True path to loop body and False path to exit
+          if (edge.label === 'True') {
+            await traverse(targetNodeId);
+          } else if (edge.label === 'False') {
+            await traverse(targetNodeId);
+          }
         } else {
           await traverse(targetNodeId);
         }
@@ -263,16 +289,35 @@ export function useFlowchartExecutor(
     /**
      * Execute the next node connected to the current node
      * @param {string} currentNodeId
+     * @param {string} handleType - 'body' or 'exit'
      */
-    const executeNextNode = (currentNodeId) => {
-      // Find the outgoing edge
-      const outgoingEdge = edges.find((edge) => edge.source === currentNodeId);
-      if (outgoingEdge) {
+    const executeNextNode = (currentNodeId, handleType = 'default') => {
+      // Find the outgoing edge based on handleType
+      let outgoingEdge = null;
+      if (handleType === 'body') {
+        outgoingEdge = edges.find(
+          (edge) => edge.source === currentNodeId && edge.label === 'True'
+        );
+      } else if (handleType === 'exit') {
+        outgoingEdge = edges.find(
+          (edge) => edge.source === currentNodeId && edge.label === 'False'
+        );
+      } else {
+        outgoingEdge = edges.find((edge) => edge.source === currentNodeId);
+      }
+
+      if (outgoingEdge && outgoingEdge.target) {
         traverse(outgoingEdge.target);
       } else {
-        setConsoleOutput(context.outputs.join('\n') + '\nExecution ended.');
-        setCharacterPosition(context.characterPos || { x: 0, y: 0 });
-        setCharacterMessage(context.characterMsg || '');
+        // If no specific edge, proceed to the first outgoing edge
+        const defaultEdge = edges.find((edge) => edge.source === currentNodeId);
+        if (defaultEdge && defaultEdge.target) {
+          traverse(defaultEdge.target);
+        } else {
+          setConsoleOutput(context.outputs.join('\n') + '\nExecution ended.');
+          setCharacterPosition(context.characterPos || { x: 0, y: 0 });
+          setCharacterMessage(context.characterMsg || '');
+        }
       }
     };
 

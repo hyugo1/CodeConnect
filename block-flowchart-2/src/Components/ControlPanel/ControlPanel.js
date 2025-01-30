@@ -3,13 +3,13 @@
 import React from 'react';
 import './ControlPanel.css';
 import { FaPlay, FaRedo, FaTrash } from 'react-icons/fa'; // Import icons for better UI
-import PropTypes from 'prop-types'; // For prop type checking
+import PropTypes from 'prop-types';
 
 const ControlPanel = ({
   executeFlowchart,
   resetExecution,
-  selectedNodes, // Array of node IDs
-  selectedEdges, // Array of edge IDs
+  selectedNodes, 
+  selectedEdges,
   setNodes,
   setEdges,
 }) => {

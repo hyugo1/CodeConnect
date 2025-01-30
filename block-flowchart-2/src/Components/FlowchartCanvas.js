@@ -95,9 +95,13 @@ function FlowchartCanvas({
           label = 'False';
           edgeStyle = { stroke: 'red', strokeWidth: 3, strokeDasharray: '5,5' };
           break;
-        case 'loop':
+        case 'loopBack':
           label = 'Loop';
           edgeStyle = { stroke: '#555', strokeWidth: 3 };
+          break;
+        case 'exit':
+          label = 'Exit';
+          edgeStyle = { stroke: 'blue', strokeWidth: 3 };
           break;
         default:
           label = '';
@@ -109,7 +113,10 @@ function FlowchartCanvas({
             ...params,
             sourceHandle: originalSourceHandle,
             label,
-            animated: sourceHandleType === 'yes' || sourceHandleType === 'no',
+            animated:
+              sourceHandleType === 'yes' ||
+              sourceHandleType === 'no' ||
+              sourceHandleType === 'loopBack',
             style: edgeStyle,
             labelBgStyle: {
               fill: 'white',
@@ -118,7 +125,7 @@ function FlowchartCanvas({
             },
             type: 'custom',
             markerEnd: { type: MarkerType.ArrowClosed },
-            id: uuidv4(), // Assign a unique ID
+            id: uuidv4(),
           },
           eds
         )
@@ -162,10 +169,6 @@ function FlowchartCanvas({
             operand1: '',
             operand2: '',
             resultVar: '',
-            varName: '',
-            varValue: '',
-            leftOperand: '',
-            rightOperand: '',
           },
         };
       } else {
@@ -244,6 +247,10 @@ function FlowchartCanvas({
       const snappedY = Math.round(position.y / 15) * 15;
 
       if (nodeType === 'while') {
+        // Capture the current lastNodeId before adding the loop
+        const previousLastNodeId = lastNodeId.current;
+
+        // Create While Start Node with condition inputs
         const whileStartNode = {
           id: uuidv4(),
           type: 'custom',
@@ -251,82 +258,105 @@ function FlowchartCanvas({
           data: {
             label: 'While Start',
             nodeType: 'whileStart',
-            condition: '',
-            whileEndNodeId: '',
+            leftOperand: '',
+            operator: '',
+            rightOperand: '',
           },
         };
 
+        // Create Dummy Node representing the loop body
+        const dummyNode = {
+          id: uuidv4(),
+          type: 'dummy',
+          position: { x: snappedX + 150, y: snappedY },
+          data: {
+            label: 'Loop Body',
+            nodeType: 'dummy',
+          },
+        };
+
+        // Create While End Node
         const whileEndNode = {
           id: uuidv4(),
           type: 'custom',
-          position: { x: snappedX + 200, y: snappedY },
+          position: { x: snappedX + 300, y: snappedY },
           data: {
             label: 'While End',
             nodeType: 'whileEnd',
-            condition: '',
-            whileStartNodeId: whileStartNode.id,
-          },
-        };
-
-        // Set the IDs to reference each other
-        whileStartNode.data.whileEndNodeId = whileEndNode.id;
-        whileEndNode.data.whileStartNodeId = whileStartNode.id;
-
-        const dummyNode = {
-          id: uuidv4(),
-          type: 'custom',
-          position: { x: snappedX + 100, y: snappedY + 150 },
-          data: {
-            label: 'Dummy',
-            nodeType: 'dummy',
           },
         };
 
         setNodes((nds) => nds.concat([whileStartNode, dummyNode, whileEndNode]));
 
-        // Connect While Start to Dummy Node
-        const edgeStartToDummy = {
-          id: uuidv4(), // Unique ID
+        // Connect While Start to Loop Body (True condition)
+        const edgeStartToBody = {
+           // Unique ID
+          id: uuidv4(),
           source: whileStartNode.id,
           target: dummyNode.id,
           type: 'custom',
-          animated: false,
+          label: 'True',
+          style: { stroke: 'green', strokeWidth: 3 },
           markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: '#555', strokeWidth: 3 },
-          label: '',
         };
 
-        // Connect Dummy Node to While End
-        const edgeDummyToEnd = {
-          id: uuidv4(), // Unique ID
+        // Connect Loop Body to While End
+        const edgeBodyToEnd = {
+           // Unique ID
+          id: uuidv4(),
           source: dummyNode.id,
           target: whileEndNode.id,
           type: 'custom',
-          animated: false,
-          markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: '#555', strokeWidth: 3 },
           label: '',
+          style: { stroke: '#555', strokeWidth: 3 },
+          markerEnd: { type: MarkerType.ArrowClosed },
         };
 
         // Connect While End back to While Start (Loop Back Edge)
-        const loopBackEdge = {
-          id: uuidv4(), // Unique ID
+        const edgeEndToStart = {
+           // Unique ID
+          id: uuidv4(),
           source: whileEndNode.id,
-          target: whileStartNode.id,
           sourceHandle: `loopBack-${whileEndNode.id}`,
+          target: whileStartNode.id,
+          targetHandle: `loopBack-${whileStartNode.id}`,
           type: 'custom',
+          label: 'Loop',
+          style: { stroke: '#555', strokeWidth: 3 },
           animated: true,
           markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: '#555', strokeWidth: 3 },
-          label: 'Loop',
         };
 
-        setEdges((eds) => eds.concat([edgeStartToDummy, edgeDummyToEnd, loopBackEdge]));
-        console.log(`Added "While" block with nodes and edges.`);
+        // Connect While Start to previous node (False condition)
+        if (previousLastNodeId) {
+          const edgeStartToExit = {
+            id: uuidv4(), // Unique ID
+            source: whileStartNode.id,
+            target: previousLastNodeId,
+            type: 'custom',
+            label: 'False',
+            style: { stroke: 'blue', strokeWidth: 3 },
+            markerEnd: { type: MarkerType.ArrowClosed },
+          };
+
+          setEdges((eds) =>
+            eds.concat([edgeStartToBody, edgeBodyToEnd, edgeEndToStart, edgeStartToExit])
+          );
+          console.log(
+            `Added "While" block with While Start, Loop Body, and While End nodes, connected to previous node "${previousLastNodeId}".`
+          );
+        } else {
+          // If there's no previous node, just add the loop edges
+          setEdges((eds) => eds.concat([edgeStartToBody, edgeBodyToEnd, edgeEndToStart]));
+          console.log('Added "While" block without connecting False path (no previous node).');
+        }
+
+        // Update lastNodeId to WhileEndNode for future connections
+        lastNodeId.current = whileEndNode.id;
       } else if (nodeType === 'operator') {
         const newNode = {
           id: uuidv4(),
-          type: 'custom',
+          type: 'operator',
           position: { x: snappedX, y: snappedY },
           data: {
             label: 'Operator',
@@ -337,27 +367,30 @@ function FlowchartCanvas({
             resultVar: '',
           },
         };
-      
+
         setNodes((nds) => nds.concat(newNode));
-      
+
         if (lastNodeId.current) {
           const newEdge = {
-            id: uuidv4(), // Unique ID
+            // Unique ID
+            id: uuidv4(),
             source: lastNodeId.current,
             target: newNode.id,
             type: 'custom',
-            animated: true,
-            markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: '#555', strokeWidth: 3 },
             label: '',
+            style: { stroke: '#555', strokeWidth: 3 },
+            markerEnd: { type: MarkerType.ArrowClosed },
+            animated: true,
           };
           setEdges((eds) => eds.concat(newEdge));
-          console.log(`Connected node "${lastNodeId.current}" to new "Operator" node "${newNode.id}".`);
+          console.log(
+            `Connected node "${lastNodeId.current}" to new "Operator" node "${newNode.id}".`
+          );
         }
-      
+
         lastNodeId.current = newNode.id;
       } else if (nodeType === 'if') {
-        // Create the 'if' node
+        // create 'if' node
         const ifNode = {
           id: uuidv4(),
           type: 'custom',
@@ -365,14 +398,17 @@ function FlowchartCanvas({
           data: {
             label: 'If Then',
             nodeType: 'if',
+            leftOperand: '',
+            operator: '',
+            rightOperand: '',
           },
         };
 
-        // Create dummy nodes for True and False branches
+        // Create Dummy Nodes for True and False branches
         const dummyTrueNode = {
           id: uuidv4(),
-          type: 'custom',
-          position: { x: snappedX - 150, y: snappedY + 150 },
+          type: 'dummy',
+          position: { x: snappedX - 150, y: snappedY + 100 },
           data: {
             label: 'True Action',
             nodeType: 'dummy',
@@ -381,8 +417,8 @@ function FlowchartCanvas({
 
         const dummyFalseNode = {
           id: uuidv4(),
-          type: 'custom',
-          position: { x: snappedX + 150, y: snappedY + 150 },
+          type: 'dummy',
+          position: { x: snappedX + 150, y: snappedY + 100 },
           data: {
             label: 'False Action',
             nodeType: 'dummy',
@@ -391,38 +427,36 @@ function FlowchartCanvas({
 
         setNodes((nds) => nds.concat([ifNode, dummyTrueNode, dummyFalseNode]));
 
-        // Connect the 'if' node to the dummy nodes
+        // Connect If Node to True Action
         const edgeIfToTrue = {
-          id: uuidv4(), // Unique ID
+           // Unique ID
+          id: uuidv4(),
           source: ifNode.id,
           target: dummyTrueNode.id,
-          sourceHandle: `yes-${ifNode.id}`,
           type: 'custom',
-          animated: false,
-          markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: 'green', strokeWidth: 3 },
           label: 'True',
+          style: { stroke: 'green', strokeWidth: 3 },
+          markerEnd: { type: MarkerType.ArrowClosed },
         };
 
+        // Connect If Node to False Action
         const edgeIfToFalse = {
-          id: uuidv4(), // Unique ID
+           // Unique ID
+          id: uuidv4(),
           source: ifNode.id,
           target: dummyFalseNode.id,
-          sourceHandle: `no-${ifNode.id}`,
           type: 'custom',
-          animated: false,
-          markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: 'red', strokeWidth: 3, strokeDasharray: '5,5' },
           label: 'False',
+          style: { stroke: 'red', strokeWidth: 3, strokeDasharray: '5,5' },
+          markerEnd: { type: MarkerType.ArrowClosed },
         };
 
         setEdges((eds) => eds.concat([edgeIfToTrue, edgeIfToFalse]));
-        console.log(`Added "If" block with nodes and edges.`);
-      }
-      else if (nodeType === 'changeVariable') {
+        console.log(`Added "If" block with If Node and True/False Action Dummy Nodes.`);
+      } else if (nodeType === 'changeVariable') {
         const newNode = {
           id: uuidv4(),
-          type: 'custom', // Must be 'custom'
+          type: 'custom', 
           position: { x: snappedX, y: snappedY },
           data: {
             label: 'Change Variable',
@@ -431,29 +465,32 @@ function FlowchartCanvas({
             varValue: 0,
           },
         };
-      
+
         setNodes((nds) => nds.concat(newNode));
-      
+
         if (lastNodeId.current) {
           const newEdge = {
-            id: uuidv4(), // Unique ID
+             // Unique ID
+            id: uuidv4(),
             source: lastNodeId.current,
             target: newNode.id,
             type: 'custom',
-            animated: true,
-            markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: '#555', strokeWidth: 3 },
             label: '',
+            style: { stroke: '#555', strokeWidth: 3 },
+            markerEnd: { type: MarkerType.ArrowClosed },
+            animated: true,
           };
           setEdges((eds) => eds.concat(newEdge));
-          console.log(`Connected node "${lastNodeId.current}" to new "Change Variable" node "${newNode.id}".`);
+          console.log(
+            `Connected node "${lastNodeId.current}" to new "Change Variable" node "${newNode.id}".`
+          );
         }
-      
+
         lastNodeId.current = newNode.id;
-      }
-      else {
+      } else {
         // Create the new node without auto-connecting edges
         const newNode = {
+          // Unique ID
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX, y: snappedY },
@@ -469,34 +506,40 @@ function FlowchartCanvas({
 
         if (lastNodeId.current) {
           const newEdge = {
-            id: uuidv4(), // Unique ID
+            // Unique ID
+            id: uuidv4(), 
             source: lastNodeId.current,
             target: newNode.id,
             type: 'custom',
-            animated: true,
-            markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: '#555', strokeWidth: 3 },
             label: '',
+            style: { stroke: '#555', strokeWidth: 3 },
+            markerEnd: { type: MarkerType.ArrowClosed },
+            animated: true,
           };
           setEdges((eds) => eds.concat(newEdge));
-          console.log(`Connected node "${lastNodeId.current}" to new "${nodeType}" node "${newNode.id}".`);
+          console.log(
+            `Connected node "${lastNodeId.current}" to new "${nodeType}" node "${newNode.id}".`
+          );
         }
 
         lastNodeId.current = newNode.id;
       }
     },
-    [setNodes, setEdges, handleSelectBlockClick, cancelDrag, setCancelDrag]
+    [setNodes, setEdges, cancelDrag, setCancelDrag]
   );
 
   // Handler for selection changes
-  const onSelectionChange = useCallback(({ nodes: selectedNodesObj, edges: selectedEdgesObj }) => {
-    const selectedNodeIds = selectedNodesObj.map((node) => node.id);
-    const selectedEdgeIds = selectedEdgesObj.map((edge) => edge.id);
-    setSelectedNodes(selectedNodeIds);
-    setSelectedEdges(selectedEdgeIds);
-    console.log(`Selected node IDs: ${selectedNodeIds.join(', ')}`);
-    console.log(`Selected edge IDs: ${selectedEdgeIds.join(', ')}`);
-  }, [setSelectedNodes, setSelectedEdges]);
+  const onSelectionChange = useCallback(
+    ({ nodes: selectedNodesObj, edges: selectedEdgesObj }) => {
+      const selectedNodeIds = selectedNodesObj.map((node) => node.id);
+      const selectedEdgeIds = selectedEdgesObj.map((edge) => edge.id);
+      setSelectedNodes(selectedNodeIds);
+      setSelectedEdges(selectedEdgeIds);
+      console.log(`Selected node IDs: ${selectedNodeIds.join(', ')}`);
+      console.log(`Selected edge IDs: ${selectedEdgeIds.join(', ')}`);
+    },
+    [setSelectedNodes, setSelectedEdges]
+  );
 
   return (
     <div

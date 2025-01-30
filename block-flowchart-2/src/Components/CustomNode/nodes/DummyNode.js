@@ -2,41 +2,32 @@
 
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaRegSquare } from 'react-icons/fa';
+import { FaQuestion } from 'react-icons/fa';
+import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
 
 const handleStyle = { background: '#555' };
-const DownLineStyle = {
-  // position: 'absolute',
-  // width: 3,
-  // backgroundColor: '#555',
-  // top: '100%',
-  // left: '50%',
-  // height: 50,
-  // transform: 'translateX(-50%)',
-  // zIndex: -1,
-};
 
 const DummyNode = ({ id, data, selected }) => {
   return (
     <div
       style={{
         padding: 10,
-        border: '2px solid #777',
+        border: '2px dashed #777',
         borderRadius: 5,
         position: 'relative',
         minWidth: 180,
         textAlign: 'center',
         fontWeight: 'bold',
-        backgroundColor: '#e0e0e0',
+        backgroundColor: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       }}
       className={selected ? 'selected' : ''}
     >
-      <FaRegSquare style={{ marginBottom: 5 }} />
+      <FaQuestion style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
       <Handle
         type="target"
@@ -54,9 +45,12 @@ const DummyNode = ({ id, data, selected }) => {
         id={`source-${id}`}
         className="handle-source-square"
         style={{ left: '50%', top: '90%', ...handleStyle }}
+        data-tooltip-id={`tooltip-${id}-source`}
+        data-tooltip-content="Connect to another node"
         isConnectable={true}
       />
-      <div style={DownLineStyle}></div>
+      <Tooltip id={`tooltip-${id}-target`} place="top" />
+      <Tooltip id={`tooltip-${id}-source`} place="top" />
     </div>
   );
 };

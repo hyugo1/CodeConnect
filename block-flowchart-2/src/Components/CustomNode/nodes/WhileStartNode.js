@@ -1,25 +1,91 @@
 // src/Components/CustomNode/nodes/WhileStartNode.js
 
 import React from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useReactFlow } from 'reactflow';
 import { FaSync } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
 
 const handleStyle = { background: '#555' };
-const DownLineStyle = {
-  // position: 'absolute',
-  // width: 3,
-  // backgroundColor: '#555',
-  // top: '100%',
-  // left: '50%',
-  // height: 50,
-  // transform: 'translateX(-50%)',
-  // zIndex: -1,
+const conditionStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  marginTop: 10,
+};
+const inputStyle = {
+  flex: 1,
+  padding: '5px',
+  borderRadius: '3px',
+  border: '1px solid #ccc',
+  fontSize: '12px',
+  marginRight: '5px',
+};
+const selectStyle = {
+  padding: '5px',
+  borderRadius: '3px',
+  border: '1px solid #ccc',
+  fontSize: '12px',
+  marginRight: '5px',
 };
 
 const WhileStartNode = ({ id, data, selected }) => {
+  const { setNodes } = useReactFlow();
+
+  const handleLeftOperandChange = (e) => {
+    const newLeftOperand = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              leftOperand: newLeftOperand,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  };
+
+  const handleOperatorChange = (e) => {
+    const newOperator = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              operator: newOperator,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  };
+
+  const handleRightOperandChange = (e) => {
+    const newRightOperand = e.target.value;
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              rightOperand: newRightOperand,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  };
+
   return (
     <div
       style={{
@@ -27,7 +93,7 @@ const WhileStartNode = ({ id, data, selected }) => {
         border: '2px solid #777',
         borderRadius: 5,
         position: 'relative',
-        minWidth: 180,
+        minWidth: 220,
         textAlign: 'center',
         fontWeight: 'bold',
         backgroundColor: '#f9f7d8',
@@ -39,6 +105,39 @@ const WhileStartNode = ({ id, data, selected }) => {
     >
       <FaSync style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
+
+      {/* Condition Inputs */}
+      <div style={conditionStyle}>
+        <input
+          type="text"
+          placeholder="Left Operand"
+          value={data.leftOperand || ''}
+          onChange={handleLeftOperandChange}
+          style={inputStyle}
+        />
+        <select
+          value={data.operator || ''}
+          onChange={handleOperatorChange}
+          style={selectStyle}
+        >
+          <option value="">Op</option>
+          <option value="<">&lt;</option>
+          <option value=">">&gt;</option>
+          <option value="==">==</option>
+          <option value="!=">!=</option>
+          <option value="<=">&lt;=</option>
+          <option value=">=">&gt;=</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Right Operand"
+          value={data.rightOperand || ''}
+          onChange={handleRightOperandChange}
+          style={inputStyle}
+        />
+      </div>
+
+      {/* Entrance Handle */}
       <Handle
         type="target"
         position={Position.Top}
@@ -46,22 +145,36 @@ const WhileStartNode = ({ id, data, selected }) => {
         className="handle-target-circle"
         style={{ left: '50%', top: '0px', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from another node"
+        data-tooltip-content="Connect from previous node"
         isConnectable={true}
       />
+      {/* Loop Body Handle */}
       <Handle
         type="source"
         position={Position.Bottom}
-        id={`source-${id}`}
+        id={`body-${id}`}
         className="handle-source-square"
         style={{ left: '50%', top: '90%', ...handleStyle }}
-        data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to the first node inside the loop"
+        data-tooltip-id={`tooltip-${id}-body`}
+        data-tooltip-content="Connect to loop body"
         isConnectable={true}
       />
+      {/* Loop Back Handle */}
+      <Handle
+        type="target"
+        position={Position.Right}
+        id={`loopBack-${id}`}
+        className="handle-target-circle"
+        style={{ left: '100%', top: '50%', ...handleStyle }}
+        data-tooltip-id={`tooltip-${id}-loopBack`}
+        data-tooltip-content="Loop back to While Start"
+        isConnectable={true}
+      />
+
+      {/* Tooltips */}
       <Tooltip id={`tooltip-${id}-target`} place="top" />
-      <Tooltip id={`tooltip-${id}-source`} place="top" />
-      <div style={DownLineStyle}></div>
+      <Tooltip id={`tooltip-${id}-body`} place="top" />
+      <Tooltip id={`tooltip-${id}-loopBack`} place="top" />
     </div>
   );
 };

@@ -29,7 +29,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
   const blockStyle = {
     margin: '10px 0',
     padding: '10px',
-    cursor: 'grab', // Indicate draggable
+    cursor: 'grab',
     borderRadius: '5px',
     color: '#000',
     fontWeight: 'bold',
@@ -45,11 +45,8 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
     { type: 'if', label: 'If-Then', color: '#d8d8f9', icon: <FaQuestion /> },
     { type: 'while', label: 'While', color: '#f9f7d8', icon: <FaSync /> },
     { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint /> },
-    // Movement blocks
     { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> },
-    // Operator block
     { type: 'operator', label: 'Operator', color: '#f9d8f9', icon: <FaPlusCircle /> },
-    // Set variable
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy /> },
     { type: 'changeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle /> },
   ];
