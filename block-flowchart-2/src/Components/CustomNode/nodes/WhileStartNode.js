@@ -164,10 +164,10 @@ const WhileStartNode = ({ id, data, selected }) => {
         type="target"
         position={Position.Right}
         id={`loopBack-${id}`}
-        className="handle-target-circle"
+        className="handle-target-circle" 
         style={{ left: '100%', top: '50%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-loopBack`}
-        data-tooltip-content="Loop back to While Start"
+        data-tooltip-content="Connect back to While Start for looping"
         isConnectable={true}
       />
 

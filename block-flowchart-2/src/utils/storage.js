@@ -42,7 +42,6 @@ const serializeEdges = (edges) => {
 const deserializeNodes = (serializedNodes) => {
   return serializedNodes.map((node) => ({
     ...node,
-    // Add any default properties if necessary
   }));
 };
 
@@ -54,7 +53,6 @@ const deserializeNodes = (serializedNodes) => {
 const deserializeEdges = (serializedEdges) => {
   return serializedEdges.map((edge) => ({
     ...edge,
-    // Ensure sourceHandle and targetHandle are retained
   }));
 };
 

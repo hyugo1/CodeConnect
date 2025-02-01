@@ -8,26 +8,6 @@ import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
 
 const handleStyle = { background: '#555' };
-const bottomLeftStyle = {
-  // position: 'absolute',
-  // width: 3,
-  // backgroundColor: '#555',
-  // top: '100%',
-  // left: '25%',
-  // height: 50,
-  // transform: 'translateX(-50%)',
-  // zIndex: -1,
-};
-const bottomRightStyle = {
-  // position: 'absolute',
-  // width: 3,
-  // backgroundColor: '#555',
-  // top: '100%',
-  // left: '75%',
-  // height: 50,
-  // transform: 'translateX(-50%)',
-  // zIndex: -1,
-};
 const conditionStyle = {
   display: 'flex',
   alignItems: 'center',
@@ -125,6 +105,8 @@ const IfNode = ({ id, data, selected }) => {
     >
       <FaQuestion style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
+      
+      {/* Target Handle */}
       <Handle
         type="target"
         position={Position.Top}
@@ -135,6 +117,8 @@ const IfNode = ({ id, data, selected }) => {
         data-tooltip-content="Connect from another node"
         isConnectable={true}
       />
+      
+      {/* Yes Branch Handle */}
       <Handle
         type="source"
         position={Position.Bottom}
@@ -145,6 +129,8 @@ const IfNode = ({ id, data, selected }) => {
         data-tooltip-content="True Branch"
         isConnectable={true}
       />
+      
+      {/* No Branch Handle */}
       <Handle
         type="source"
         position={Position.Bottom}
@@ -155,10 +141,12 @@ const IfNode = ({ id, data, selected }) => {
         data-tooltip-content="False Branch"
         isConnectable={true}
       />
+      
       {/* Tooltips */}
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-yes`} place="top" />
       <Tooltip id={`tooltip-${id}-no`} place="top" />
+      
       {/* Condition Inputs */}
       <div style={conditionStyle}>
         <input
@@ -189,9 +177,6 @@ const IfNode = ({ id, data, selected }) => {
           style={inputStyle}
         />
       </div>
-      {/* Branch Lines */}
-      <div style={bottomLeftStyle}></div>
-      <div style={bottomRightStyle}></div>
     </div>
   );
 };

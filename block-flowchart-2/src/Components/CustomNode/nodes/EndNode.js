@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaStopCircle } from 'react-icons/fa';
+import { FaStop } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './node.css';
@@ -17,34 +17,29 @@ const EndNode = ({ id, data, selected }) => {
         border: '2px solid #777',
         borderRadius: 5,
         position: 'relative',
-        minWidth: 180,
+        minWidth: 100,
         textAlign: 'center',
         fontWeight: 'bold',
-        backgroundColor: '#f8d7da',
+        backgroundColor: '#f7d8d8',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       }}
-      className={`end-node ${selected ? 'selected' : ''}`}
+      className={selected ? 'selected' : ''}
     >
-      <FaStopCircle style={{ marginBottom: 5, }} />
-      {data.label}
+      <FaStop style={{ marginBottom: 5 }} />
+      <div>{data.label}</div>
+      {/* No outgoing handles */}
       <Handle
         type="target"
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{
-          left: '50%',
-          top: '0px',
-          transform: 'translate(-50%, -50%)',
-          ...handleStyle
-        }}
+        style={{ left: '50%', top: '0px', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
       />
-      {/* No source handles as it's an end node */}
       {/* Tooltips */}
       <Tooltip id={`tooltip-${id}-target`} place="top" />
     </div>

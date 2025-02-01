@@ -5,7 +5,7 @@ import BlockPalette from './Components/BlockPalette/BlockPalette';
 import FlowchartCanvas from './Components/FlowchartCanvas';
 import CharacterDisplay from './Components/CharacterDisplay/CharacterDisplay';
 import Console from './Components/Console/Console';
-import Navbar from './Components/Navbar/Navbar'; // Import Navbar
+import Navbar from './Components/Navbar/Navbar';
 import './styles/App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';

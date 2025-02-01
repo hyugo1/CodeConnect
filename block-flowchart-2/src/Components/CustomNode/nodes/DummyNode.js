@@ -27,8 +27,9 @@ const DummyNode = ({ id, data, selected }) => {
       }}
       className={selected ? 'selected' : ''}
     >
-      <FaQuestion style={{ marginBottom: 5 }} />
-      <div>{data.label}</div>
+        <FaQuestion style={{ marginBottom: 5 }} />
+        <div>{data.label}</div>
+      {/* Entrance Handle */}
       <Handle
         type="target"
         position={Position.Top}
@@ -36,9 +37,10 @@ const DummyNode = ({ id, data, selected }) => {
         className="handle-target-circle"
         style={{ left: '50%', top: '0px', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from another node"
+        data-tooltip-content="Connect from previous node"
         isConnectable={true}
       />
+      {/* source Handle */}
       <Handle
         type="source"
         position={Position.Bottom}
@@ -46,9 +48,10 @@ const DummyNode = ({ id, data, selected }) => {
         className="handle-source-square"
         style={{ left: '50%', top: '90%', ...handleStyle }}
         data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to another node"
+        data-tooltip-content="Connect to another block"
         isConnectable={true}
       />
+      {/* Tooltips */}
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-source`} place="top" />
     </div>
