@@ -7,6 +7,8 @@ import ReactFlow, {
   MarkerType,
   applyNodeChanges,
   applyEdgeChanges,
+  // Import useReactFlow to access the project() function
+  useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode/CustomNode';
@@ -42,7 +44,7 @@ function FlowchartCanvas({
 }) {
   const lastNodeId = useRef(null);
 
-  // Selection State Managed Internally
+  // Selection state managed internally
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [selectedEdges, setSelectedEdges] = useState([]);
 
@@ -61,6 +63,9 @@ function FlowchartCanvas({
 
   // Add a ref for the ReactFlow wrapper to calculate drop positions accurately
   const reactFlowWrapper = useRef(null);
+
+  // Get the project function from React Flow
+  const { project } = useReactFlow();
 
   // Reset lastNodeId when nodes change (e.g., after loading a project)
   useEffect(() => {
@@ -225,34 +230,37 @@ function FlowchartCanvas({
     console.log(`Selected dummy node "${nodeId}" for replacement.`);
   }, []);
 
-  // Handler for dropping nodes onto the canvas
+  // Updated onDrop handler using project() to convert screen coordinates to flow coordinates
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
 
-      // Check if Drag was Canceled
       if (cancelDrag) {
         console.log('Drag was canceled. Ignoring drop.');
         setCancelDrag(false);
         return;
       }
 
-      // Use the ReactFlow wrapper ref for accurate bounding rectangle
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
       const nodeType = event.dataTransfer.getData('application/reactflow');
 
       if (!nodeType) return;
 
-      const position = {
+      // Get the drop point relative to the container
+      const dropPoint = {
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
       };
 
+      // Convert the drop point to the flow's coordinate system
+      const position = project(dropPoint);
+
+      // Optionally snap to grid (15px grid)
       const snappedX = Math.round(position.x / 15) * 15;
       const snappedY = Math.round(position.y / 15) * 15;
 
+      // Create nodes based on nodeType
       if (nodeType === 'while') {
-        // Create While block nodes
         const whileStartNode = {
           id: uuidv4(),
           type: 'custom',
@@ -451,8 +459,7 @@ function FlowchartCanvas({
         }
 
         lastNodeId.current = newNode.id;
-      }
-      else {
+      } else {
         // Fallback for all other block types
         const newNode = {
           id: uuidv4(),
@@ -464,10 +471,9 @@ function FlowchartCanvas({
           },
         };
         setNodes((nds) => nds.concat(newNode));
-        // optional: connect to the previous node, if desired
       }
     },
-    [setNodes, setEdges, cancelDrag, setCancelDrag]
+    [setNodes, setEdges, cancelDrag, setCancelDrag, project]
   );
 
   // Handler for selection changes

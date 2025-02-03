@@ -92,7 +92,7 @@ const WhileStartNode = ({ id, data, selected }) => {
         position={Position.Bottom}
         id={`body-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '90%' }}
+        style={{ left: '50%', top: '95%' }}
         data-tooltip-id={`tooltip-${id}-body`}
         data-tooltip-content="Connect to loop body"
         isConnectable={true}

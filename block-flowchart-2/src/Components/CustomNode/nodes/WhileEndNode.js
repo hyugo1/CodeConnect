@@ -34,15 +34,15 @@ const WhileEndNode = ({ id, data, selected }) => {
         data-tooltip-content="Connect back to While Start for looping"
         isConnectable={true}
       />
-      {/* Exit Handle */}
+      {/* Exit Handle – updated to be on the left */}
       <Handle
         type="source"
-        position={Position.Right}
+        position={Position.Bottom}
         id={`exit-${id}`}
         className="handle-source-square"
         style={{ left: '50%', top: '90%' }}
         data-tooltip-id={`tooltip-${id}-exit`}
-        data-tooltip-content="Connect to next node after loop"
+        data-tooltip-content="Connect to next node after while loop"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />

@@ -1,6 +1,6 @@
 // src/App.js
-
 import React, { useState, useCallback } from 'react';
+import { ReactFlowProvider } from 'reactflow'; // Import the provider
 import BlockPalette from './Components/BlockPalette/BlockPalette';
 import FlowchartCanvas from './Components/FlowchartCanvas';
 import CharacterDisplay from './Components/CharacterDisplay/CharacterDisplay';
@@ -16,17 +16,16 @@ function App() {
   const [characterPosition, setCharacterPosition] = useState({ x: 0, y: 0 });
   const [characterMessage, setCharacterMessage] = useState('');
 
-  // **Drag State**
+  // Drag State
   const [isDragging, setIsDragging] = useState(false);
   const [cancelDrag, setCancelDrag] = useState(false);
 
-  // **Flowchart State**
+  // Flowchart State
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
 
   // Handler for selecting a block from the palette
   const handleSelectBlock = useCallback((blockType) => {
-    // Implement logic if needed when a block is selected from the left palette
     console.log(`Block selected from left palette: ${blockType}`);
   }, []);
 
@@ -52,24 +51,26 @@ function App() {
           setIsDragging={setIsDragging}
           setCancelDrag={setCancelDrag}
         />
-
+        {/* Wrap the FlowchartCanvas in the ReactFlowProvider */}
         {/* **Middle Flowchart Canvas** */}
-        <FlowchartCanvas
-          nodes={nodes}
-          setNodes={setNodes}
-          edges={edges}
-          setEdges={setEdges}
-          consoleOutput={consoleOutput}
-          setConsoleOutput={setConsoleOutput}
-          characterPosition={characterPosition}
-          setCharacterPosition={setCharacterPosition}
-          characterMessage={characterMessage}
-          setCharacterMessage={setCharacterMessage}
-          isDragging={isDragging}
-          cancelDrag={cancelDrag}
-          setCancelDrag={setCancelDrag}
-          setIsDragging={setIsDragging}
-        />
+        <ReactFlowProvider>
+          <FlowchartCanvas
+            nodes={nodes}
+            setNodes={setNodes}
+            edges={edges}
+            setEdges={setEdges}
+            consoleOutput={consoleOutput}
+            setConsoleOutput={setConsoleOutput}
+            characterPosition={characterPosition}
+            setCharacterPosition={setCharacterPosition}
+            characterMessage={characterMessage}
+            setCharacterMessage={setCharacterMessage}
+            isDragging={isDragging}
+            cancelDrag={cancelDrag}
+            setCancelDrag={setCancelDrag}
+            setIsDragging={setIsDragging}
+          />
+        </ReactFlowProvider>
 
         {/* **Right Panel** */}
         <div className="right-panel">
