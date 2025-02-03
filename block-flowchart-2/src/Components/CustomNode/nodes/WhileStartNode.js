@@ -171,6 +171,18 @@ const WhileStartNode = ({ id, data, selected }) => {
         isConnectable={true}
       />
 
+      {/* **Exit Handle** for when the loop condition is false */}
+      <Handle
+        type="source"
+        position={Position.Left}
+        id={`exit-${id}`}
+        className='handle-source-square'
+        style={{ left: 0, top: '50%', ...handleStyle }}
+        data-tooltip-id={`tooltip-${id}-exit`}
+        data-tooltip-content="Connect to next node after loop"
+        isConnectable={true}
+      />
+
       {/* Tooltips */}
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-body`} place="top" />

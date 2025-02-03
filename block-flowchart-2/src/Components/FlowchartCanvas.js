@@ -1,5 +1,4 @@
 // src/Components/FlowchartCanvas.js
-
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
   addEdge,
@@ -43,7 +42,7 @@ function FlowchartCanvas({
 }) {
   const lastNodeId = useRef(null);
 
-  // **Selection State Managed Internally**
+  // Selection State Managed Internally
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [selectedEdges, setSelectedEdges] = useState([]);
 
@@ -59,6 +58,9 @@ function FlowchartCanvas({
     setCharacterPosition,
     setCharacterMessage
   );
+
+  // Add a ref for the ReactFlow wrapper to calculate drop positions accurately
+  const reactFlowWrapper = useRef(null);
 
   // Reset lastNodeId when nodes change (e.g., after loading a project)
   useEffect(() => {
@@ -118,7 +120,7 @@ function FlowchartCanvas({
             },
             type: 'custom',
             markerEnd: { type: MarkerType.ArrowClosed },
-            id: uuidv4(), // Assign a unique ID
+            id: uuidv4(),
           },
           eds
         )
@@ -138,7 +140,6 @@ function FlowchartCanvas({
     (selectedBlockType) => {
       if (!currentDummyNodeId) return;
 
-      // Find the dummy node to replace
       const nodeToReplace = nodes.find((node) => node.id === currentDummyNodeId);
       if (!nodeToReplace) {
         console.error(`No node found with id: ${currentDummyNodeId}`);
@@ -151,7 +152,6 @@ function FlowchartCanvas({
 
       if (selectedBlockType === 'operator') {
         newNode = {
-          // Unique ID
           id: uuidv4(),
           type: 'custom',
           position: nodeToReplace.position,
@@ -170,7 +170,6 @@ function FlowchartCanvas({
         };
       } else if (selectedBlockType === 'changeVariable') {
         newNode = {
-          // Unique ID
           id: uuidv4(),
           type: 'custom',
           position: nodeToReplace.position,
@@ -183,7 +182,6 @@ function FlowchartCanvas({
         };
       } else {
         newNode = {
-          // Unique ID
           id: uuidv4(),
           type: 'custom',
           position: nodeToReplace.position,
@@ -198,9 +196,6 @@ function FlowchartCanvas({
         nds.map((node) => (node.id === currentDummyNodeId ? newNode : node))
       );
 
-      // Optionally, update edges connected to the dummy node
-      // For now, leaving existing edges as they are
-
       setPaletteVisible(false);
       setCurrentDummyNodeId(null);
       console.log(`Replaced dummy node "${currentDummyNodeId}" with "${selectedBlockType}" node.`);
@@ -211,7 +206,6 @@ function FlowchartCanvas({
   // Handler for edge click
   const handleEdgeClick = useCallback(
     (edgeId) => {
-      // Toggle selection of the edge
       setSelectedEdges((prevSelected) => {
         if (prevSelected.includes(edgeId)) {
           return prevSelected.filter((id) => id !== edgeId);
@@ -236,14 +230,15 @@ function FlowchartCanvas({
     (event) => {
       event.preventDefault();
 
-      // **Check if Drag was Canceled**
+      // Check if Drag was Canceled
       if (cancelDrag) {
         console.log('Drag was canceled. Ignoring drop.');
-        setCancelDrag(false); // Reset the cancelDrag state
+        setCancelDrag(false);
         return;
       }
 
-      const reactFlowBounds = event.target.getBoundingClientRect();
+      // Use the ReactFlow wrapper ref for accurate bounding rectangle
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
       const nodeType = event.dataTransfer.getData('application/reactflow');
 
       if (!nodeType) return;
@@ -257,6 +252,7 @@ function FlowchartCanvas({
       const snappedY = Math.round(position.y / 15) * 15;
 
       if (nodeType === 'while') {
+        // Create While block nodes
         const whileStartNode = {
           id: uuidv4(),
           type: 'custom',
@@ -278,20 +274,17 @@ function FlowchartCanvas({
           data: {
             label: 'While End',
             nodeType: 'whileEnd',
-            // Reference to While Start
-            whileStartNodeId: whileStartNode.id, 
+            whileStartNodeId: whileStartNode.id,
           },
         };
 
-        // Set the IDs to reference each other
         whileStartNode.data.whileEndNodeId = whileEndNode.id;
         whileEndNode.data.whileStartNodeId = whileStartNode.id;
 
-        const loopBodyNode = {
+        const changeVariableNode = {
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX + 100, y: snappedY + 150 },
-          //FIXME: Change the system of while loops, it currently doesnt have a dummy node
           data: {
             label: 'Change Variable',
             nodeType: 'changeVariable',
@@ -300,14 +293,22 @@ function FlowchartCanvas({
           },
         };
 
-        setNodes((nds) => nds.concat([whileStartNode, loopBodyNode, whileEndNode]));
+        const dummyNode = {
+          id: uuidv4(),
+          type: 'custom',
+          position: { x: snappedX + 100, y: snappedY + 300 },
+          data: {
+            label: 'Dummy',
+            nodeType: 'dummy',
+          },
+        };
 
-        // Connect While Start to Change Variable (Loop Body)
-        const edgeStartToBody = {
-          // Unique ID
+        setNodes((nds) => nds.concat([whileStartNode, changeVariableNode, dummyNode, whileEndNode]));
+
+        const edgeStartToChange = {
           id: uuidv4(),
           source: whileStartNode.id,
-          target: loopBodyNode.id,
+          target: changeVariableNode.id,
           type: 'custom',
           animated: false,
           markerEnd: { type: MarkerType.ArrowClosed },
@@ -316,10 +317,20 @@ function FlowchartCanvas({
           sourceHandle: `body-${whileStartNode.id}`,
         };
 
-        // Connect Change Variable to While End
-        const edgeBodyToEnd = {
-          id: uuidv4(), // Unique ID
-          source: loopBodyNode.id,
+        const edgeChangeToDummy = {
+          id: uuidv4(),
+          source: changeVariableNode.id,
+          target: dummyNode.id,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: '#555', strokeWidth: 3 },
+          label: '',
+        };
+
+        const edgeDummyToEnd = {
+          id: uuidv4(),
+          source: dummyNode.id,
           target: whileEndNode.id,
           type: 'custom',
           animated: false,
@@ -328,7 +339,6 @@ function FlowchartCanvas({
           label: '',
         };
 
-        // Connect While End back to While Start (Loop Back Edge)
         const loopBackEdge = {
           id: uuidv4(),
           source: whileEndNode.id,
@@ -342,8 +352,72 @@ function FlowchartCanvas({
           label: 'Loop',
         };
 
-        setEdges((eds) => eds.concat([edgeStartToBody, edgeBodyToEnd, loopBackEdge]));
+        setEdges((eds) =>
+          eds.concat([edgeStartToChange, edgeChangeToDummy, edgeDummyToEnd, loopBackEdge])
+        );
         console.log(`Added "While" block with nodes and edges.`);
+      } else if (nodeType === 'if') {
+        const ifNode = {
+          id: uuidv4(),
+          type: 'custom',
+          position: { x: snappedX, y: snappedY },
+          data: {
+            label: 'If Then',
+            nodeType: 'if',
+            leftOperand: 'i_variable',
+            operator: '==',
+            rightOperand: '5',
+          },
+        };
+
+        const dummyTrueNode = {
+          id: uuidv4(),
+          type: 'custom',
+          position: { x: snappedX - 150, y: snappedY + 150 },
+          data: {
+            label: 'Dummy',
+            nodeType: 'dummy',
+          },
+        };
+
+        const dummyFalseNode = {
+          id: uuidv4(),
+          type: 'custom',
+          position: { x: snappedX + 150, y: snappedY + 150 },
+          data: {
+            label: 'Dummy',
+            nodeType: 'dummy',
+          },
+        };
+
+        setNodes((nds) => nds.concat([ifNode, dummyTrueNode, dummyFalseNode]));
+
+        const edgeIfToTrue = {
+          id: uuidv4(),
+          source: ifNode.id,
+          target: dummyTrueNode.id,
+          sourceHandle: `yes-${ifNode.id}`,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: 'green', strokeWidth: 3 },
+          label: 'True',
+        };
+
+        const edgeIfToFalse = {
+          id: uuidv4(),
+          source: ifNode.id,
+          target: dummyFalseNode.id,
+          sourceHandle: `no-${ifNode.id}`,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: 'red', strokeWidth: 3, strokeDasharray: '5,5' },
+          label: 'False',
+        };
+
+        setEdges((eds) => eds.concat([edgeIfToTrue, edgeIfToFalse]));
+        console.log(`Added "If" block with dummy nodes for both branches.`);
       } else if (nodeType === 'operator') {
         const newNode = {
           id: uuidv4(),
@@ -358,12 +432,11 @@ function FlowchartCanvas({
             resultVar: '',
           },
         };
-      
+
         setNodes((nds) => nds.concat(newNode));
-      
+
         if (lastNodeId.current) {
           const newEdge = {
-             // Unique ID
             id: uuidv4(),
             source: lastNodeId.current,
             target: newNode.id,
@@ -376,116 +449,11 @@ function FlowchartCanvas({
           setEdges((eds) => eds.concat(newEdge));
           console.log(`Connected node "${lastNodeId.current}" to new "Operator" node "${newNode.id}".`);
         }
-      
-        lastNodeId.current = newNode.id;
-      } else if (nodeType === 'if') {
-        // Create the 'if' node
-        const ifNode = {
-          id: uuidv4(),
-          type: 'custom',
-          position: { x: snappedX, y: snappedY },
-          data: {
-            label: 'If Then',
-            nodeType: 'if',
-            leftOperand: 'i_variable',
-            operator: '==',
-            rightOperand: '5',
-          },
-        };
 
-        // Create Change Variable nodes for True and False actions
-        const changeVarTrueNode = {
-          id: uuidv4(),
-          type: 'custom',
-          position: { x: snappedX - 150, y: snappedY + 150 },
-          data: {
-            label: 'Change Variable',
-            nodeType: 'changeVariable',
-            varName: 'i_variable',
-            varValue: '1',
-          },
-        };
-
-        const changeVarFalseNode = {
-          id: uuidv4(),
-          type: 'custom',
-          position: { x: snappedX + 150, y: snappedY + 150 },
-          data: {
-            label: 'Change Variable',
-            nodeType: 'changeVariable',
-            varName: 'i_variable',
-            varValue: '1',
-          },
-        };
-
-        setNodes((nds) => nds.concat([ifNode, changeVarTrueNode, changeVarFalseNode]));
-
-        // Connect the 'if' node to the True branch
-        const edgeIfToTrue = {
-           // Unique ID
-          id: uuidv4(),
-          source: ifNode.id,
-          target: changeVarTrueNode.id,
-          sourceHandle: `yes-${ifNode.id}`,
-          type: 'custom',
-          animated: false,
-          markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: 'green', strokeWidth: 3 },
-          label: 'True',
-        };
-
-        // Connect the 'if' node to the False branch
-        const edgeIfToFalse = {
-           // Unique ID
-          id: uuidv4(),
-          source: ifNode.id,
-          target: changeVarFalseNode.id,
-          sourceHandle: `no-${ifNode.id}`,
-          type: 'custom',
-          animated: false,
-          markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: 'red', strokeWidth: 3, strokeDasharray: '5,5' },
-          label: 'False',
-        };
-
-        setEdges((eds) => eds.concat([edgeIfToTrue, edgeIfToFalse]));
-        console.log(`Added "If" block with nodes and edges.`);
-      }
-      else if (nodeType === 'changeVariable') {
-        const newNode = {
-          id: uuidv4(),
-          type: 'custom', 
-          position: { x: snappedX, y: snappedY },
-          data: {
-            label: 'Change Variable',
-            nodeType: 'changeVariable',
-            varName: 'i_variable',
-            varValue: '1',
-          },
-        };
-      
-        setNodes((nds) => nds.concat(newNode));
-      
-        if (lastNodeId.current) {
-          const newEdge = {
-             // Unique ID
-            id: uuidv4(),
-            source: lastNodeId.current,
-            target: newNode.id,
-            type: 'custom',
-            animated: true,
-            markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: '#555', strokeWidth: 3 },
-            label: '',
-          };
-          setEdges((eds) => eds.concat(newEdge));
-          console.log(`Connected node "${lastNodeId.current}" to new "Change Variable" node "${newNode.id}".`);
-        }
-      
         lastNodeId.current = newNode.id;
       }
       else {
-        // Create the new node without auto-connecting edges
+        // Fallback for all other block types
         const newNode = {
           id: uuidv4(),
           type: 'custom',
@@ -493,33 +461,13 @@ function FlowchartCanvas({
           data: {
             label: `${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)}`,
             nodeType,
-            action: '',
-            message: '',
           },
         };
-
         setNodes((nds) => nds.concat(newNode));
-
-        if (lastNodeId.current) {
-          const newEdge = {
-             // Unique ID
-            id: uuidv4(),
-            source: lastNodeId.current,
-            target: newNode.id,
-            type: 'custom',
-            animated: true,
-            markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: '#555', strokeWidth: 3 },
-            label: '',
-          };
-          setEdges((eds) => eds.concat(newEdge));
-          console.log(`Connected node "${lastNodeId.current}" to new "${nodeType}" node "${newNode.id}".`);
-        }
-
-        lastNodeId.current = newNode.id;
+        // optional: connect to the previous node, if desired
       }
     },
-    [setNodes, setEdges, handleSelectBlockClick, cancelDrag, setCancelDrag]
+    [setNodes, setEdges, cancelDrag, setCancelDrag]
   );
 
   // Handler for selection changes
@@ -530,14 +478,14 @@ function FlowchartCanvas({
     setSelectedEdges(selectedEdgeIds);
     console.log(`Selected node IDs: ${selectedNodeIds.join(', ')}`);
     console.log(`Selected edge IDs: ${selectedEdgeIds.join(', ')}`);
-  }, [setSelectedNodes, setSelectedEdges]);
+  }, []);
 
   return (
     <div
+      ref={reactFlowWrapper}
       className="flowchart-container"
       style={{ width: '100%', height: '100%', position: 'relative' }}
     >
-      {/* The actual ReactFlow area */}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -560,12 +508,10 @@ function FlowchartCanvas({
         onSelectionChange={onSelectionChange}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        // **Add onEdgeClick handler**
         onEdgeClick={(event, edge) => {
           event.preventDefault();
           handleEdgeClick(edge.id);
         }}
-        // Optional: Deselect edges and nodes when clicking on canvas
         onPaneClick={() => {
           setSelectedEdges([]);
           setSelectedNodes([]);
@@ -576,7 +522,6 @@ function FlowchartCanvas({
         <Background color="#aaa" gap={16} />
       </ReactFlow>
 
-      {/* Run, Reset, and Delete Buttons */}
       <ControlPanel
         executeFlowchart={executeFlowchart}
         resetExecution={resetExecution}
@@ -586,7 +531,6 @@ function FlowchartCanvas({
         setEdges={setEdges}
       />
 
-      {/* Block Palette Modal */}
       {paletteVisible && (
         <BlockPalette
           onSelectBlock={onSelectBlock}

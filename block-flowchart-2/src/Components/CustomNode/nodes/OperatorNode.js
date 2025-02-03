@@ -74,7 +74,7 @@ const OperatorNode = ({ id, data, selected }) => {
             ...node,
             data: {
               ...node.data,
-              resultVar: newResultVar, // Ensure this is set to 'result'
+              resultVar: newResultVar, 
             },
           };
         }

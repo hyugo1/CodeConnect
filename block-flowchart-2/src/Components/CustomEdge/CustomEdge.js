@@ -1,5 +1,4 @@
 // src/Components/CustomEdge/CustomEdge.js
-
 import React, { useState } from 'react';
 import { getBezierPath, getMarkerEnd } from 'reactflow';
 import './CustomEdge.css';
@@ -30,9 +29,10 @@ const CustomEdge = ({
 
   const [isHovered, setIsHovered] = useState(false);
 
+  // Increase strokeWidth to 30 for a larger clickable area
   const invisiblePathStyle = {
     stroke: 'transparent',
-    strokeWidth: 20,
+    strokeWidth: 30,
     cursor: 'pointer',
     fill: 'none',
   };
@@ -48,7 +48,7 @@ const CustomEdge = ({
         fill="none"
         onClick={(event) => {
           event.stopPropagation();
-          // The actual selection is handled by FlowchartCanvas via onEdgeClick
+          // Selection is handled elsewhere (e.g. via onEdgeClick in ReactFlow)
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

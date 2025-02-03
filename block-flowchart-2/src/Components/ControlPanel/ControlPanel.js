@@ -2,7 +2,7 @@
 
 import React from 'react';
 import './ControlPanel.css';
-import { FaPlay, FaRedo, FaTrash } from 'react-icons/fa'; // Import icons for better UI
+import { FaPlay, FaRedo, FaTrash } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
 const ControlPanel = ({
