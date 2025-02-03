@@ -288,6 +288,55 @@ export function useFlowchartExecutor(
         }
         break;
       }
+      case 'operator': {
+        // Attempt to evaluate the operator node
+        try {
+          // Map the custom operator names to mathematical symbols.
+          let opSymbol = '';
+          switch (node.data.operator) {
+            case 'add':
+              opSymbol = '+';
+              break;
+            case 'subtract':
+              opSymbol = '-';
+              break;
+            case 'multiply':
+              opSymbol = '*';
+              break;
+            case 'divide':
+              opSymbol = '/';
+              break;
+            default:
+              throw new Error('Unknown operator');
+          }
+
+          //operand1 and operand 2
+          const operand1 = context.variables[node.data.operand1] !== undefined
+            ? context.variables[node.data.operand1]
+            : node.data.operand1;
+          const operand2 = context.variables[node.data.operand2] !== undefined
+            ? context.variables[node.data.operand2]
+            : node.data.operand2;
+          const expression = `${operand1} ${opSymbol} ${operand2}`;
+    
+          // Evaluate the expression using mathjs
+          const result = evaluate(expression, context.variables);
+    
+          // Store the result in the variable specified by result var if applicable
+          if (node.data.resultVar) {
+            context.variables[node.data.resultVar] = result;
+            outputs.push(`Operator node: ${expression} = ${result}`);
+            console.log(`Operator node: ${expression} = ${result}`);
+          } else {
+            outputs.push(`Operator node evaluated: ${expression} = ${result}`);
+            console.log(`Operator node evaluated: ${expression} = ${result}`);
+          }
+        } catch (error) {
+          outputs.push(`Error in operator node ${node.id}: ${error.message}`);
+          console.error(`Error in operator node ${node.id}:`, error);
+        }
+        break;
+      }
 
       default:
         console.warn(`Unknown node type: ${node.data.nodeType}`);
