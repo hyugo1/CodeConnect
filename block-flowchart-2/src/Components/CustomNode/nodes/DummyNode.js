@@ -1,5 +1,4 @@
 // src/Components/CustomNode/nodes/DummyNode.js
-
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
@@ -9,7 +8,6 @@ import 'react-tooltip/dist/react-tooltip.css';
 const DummyNode = ({ id, data, selected }) => {
   return (
     <>
-      {/* Inline Style Block */}
       <style>
         {`
           .dummy-node {
@@ -26,39 +24,16 @@ const DummyNode = ({ id, data, selected }) => {
             align-items: center;
             transition: background-color 0.3s ease, border-color 0.3s ease;
           }
-
           .dummy-node:hover {
             background-color: #f0f0f0;
             border-color: #777;
           }
-
-          /* You can include additional shared or scoped styles here. */
-          .handle-target-circle {
-            /* Example handle styling */
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-          }
-
-          .handle-source-square {
-            /* Example handle styling */
-            width: 10px;
-            height: 10px;
-          }
-
-          /* If there's a selected state styling, you can handle that too */
-          .dummy-node.selected {
-            border-color: #007bff;
-            background-color: #e7f0ff;
-          }
+          /* Note: The selected style will come from .node-container.selected */
         `}
       </style>
-
-      <div className={`dummy-node ${selected ? 'selected' : ''}`}>
+      <div className={`node-container dummy-node ${selected ? 'selected' : ''}`}>
         <FaQuestion style={{ marginBottom: 5 }} />
         <div>{data.label}</div>
-
-        {/* Target (Entrance) Handle */}
         <Handle
           type="target"
           position={Position.Top}
@@ -69,8 +44,6 @@ const DummyNode = ({ id, data, selected }) => {
           data-tooltip-content="Connect from previous node"
           isConnectable={true}
         />
-
-        {/* Source (Exit) Handle */}
         <Handle
           type="source"
           position={Position.Bottom}
@@ -81,8 +54,6 @@ const DummyNode = ({ id, data, selected }) => {
           data-tooltip-content="Connect to another block"
           isConnectable={true}
         />
-
-        {/* Tooltip elements */}
         <Tooltip id={`tooltip-${id}-target`} place="top" />
         <Tooltip id={`tooltip-${id}-source`} place="top" />
       </div>

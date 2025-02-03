@@ -1,14 +1,12 @@
 // src/Components/CustomNode/nodes/OperatorNode.js
-
 import React from 'react';
-import { Handle, Position, useReactFlow } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 import { FaPlus, FaMinus, FaTimes, FaDivide } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './node.css';
 
-const handleStyle = { background: '#555' };
-const DownLineStyle = {};
 const mathStyle = {
   width: '100%',
   marginTop: 10,
@@ -27,100 +25,30 @@ const operatorIcons = {
 };
 
 const OperatorNode = ({ id, data, selected }) => {
-  const { setNodes } = useReactFlow();
+  const updateNodeData = useNodeUpdater(id);
 
   const handleOperand1Change = (e) => {
-    const newOperand1 = e.target.value;
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              operand1: newOperand1,
-            },
-          };
-        }
-        return node;
-      })
-    );
+    updateNodeData({ operand1: e.target.value });
   };
 
   const handleOperand2Change = (e) => {
-    const newOperand2 = e.target.value;
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              operand2: newOperand2,
-            },
-          };
-        }
-        return node;
-      })
-    );
+    updateNodeData({ operand2: e.target.value });
   };
 
   const handleResultVarChange = (e) => {
-    const newResultVar = e.target.value;
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              resultVar: newResultVar, 
-            },
-          };
-        }
-        return node;
-      })
-    );
+    updateNodeData({ resultVar: e.target.value });
   };
 
   const handleOperatorChange = (e) => {
-    const newOperator = e.target.value;
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              operator: newOperator,
-            },
-          };
-        }
-        return node;
-      })
-    );
+    updateNodeData({ operator: e.target.value });
   };
 
   const { operator } = data;
   const icon = operatorIcons[operator] || <FaPlus style={{ marginBottom: 5 }} />;
 
   return (
-    <div
-      style={{
-        padding: 10,
-        border: '2px solid #777',
-        borderRadius: 5,
-        position: 'relative',
-        minWidth: 180,
-        textAlign: 'center',
-        fontWeight: 'bold',
-        backgroundColor: '#f9d8f9',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-      className={selected ? 'selected' : ''}
-    >
+    <div className={`node-container operator-node ${selected ? 'selected' : ''}`}
+         style={{ backgroundColor: '#f9d8f9' }}>
       {icon}
       <div>{data.label}</div>
       <Handle
@@ -128,7 +56,7 @@ const OperatorNode = ({ id, data, selected }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{ left: '50%', top: '0px', ...handleStyle }}
+        style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
@@ -138,7 +66,7 @@ const OperatorNode = ({ id, data, selected }) => {
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '97%', ...handleStyle }}
+        style={{ left: '50%', top: '97%' }}
         data-tooltip-id={`tooltip-${id}-source`}
         data-tooltip-content="Connect to another node"
         isConnectable={true}
@@ -148,11 +76,7 @@ const OperatorNode = ({ id, data, selected }) => {
       <select
         value={operator || ''}
         onChange={handleOperatorChange}
-        style={{
-          ...mathStyle,
-          marginTop: 10,
-          textAlign: 'center',
-        }}
+        style={{ ...mathStyle, marginTop: 10, textAlign: 'center' }}
       >
         <option value="">Select Operator</option>
         <option value="add">Add (+)</option>
@@ -181,7 +105,6 @@ const OperatorNode = ({ id, data, selected }) => {
         onChange={handleResultVarChange}
         style={mathStyle}
       />
-      <div style={DownLineStyle}></div>
     </div>
   );
 };

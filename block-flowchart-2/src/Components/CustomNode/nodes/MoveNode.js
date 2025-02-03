@@ -1,7 +1,6 @@
 // src/Components/CustomNode/nodes/MoveNode.js
-
 import React from 'react';
-import { Handle, Position, useReactFlow } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 import {
   FaArrowUp,
   FaArrowDown,
@@ -11,57 +10,29 @@ import {
 } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './node.css';
 
-const handleStyle = { background: '#555' };
-const DownLineStyle = {
-  // position: 'absolute',
-  // width: 3,
-  // backgroundColor: '#555',
-  // top: '100%',
-  // left: '50%',
-  // height: 50,
-  // transform: 'translateX(-50%)',
-  // zIndex: -1,
+const inputStyle = {
+  width: '100%',
+  marginTop: 10,
+  padding: '5px',
+  borderRadius: '3px',
+  border: '1px solid #ccc',
+  fontSize: '12px',
+  boxSizing: 'border-box',
 };
 
 const MoveNode = ({ id, data, selected }) => {
-  const { setNodes } = useReactFlow();
+  const updateNodeData = useNodeUpdater(id);
 
   const handleDistanceChange = (e) => {
     const newDistance = parseInt(e.target.value, 10) || 0;
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              distance: newDistance,
-            },
-          };
-        }
-        return node;
-      })
-    );
+    updateNodeData({ distance: newDistance });
   };
 
   const handleDirectionChange = (e) => {
-    const newDirection = e.target.value;
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              direction: newDirection,
-            },
-          };
-        }
-        return node;
-      })
-    );
+    updateNodeData({ direction: e.target.value });
   };
 
   let icon = null;
@@ -83,22 +54,8 @@ const MoveNode = ({ id, data, selected }) => {
   }
 
   return (
-    <div
-      style={{
-        padding: 10,
-        border: '2px solid #777',
-        borderRadius: 5,
-        position: 'relative',
-        minWidth: 180,
-        textAlign: 'center',
-        fontWeight: 'bold',
-        backgroundColor: '#d8f9f9',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-      className={selected ? 'selected' : ''}
-    >
+    <div className={`node-container move-node ${selected ? 'selected' : ''}`}
+         style={{ backgroundColor: '#d8f9f9' }}>
       {icon}
       <div>{data.label}</div>
       <Handle
@@ -106,7 +63,7 @@ const MoveNode = ({ id, data, selected }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{ left: '50%', top: '0px', ...handleStyle }}
+        style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from another node"
         isConnectable={true}
@@ -116,7 +73,7 @@ const MoveNode = ({ id, data, selected }) => {
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '95%', ...handleStyle }}
+        style={{ left: '50%', top: '95%' }}
         data-tooltip-id={`tooltip-${id}-source`}
         data-tooltip-content="Connect to another node"
         isConnectable={true}
@@ -128,28 +85,12 @@ const MoveNode = ({ id, data, selected }) => {
         placeholder="Enter distance"
         value={data.distance || ''}
         onChange={handleDistanceChange}
-        style={{
-          width: '100%',
-          marginTop: 10,
-          padding: '5px',
-          borderRadius: '3px',
-          border: '1px solid #ccc',
-          fontSize: '12px',
-          boxSizing: 'border-box',
-        }}
+        style={inputStyle}
       />
       <select
         value={data.direction || ''}
         onChange={handleDirectionChange}
-        style={{
-          width: '100%',
-          marginTop: 10,
-          padding: '5px',
-          borderRadius: '3px',
-          border: '1px solid #ccc',
-          fontSize: '12px',
-          boxSizing: 'border-box',
-        }}
+        style={inputStyle}
       >
         <option value="">Select Direction</option>
         <option value="up">Up</option>
@@ -157,7 +98,6 @@ const MoveNode = ({ id, data, selected }) => {
         <option value="left">Left</option>
         <option value="right">Right</option>
       </select>
-      <div style={DownLineStyle}></div>
     </div>
   );
 };

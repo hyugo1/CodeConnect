@@ -1,18 +1,18 @@
 /* src/Components/CustomNode/CustomNode.css */
-
+/* 
 .custom-node {
   padding: 10px;
   border: 2px solid #777;
   border-radius: 5px;
   position: relative;
-  min-width: 180px; /* Increased width for better layout */
+  min-width: 180px; 
   text-align: center;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column; /* Adjusted for vertical stacking */
-  background-color: #fff; /* Default background */
+  flex-direction: column;
+  background-color: #fff; 
   transition: background-color 0.3s, border-color 0.3s;
 }
 
@@ -101,14 +101,13 @@
   z-index: -1;
 }
 
-/* Specific styling for End Node */
 .end-node {
-  background-color: #f9d8d8; /* Example: Light red background */
-  border-color: #f44336; /* Example: Red border */
+  background-color: #f9d8d8; 
+  border-color: #f44336;
 }
 
 .end-node.executing {
-  border-color: #e53935; /* Darker red when executing */
+  border-color: #e53935; 
   box-shadow: 0 0 10px rgba(229, 57, 53, 0.5);
   background-color: #ffcdd2;
-}
+} */

@@ -1,59 +1,94 @@
-/* Target handles styled as circles */
+:root {
+  --node-bg: #f5f5f5;
+  --node-border: #777;
+  --node-selected-bg: #e7f0ff;
+  --node-selected-border: #007bff;
+  --node-shadow: rgba(0, 0, 0, 0.1);
+  --transition-time: 0.3s;
+}
+
+.node-container {
+  padding: 12px;
+  border: 2px solid var(--node-border);
+  border-radius: 8px;
+  position: relative;
+  min-width: 180px;
+  text-align: center;
+  font-weight: 600;
+  background-color: var(--node-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 12px;
+  transition: 
+    background-color var(--transition-time),
+    border-color var(--transition-time),
+    box-shadow var(--transition-time),
+    transform var(--transition-time);
+  box-shadow: 0 2px 4px var(--node-shadow);
+}
+
+/* Hover Animation */
+.node-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--node-shadow);
+}
+
+/* Selected State */
+.node-container.selected {
+  border-color: var(--node-selected-border);
+  background-color: var(--node-selected-bg);
+  box-shadow: 0 4px 12px var(--node-shadow);
+}
+
+/* Input Fields */
+.node-input {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.node-input:focus {
+  outline: none;
+  border-color: var(--node-selected-border);
+}
+
 .handle-target-circle {
-    width: 13px;
-    height: 13px;
-    background: transparent;
-    background-size: cover;
-    background-repeat: no-repeat;
-    cursor: pointer;
-    /* Center the handle */
-    position: absolute;
-    top: 50%;
-    left: 100%; 
-    transform: translate(-50%, -50%);
-    border-radius: 50%; 
-    border: 2px solid #555;
-    transition: background-color 0.3s, border-color 0.3s;
-  }
-  
-  /* Source handles styled as squares */
-  .handle-source-square {
-    width: 13px;
-    height: 13px;
-    background: #555;
-    background-size: cover;
-    background-repeat: no-repeat;
-    cursor: pointer;
-    /* Center the handle */
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, 0%);
-    border-radius: 0;
-    transition: background-color 0.3s;
-  }
-  
-  .handle-source-square.no-handle {
-    left: 75%;
-  }
-  
-  /* Active state when the square is hovered (circle turns red) */
-  .handle-target-circle.active {
-    background-color: red;
-    border-color: red;
-  }
-  
-  /* Active state when the circle is hovered (square turns red) */
-  .handle-source-square.active {
-    background-color: red;
-  }
-  
-  /* Optional: Additional styling for hover or active states */
-  .handle-target-circle:hover,
-  .handle-source-square:hover {
-    background-color: rgba(85, 85, 85, 0.1);
-  }
-  
-  /* Ensure the container positions the handles correctly */
-  .custom-node {
-    position: relative;
-  }
+  width: 14px;
+  height: 14px;
+  background: transparent;
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid #555;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.handle-target-circle:hover {
+  border-color: var(--node-selected-border);
+}
+
+.handle-source-square {
+  width: 14px;
+  height: 14px;
+  background: #555;
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 0);
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.handle-source-square:hover {
+  background-color: var(--node-selected-border);
+}

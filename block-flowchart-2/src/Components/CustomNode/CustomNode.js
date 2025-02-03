@@ -1,5 +1,4 @@
 // src/Components/CustomNode/CustomNode.js
-
 import React from 'react';
 
 import StartNode from './nodes/StartNode';
@@ -32,24 +31,8 @@ const CustomNode = ({ id, data, selected }) => {
   const SpecificNode = nodeMapping[data.nodeType];
 
   if (!SpecificNode) {
-    // Fallback to a default node if nodeType is not recognized
     return (
-      <div
-        style={{
-          padding: 10,
-          border: '2px solid #777',
-          borderRadius: 5,
-          position: 'relative',
-          minWidth: 180,
-          textAlign: 'center',
-          fontWeight: 'bold',
-          backgroundColor: '#fff',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-        className={selected ? 'selected' : ''}
-      >
+      <div className={`node-container ${selected ? 'selected' : ''}`}>
         <div>Unknown Node</div>
       </div>
     );
