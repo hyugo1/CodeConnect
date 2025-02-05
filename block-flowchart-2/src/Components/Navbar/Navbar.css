@@ -1,50 +1,88 @@
-/* src/Components/Navbar/Navbar.css */
+/* Navbar.css */
 
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #2d2d2d;
-  padding: 10px 20px;
-  color: #fff;
+  background: #2c3e50;
+  color: #ecf0f1;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  user-select: none;
 }
 
 .save-load-section {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .project-name-input {
-  padding: 5px;
-  margin-right: 10px;
-  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
   border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: box-shadow 0.2s ease;
 }
 
+.project-name-input:focus {
+  outline: 2px solid #2980b9;
+  box-shadow: 0 0 5px rgba(41, 128, 185, 0.4);
+}
+
+/* Common Button Styles */
 .save-button,
 .clear-button,
 .dropdown-button,
 .load-button,
 .delete-button {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 6px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  margin: 2px 1px;
-  border-radius: 4px;
   cursor: pointer;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.save-button {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+.save-button:hover {
+  background-color: #2ecc71;
+  transform: scale(1.02);
+  box-shadow: 0 0 5px rgba(46, 204, 113, 0.7);
 }
 
 .clear-button {
-  background-color: #f44336; /* Red */
+  background-color: #e67e22;
+  color: #fff;
+}
+
+.clear-button:hover {
+  background-color: #d35400;
+  transform: scale(1.02);
+  box-shadow: 0 0 5px rgba(211, 77, 39, 0.7);
 }
 
 .dropdown-button {
-  background-color: #555; /* Dark Gray */
+  background-color: #2980b9;
+  color: #fff;
+}
+
+.dropdown-button:hover {
+  background-color: #3498db;
+  transform: scale(1.02);
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.7);
 }
 
 .project-list-section {
@@ -53,44 +91,93 @@
 
 .project-dropdown {
   position: absolute;
-  top: 100%;
+  top: 120%;
   right: 0;
-  background-color: #3d3d3d;
-  list-style: none;
-  padding: 10px;
-  margin: 5px 0 0 0;
-  border: 1px solid #444;
+  min-width: 200px;
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #dcdcdc;
   border-radius: 4px;
-  width: 200px;
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 1000;
+  list-style-type: none;
+  padding: 0.5rem 0;
+  margin: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 999;
 }
 
 .project-dropdown li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  cursor: default;
+  transition: background-color 0.2s ease;
+}
+
+.project-dropdown li:hover {
+  background-color: #f2f2f2;
+}
+
+.project-dropdown li span {
+  margin-right: 0.5rem;
+  flex-grow: 1;
+  font-weight: 500;
+  color: #333;
 }
 
 .project-actions {
   display: flex;
-  gap: 5px;
+  gap: 0.3rem;
+}
+
+.project-dropdown li:first-child {
+  color: #999;
+  justify-content: center;
 }
 
 .load-button {
-  background-color: #2196F3; /* Blue */
+  background-color: #27ae60;
+  color: #fff;
+  padding: 0.3rem 0.4rem;
+  border: 2px solid #000;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.load-button:hover {
+  background-color: #2ecc71;
+  transform: scale(1.02);
+  box-shadow: 0 0 5px rgba(46, 204, 113, 0.7);
 }
 
 .delete-button {
-  background-color: #f44336; /* Red */
+  background-color: #c0392b;
+  color: #fff;
+  padding: 0.3rem 0.4rem;
+  border: 2px solid #000;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 }
 
-.project-dropdown li:hover {
-  background-color: #555;
+.delete-button:hover {
+  background-color: #e74c3c;
+  transform: scale(1.02);
+  box-shadow: 0 0 5px rgba(231, 76, 60, 0.7);
 }
 
-.project-dropdown li span {
-  flex-grow: 1;
+/* Responsive adjustments for smaller screens */
+@media screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .save-load-section,
+  .project-list-section {
+    margin-top: 0.5rem;
+  }
+
+  .project-dropdown {
+    top: 100%;
+    min-width: 100%;
+  }
 }

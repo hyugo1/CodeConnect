@@ -1,6 +1,6 @@
 // src/Components/BlockPalette/BlockPalette.js
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FaPlay,
   FaStop,
@@ -14,6 +14,9 @@ import {
 import './BlockPalette.css';
 
 const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag }) => {
+  // state to track for collapse
+  const [collapsed, setCollapsed] = useState(false);
+
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -63,25 +66,54 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
   }, [isDragging, setCancelDrag, setIsDragging]);
 
   return (
-    <aside style={{ padding: '10px', backgroundColor: '#eee', width: '220px', overflowY: 'auto', height: '100vh' }}>
-      <h3 style={{ textAlign: 'center' }}>Blocks</h3>
-      {blocks.map((block) => (
-        <div
-          key={block.type}
-          style={{
-            ...blockStyle,
-            backgroundColor: block.color,
-            border: '2px solid #555',
-          }}
-          onClick={() => onSelectBlock(block.type)}
-          onDragStart={(event) => onDragStart(event, block.type)}
-          onDragEnd={onDragEnd}
-          draggable
-        >
-          {block.icon}
-          <span style={{ marginLeft: '8px' }}>{block.label}</span>
-        </div>
-      ))}
+    <aside
+      style={{
+        padding: '10px',
+        backgroundColor: '#eee',
+        width: collapsed ? '40px' : '220px',
+        overflowY: 'auto',
+        height: '100vh',
+        transition: 'width 0.3s',
+        border: '2px solid #555',
+      }}
+    >
+      {/* Toggle button to collapse/expand the palette */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        style={{
+          marginBottom: '10px',
+          width: '100%',
+          padding: '5px',
+          cursor: 'pointer',
+          border: '2px solid #555',
+          backgroundColor: '#fff',
+          borderRadius: '4px',
+        }}
+      >
+        {collapsed ? '>' : '<'}
+      </button>
+      {!collapsed && (
+        <>
+          <h3 style={{ textAlign: 'center' }}>Blocks</h3>
+          {blocks.map((block) => (
+            <div
+              key={block.type}
+              style={{
+                ...blockStyle,
+                backgroundColor: block.color,
+                border: '2px solid #555',
+              }}
+              onClick={() => onSelectBlock(block.type)}
+              onDragStart={(event) => onDragStart(event, block.type)}
+              onDragEnd={onDragEnd}
+              draggable
+            >
+              {block.icon}
+              <span style={{ marginLeft: '8px' }}>{block.label}</span>
+            </div>
+          ))}
+        </>
+      )}
     </aside>
   );
 };

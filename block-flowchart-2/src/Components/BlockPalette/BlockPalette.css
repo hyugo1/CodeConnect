@@ -1,15 +1,45 @@
 /* src/Components/BlockPalette/BlockPalette.css */
 
-aside {
+/* src/Components/BlockPalette/BlockPalette.css */
+
+.aside-container {
+  position: relative;
   padding: 10px;
   background-color: #eee;
   width: 220px;
   box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: visible;
+  height: 100vh;
+  transition: width 0.3s;
+  border: 2px solid #555;
 }
 
-aside h3 {
-  text-align: center;
+.collapsed {
+  width: 40px;
 }
+
+.toggle-button {
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #555;
+  background-color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+/* .aside-content {
+  
+} */
 
 .dndnode {
   margin: 10px 0;
@@ -26,4 +56,8 @@ aside h3 {
 
 .dndnode span {
   margin-left: 8px;
+}
+
+aside h3 {
+  text-align: center;
 }

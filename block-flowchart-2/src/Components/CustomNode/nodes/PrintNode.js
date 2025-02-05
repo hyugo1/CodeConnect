@@ -15,8 +15,10 @@ const PrintNode = ({ id, data, selected }) => {
   };
 
   return (
-    <div className={`node-container print-node ${selected ? 'selected' : ''}`}
-         style={{ backgroundColor: '#ffeeba' }}>
+    <div
+      className={`node-container print-node ${selected ? 'selected' : ''}`}
+      style={{ backgroundColor: '#ffeeba' }}
+    >
       <FaPrint style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
       <Handle
@@ -43,7 +45,7 @@ const PrintNode = ({ id, data, selected }) => {
       <Tooltip id={`tooltip-${id}-source`} place="top" />
       <input
         type="text"
-        placeholder="Enter message to print (e.g., $resultVARIABLE)"
+        placeholder="Enter message to print (e.g., 'x is {x}')"
         value={data.message || ''}
         onChange={handleChange}
         style={{

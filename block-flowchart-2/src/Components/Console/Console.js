@@ -1,6 +1,7 @@
 // src/Components/Console.js
 
 import React from 'react';
+// import './Console.css';
 
 function Console({ consoleOutput }) {
   return (

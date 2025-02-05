@@ -7,7 +7,7 @@
   
   .block-palette {
     width: 220px;
-    background-color: #eee;
+    /* background-color: #eee; */
     padding: 10px;
     overflow-y: auto;
   }
@@ -17,7 +17,7 @@
     position: relative;
   }
   
-  .control-panel {
+  /* .control-panel {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -25,4 +25,4 @@
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  }
+  } */

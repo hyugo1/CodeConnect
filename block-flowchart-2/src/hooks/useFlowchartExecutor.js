@@ -9,7 +9,7 @@ export function useFlowchartExecutor(
   setCharacterPosition,
   setCharacterMessage
 ) {
-  const MAX_ITERATIONS = 1000;
+  const MAX_ITERATIONS = 100;
 
   const resetExecution = useCallback(() => {
     setConsoleOutput('');
@@ -229,22 +229,19 @@ export function useFlowchartExecutor(
 
         let evaluatedMessage = '';
 
-        // If the message exactly matches a variable name, print its value.
-        if (context.variables.hasOwnProperty(message)) {
-          const value = context.variables[message];
-          evaluatedMessage = value.toString();
-          outputs.push(`Print: ${evaluatedMessage}`);
-          console.log(`Print: ${evaluatedMessage}`);
-          setCharacterMessage(evaluatedMessage);
-        } else {
-          // Otherwise, replace variable references like ${varName}
-          evaluatedMessage = message.replace(/\$\{(\w+)\}/g, (match, p1) => {
-            return context.variables[p1] !== undefined ? context.variables[p1] : match;
-          });
-          outputs.push(`Print: ${evaluatedMessage}`);
-          console.log(`Print: ${evaluatedMessage}`);
-          setCharacterMessage(evaluatedMessage);
+        // Replace variable references enclosed in curly braces, e.g. {x}
+        evaluatedMessage = message.replace(/{(\w+)}/g, (match, varName) => {
+          return context.variables.hasOwnProperty(varName) ? context.variables[varName] : match;
+        });
+
+        // If no curly brace substitution occurred and the message exactly matches a variable name, print its value.
+        if (evaluatedMessage === message && context.variables.hasOwnProperty(message)) {
+          evaluatedMessage = context.variables[message].toString();
         }
+
+        outputs.push(`Print: ${evaluatedMessage}`);
+        console.log(`Print: ${evaluatedMessage}`);
+        setCharacterMessage(evaluatedMessage);
 
         // Optional delay to show the message
         await new Promise((resolve) => setTimeout(resolve, 1000));

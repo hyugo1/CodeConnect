@@ -15,6 +15,7 @@
     "react-toastify": "^11.0.3",
     "react-tooltip": "^5.28.0",
     "reactflow": "^11.11.4",
+    "use-undo": "^1.1.1",
     "uuid": "^11.0.5",
     "web-vitals": "^2.1.4"
   },
