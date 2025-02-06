@@ -1,11 +1,11 @@
-// src/Components/CustomNode/nodes/OperatorNode.js
+// src/Components/CustomNode/blocks/OperatorNode.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlus, FaMinus, FaTimes, FaDivide } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
-import './node.css';
+import './block.css';
 
 const mathStyle = {
   width: '100%',
@@ -47,7 +47,7 @@ const OperatorNode = ({ id, data, selected }) => {
   const icon = operatorIcons[operator] || <FaPlus style={{ marginBottom: 5 }} />;
 
   return (
-    <div className={`node-container operator-node ${selected ? 'selected' : ''}`}
+    <div className={`block-container operator-block ${selected ? 'selected' : ''}`}
          style={{ backgroundColor: '#f9d8f9' }}>
       {icon}
       <div>{data.label}</div>
@@ -58,7 +58,7 @@ const OperatorNode = ({ id, data, selected }) => {
         className="handle-target-circle"
         style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from another node"
+        data-tooltip-content="Connect from another block"
         isConnectable={true}
       />
       <Handle
@@ -68,7 +68,7 @@ const OperatorNode = ({ id, data, selected }) => {
         className="handle-source-square"
         style={{ left: '50%', top: '97%' }}
         data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to another node"
+        data-tooltip-content="Connect to another block"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />

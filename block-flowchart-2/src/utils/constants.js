@@ -18,7 +18,7 @@ const edgeTypes = {
   custom: CustomEdge,
 };
 
-const nodeTypes = {
+const blockTypes = {
   custom: CustomNode,
 };
 
@@ -33,7 +33,7 @@ function FlowchartCanvas({
   const initialNodes = [];
   const initialEdges = [];
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [blocks, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const lastNodeId = useRef(null);
@@ -52,9 +52,9 @@ function FlowchartCanvas({
       onDrop={onDrop}
     >
       <ReactFlow
-        nodes={nodes}
+        blocks={blocks}
         edges={edges}
-        nodeTypes={nodeTypes}
+        blockTypes={blockTypes}
         edgeTypes={edgeTypes}
         snapToGrid={true}
         snapGrid={[15, 15]}

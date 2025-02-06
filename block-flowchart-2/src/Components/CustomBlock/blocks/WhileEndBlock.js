@@ -1,14 +1,14 @@
-// src/Components/CustomNode/nodes/WhileEndNode.js
+// src/Components/CustomBlock/blocks/WhileEndBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaSync } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
-import './node.css';
+import './block.css';
 
-const WhileEndNode = ({ id, data, selected }) => {
+const WhileEndBlock = ({ id, data, selected }) => {
   return (
-    <div className={`node-container while-end-node ${selected ? 'selected' : ''}`}
+    <div className={`block-container while-end-block ${selected ? 'selected' : ''}`}
          style={{ backgroundColor: '#f9f7d8' }}>
       <FaSync style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
@@ -42,7 +42,7 @@ const WhileEndNode = ({ id, data, selected }) => {
         className="handle-source-square"
         style={{ left: '50%', top: '90%' }}
         data-tooltip-id={`tooltip-${id}-exit`}
-        data-tooltip-content="Connect to next node after while loop"
+        data-tooltip-content="Connect to next block after while loop"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
@@ -52,4 +52,4 @@ const WhileEndNode = ({ id, data, selected }) => {
   );
 };
 
-export default WhileEndNode;
+export default WhileEndBlock;

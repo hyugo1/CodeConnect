@@ -21,7 +21,7 @@ function App() {
   const [cancelDrag, setCancelDrag] = useState(false);
 
   // Flowchart State
-  const [nodes, setNodes] = useState([]);
+  const [blocks, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
 
   // Handler for selecting a block from the palette
@@ -33,7 +33,7 @@ function App() {
     <div className="App">
       {/* **Navbar at the Top** */}
       <Navbar
-        nodes={nodes}
+        blocks={blocks}
         edges={edges}
         setNodes={setNodes}
         setEdges={setEdges}
@@ -55,7 +55,7 @@ function App() {
         {/* **Middle Flowchart Canvas** */}
         <ReactFlowProvider>
           <FlowchartCanvas
-            nodes={nodes}
+            blocks={blocks}
             setNodes={setNodes}
             edges={edges}
             setEdges={setEdges}

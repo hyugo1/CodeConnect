@@ -11,7 +11,7 @@ import './Navbar.css';
 import { FaFolderOpen, FaTrash } from 'react-icons/fa'; // Import icons for better UI
 import { toast } from 'react-toastify'; // Import toast for notifications
 
-const Navbar = ({ nodes, edges, setNodes, setEdges }) => {
+const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
   const [projectName, setProjectName] = useState('');
   const [savedProjects, setSavedProjects] = useState(getSavedProjects());
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -43,12 +43,12 @@ const Navbar = ({ nodes, edges, setNodes, setEdges }) => {
         }
       }
 
-      // **Log the nodes and edges being saved**
-      console.log('Current nodes before saving:', JSON.stringify(nodes, null, 2));
+      // **Log the blocks and edges being saved**
+      console.log('Current blocks before saving:', JSON.stringify(blocks, null, 2));
       console.log('Current edges before saving:', JSON.stringify(edges, null, 2));
 
       // **Ensure serialization is correct**
-      const serializedNodes = nodes.map(({ id, type, position, data }) => ({
+      const serializedNodes = blocks.map(({ id, type, position, data }) => ({
         id,
         type,
         position,
@@ -68,10 +68,10 @@ const Navbar = ({ nodes, edges, setNodes, setEdges }) => {
       }));
 
       // **Optionally, verify serialized data**
-      console.log('Serialized nodes:', JSON.stringify(serializedNodes, null, 2));
+      console.log('Serialized blocks:', JSON.stringify(serializedNodes, null, 2));
       console.log('Serialized edges:', JSON.stringify(serializedEdges, null, 2));
 
-      saveFlowchart(sanitizedProjectName, nodes, edges);
+      saveFlowchart(sanitizedProjectName, blocks, edges);
       setSavedProjects(getSavedProjects());
       setProjectName('');
       setIsDropdownOpen(false);
@@ -89,11 +89,11 @@ const Navbar = ({ nodes, edges, setNodes, setEdges }) => {
       const loadedData = loadFlowchart(name);
       if (loadedData) {
         console.log('Loaded data:', JSON.stringify(loadedData, null, 2));
-        setNodes(loadedData.nodes);
+        setNodes(loadedData.blocks);
         setEdges(loadedData.edges);
         setIsDropdownOpen(false);
         toast.success(`Flowchart "${name}" loaded successfully.`);
-        console.log(`Project "${name}" loaded with nodes:`, loadedData.nodes, 'and edges:', loadedData.edges);
+        console.log(`Project "${name}" loaded with blocks:`, loadedData.blocks, 'and edges:', loadedData.edges);
       } else {
         toast.error('Failed to load the selected project.');
         console.warn(`Failed to load project "${name}".`);
@@ -129,7 +129,7 @@ const Navbar = ({ nodes, edges, setNodes, setEdges }) => {
 
   return (
     <nav className="navbar">
-      <h2>Lego Like Programming</h2>
+      <h2>A Lego-like Programming</h2>
       <div className="save-load-section">
         <input
           type="text"

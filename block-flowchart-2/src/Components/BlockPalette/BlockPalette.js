@@ -17,8 +17,8 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
   // state to track for collapse
   const [collapsed, setCollapsed] = useState(false);
 
-  const onDragStart = (event, nodeType) => {
-    event.dataTransfer.setData('application/reactflow', nodeType);
+  const onDragStart = (event, blockType) => {
+    event.dataTransfer.setData('application/reactflow', blockType);
     event.dataTransfer.effectAllowed = 'move';
     setIsDragging(true);
     setCancelDrag(false);

@@ -1,23 +1,13 @@
-// src/Components/CustomNode/nodes/ChangeVariable.js
+// src/Components/CustomBlock/blocks/SetVariableBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaPlusCircle } from 'react-icons/fa';
+import { FaPenFancy } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
-import './node.css';
+import './block.css';
 
-const inputStyle = {
-  width: '100%',
-  marginTop: 10,
-  padding: '5px',
-  borderRadius: '3px',
-  border: '1px solid #ccc',
-  fontSize: '12px',
-  boxSizing: 'border-box',
-};
-
-const ChangeVariable = ({ id, data, selected }) => {
+const SetVariableBlock = ({ id, data, selected }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleVarNameChange = (e) => {
@@ -29,17 +19,16 @@ const ChangeVariable = ({ id, data, selected }) => {
   };
 
   return (
-    <div className={`node-container change-variable ${selected ? 'selected' : ''}`} style={{background: '#e0ffe0'}}>
-      <FaPlusCircle style={{ marginBottom: 5 }} />
+    <div className={`block-container ${selected ? 'selected' : ''}`}>
+      <FaPenFancy style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
       <Handle
         type="target"
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from another node"
+        data-tooltip-content="Connect from another block"
         isConnectable={true}
       />
       <Handle
@@ -47,9 +36,8 @@ const ChangeVariable = ({ id, data, selected }) => {
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '95%' }}
         data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to another node"
+        data-tooltip-content="Connect to another block"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
@@ -59,17 +47,17 @@ const ChangeVariable = ({ id, data, selected }) => {
         placeholder="Variable Name"
         value={data.varName || ''}
         onChange={handleVarNameChange}
-        style={inputStyle}
+        className="block-input"
       />
       <input
-        type="number"
-        placeholder="Change Value"
+        type="text"
+        placeholder="Value"
         value={data.varValue || ''}
         onChange={handleVarValueChange}
-        style={inputStyle}
+        className="block-input"
       />
     </div>
   );
 };
 
-export default ChangeVariable;
+export default SetVariableBlock;

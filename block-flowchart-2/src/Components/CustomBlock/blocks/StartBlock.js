@@ -1,14 +1,14 @@
-// src/Components/CustomNode/nodes/StartNode.js
+// src/Components/CustomBlock/blocks/StartBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlay } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
-import './node.css';
+import './block.css';
 
-const StartNode = ({ id, data, selected }) => {
+const StartBlock = ({ id, data, selected }) => {
   return (
-    <div className={`node-container start-node ${selected ? 'selected' : ''}`}
+    <div className={`block-container start-block ${selected ? 'selected' : ''}`}
          style={{ backgroundColor: '#d3f9d8' }}>
       <FaPlay style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
@@ -19,7 +19,7 @@ const StartNode = ({ id, data, selected }) => {
         className="handle-source-square"
         style={{ left: '50%', top: '90%' }}
         data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to another node"
+        data-tooltip-content="Connect to another block"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-source`} place="top" />
@@ -27,4 +27,4 @@ const StartNode = ({ id, data, selected }) => {
   );
 };
 
-export default StartNode;
+export default StartBlock;

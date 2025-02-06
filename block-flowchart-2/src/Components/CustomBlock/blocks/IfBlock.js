@@ -1,11 +1,11 @@
-// src/Components/CustomNode/nodes/IfNode.js
+// src/Components/CustomNode/blocks/IfNode.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
-import './node.css';
+import './block.css';
 
 const conditionStyle = {
   display: 'flex',
@@ -44,7 +44,7 @@ const IfNode = ({ id, data, selected }) => {
   };
 
   return (
-    <div className={`node-container if-node ${selected ? 'selected' : ''}`}
+    <div className={`block-container if-block ${selected ? 'selected' : ''}`}
          style={{ backgroundColor: '#d8d8f9' }}>
       <FaQuestion style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
@@ -55,7 +55,7 @@ const IfNode = ({ id, data, selected }) => {
         className="handle-target-circle"
         style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from another node"
+        data-tooltip-content="Connect from another block"
         isConnectable={true}
       />
       <Handle

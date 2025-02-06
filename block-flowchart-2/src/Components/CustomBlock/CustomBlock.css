@@ -1,6 +1,6 @@
 /* src/Components/CustomNode/CustomNode.css */
 /* 
-.custom-node {
+.custom-block {
   padding: 10px;
   border: 2px solid #777;
   border-radius: 5px;
@@ -16,30 +16,30 @@
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-.custom-node.executing {
+.custom-block.executing {
   border-color: #ff5722;
   box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
   background-color: #ffe0b2;
 }
 
-.node-icon {
+.block-icon {
   margin-bottom: 5px;
   font-size: 20px;
 }
 
-.node-label {
+.block-label {
   margin-bottom: 5px;
   font-size: 14px;
 }
 
-.node-content {
+.block-content {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.node-input {
+.block-input {
   width: 80%;
   margin: 5px 0;
   padding: 5px;
@@ -101,12 +101,12 @@
   z-index: -1;
 }
 
-.end-node {
+.end-block {
   background-color: #f9d8d8; 
   border-color: #f44336;
 }
 
-.end-node.executing {
+.end-block.executing {
   border-color: #e53935; 
   box-shadow: 0 0 10px rgba(229, 57, 53, 0.5);
   background-color: #ffcdd2;

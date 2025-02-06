@@ -11,7 +11,7 @@ import ReactFlow, {
   useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import CustomNode from './CustomNode/CustomNode';
+import CustomNode from './CustomBlock/CustomBlock';
 import CustomEdge from './CustomEdge/CustomEdge';
 import ControlPanel from './ControlPanel/ControlPanel';
 import BlockPalette from './BlockPalette/BlockPalette';
@@ -22,12 +22,12 @@ const edgeTypes = {
   custom: CustomEdge,
 };
 
-const nodeTypes = {
+const blockTypes = {
   custom: CustomNode,
 };
 
 function FlowchartCanvas({
-  nodes,
+  blocks,
   setNodes,
   edges,
   setEdges,
@@ -54,7 +54,7 @@ function FlowchartCanvas({
 
   // Use the custom hook for executing the flowchart
   const { executeFlowchart, resetExecution } = useFlowchartExecutor(
-    nodes,
+    blocks,
     edges,
     setConsoleOutput,
     setCharacterPosition,
@@ -67,18 +67,18 @@ function FlowchartCanvas({
   // Get the project function from React Flow
   const { project } = useReactFlow();
 
-  // Reset lastNodeId when nodes change (e.g., after loading a project)
+  // Reset lastNodeId when blocks change (e.g., after loading a project)
   useEffect(() => {
-    if (nodes.length > 0) {
-      lastNodeId.current = nodes[nodes.length - 1].id;
-      console.log(`Updated lastNodeId to "${lastNodeId.current}" after nodes change.`);
+    if (blocks.length > 0) {
+      lastNodeId.current = blocks[blocks.length - 1].id;
+      console.log(`Updated lastNodeId to "${lastNodeId.current}" after blocks change.`);
     } else {
       lastNodeId.current = null;
-      console.log('Reset lastNodeId to null as there are no nodes.');
+      console.log('Reset lastNodeId to null as there are no blocks.');
     }
-  }, [nodes]);
+  }, [blocks]);
 
-  // Handler for connecting nodes
+  // Handler for connecting blocks
   const onConnect = useCallback(
     (params) => {
       console.log('onConnect params:', params);
@@ -145,9 +145,9 @@ function FlowchartCanvas({
     (selectedBlockType) => {
       if (!currentDummyNodeId) return;
 
-      const nodeToReplace = nodes.find((node) => node.id === currentDummyNodeId);
-      if (!nodeToReplace) {
-        console.error(`No node found with id: ${currentDummyNodeId}`);
+      const blockToReplace = blocks.find((block) => block.id === currentDummyNodeId);
+      if (!blockToReplace) {
+        console.error(`No block found with id: ${currentDummyNodeId}`);
         setPaletteVisible(false);
         setCurrentDummyNodeId(null);
         return;
@@ -159,10 +159,10 @@ function FlowchartCanvas({
         newNode = {
           id: uuidv4(),
           type: 'custom',
-          position: nodeToReplace.position,
+          position: blockToReplace.position,
           data: {
             label: 'Operator',
-            nodeType: 'operator',
+            blockType: 'operator',
             operator: '',
             operand1: '',
             operand2: '',
@@ -177,10 +177,10 @@ function FlowchartCanvas({
         newNode = {
           id: uuidv4(),
           type: 'custom',
-          position: nodeToReplace.position,
+          position: blockToReplace.position,
           data: {
             label: 'Change Variable',
-            nodeType: 'changeVariable',
+            blockType: 'changeVariable',
             varName: '',
             varValue: '',
           },
@@ -189,23 +189,23 @@ function FlowchartCanvas({
         newNode = {
           id: uuidv4(),
           type: 'custom',
-          position: nodeToReplace.position,
+          position: blockToReplace.position,
           data: {
             label: `${selectedBlockType.charAt(0).toUpperCase() + selectedBlockType.slice(1)}`,
-            nodeType: selectedBlockType,
+            blockType: selectedBlockType,
           },
         };
       }
 
       setNodes((nds) =>
-        nds.map((node) => (node.id === currentDummyNodeId ? newNode : node))
+        nds.map((block) => (block.id === currentDummyNodeId ? newNode : block))
       );
 
       setPaletteVisible(false);
       setCurrentDummyNodeId(null);
-      console.log(`Replaced dummy node "${currentDummyNodeId}" with "${selectedBlockType}" node.`);
+      console.log(`Replaced dummy block "${currentDummyNodeId}" with "${selectedBlockType}" block.`);
     },
-    [currentDummyNodeId, nodes, setNodes]
+    [currentDummyNodeId, blocks, setNodes]
   );
 
   // Handler for edge click
@@ -223,11 +223,11 @@ function FlowchartCanvas({
     [setSelectedEdges]
   );
 
-  // Handler for opening the palette when a dummy node is clicked
-  const handleSelectBlockClick = useCallback((nodeId) => {
-    setCurrentDummyNodeId(nodeId);
+  // Handler for opening the palette when a dummy block is clicked
+  const handleSelectBlockClick = useCallback((blockId) => {
+    setCurrentDummyNodeId(blockId);
     setPaletteVisible(true);
-    console.log(`Selected dummy node "${nodeId}" for replacement.`);
+    console.log(`Selected dummy block "${blockId}" for replacement.`);
   }, []);
 
   // Updated onDrop handler using project() to convert screen coordinates to flow coordinates
@@ -242,9 +242,9 @@ function FlowchartCanvas({
       }
 
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      const nodeType = event.dataTransfer.getData('application/reactflow');
+      const blockType = event.dataTransfer.getData('application/reactflow');
 
-      if (!nodeType) return;
+      if (!blockType) return;
 
       // Get the drop point relative to the container
       const dropPoint = {
@@ -259,15 +259,15 @@ function FlowchartCanvas({
       const snappedX = Math.round(position.x / 15) * 15;
       const snappedY = Math.round(position.y / 15) * 15;
 
-      // Create nodes based on nodeType
-      if (nodeType === 'while') {
+      // Create blocks based on blockType
+      if (blockType === 'while') {
         const whileStartNode = {
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
             label: 'While Start',
-            nodeType: 'whileStart',
+            blockType: 'whileStart',
             leftOperand: '',
             operator: '',
             rightOperand: '',
@@ -281,7 +281,7 @@ function FlowchartCanvas({
           position: { x: snappedX + 200, y: snappedY },
           data: {
             label: 'While End',
-            nodeType: 'whileEnd',
+            blockType: 'whileEnd',
             whileStartNodeId: whileStartNode.id,
           },
         };
@@ -295,8 +295,8 @@ function FlowchartCanvas({
           position: { x: snappedX + 100, y: snappedY + 150 },
           data: {
             label: 'Change Variable',
-            nodeType: 'changeVariable',
-            varName: 'i_variable',
+            blockType: 'changeVariable',
+            varName: '',
             varValue: '1',
           },
         };
@@ -307,7 +307,7 @@ function FlowchartCanvas({
           position: { x: snappedX + 100, y: snappedY + 300 },
           data: {
             label: 'Dummy',
-            nodeType: 'dummy',
+            blockType: 'dummy',
           },
         };
 
@@ -363,18 +363,18 @@ function FlowchartCanvas({
         setEdges((eds) =>
           eds.concat([edgeStartToChange, edgeChangeToDummy, edgeDummyToEnd, loopBackEdge])
         );
-        console.log(`Added "While" block with nodes and edges.`);
-      } else if (nodeType === 'if') {
+        console.log(`Added "While" block with blocks and edges.`);
+      } else if (blockType === 'if') {
         const ifNode = {
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
             label: 'If Then',
-            nodeType: 'if',
-            leftOperand: 'i_variable',
-            operator: '==',
-            rightOperand: '5',
+            blockType: 'if',
+            leftOperand: '',
+            operator: '',
+            rightOperand: '',
           },
         };
 
@@ -384,7 +384,7 @@ function FlowchartCanvas({
           position: { x: snappedX - 150, y: snappedY + 150 },
           data: {
             label: 'Dummy',
-            nodeType: 'dummy',
+            blockType: 'dummy',
           },
         };
 
@@ -394,7 +394,7 @@ function FlowchartCanvas({
           position: { x: snappedX + 150, y: snappedY + 150 },
           data: {
             label: 'Dummy',
-            nodeType: 'dummy',
+            blockType: 'dummy',
           },
         };
 
@@ -408,7 +408,7 @@ function FlowchartCanvas({
           type: 'custom',
           animated: false,
           markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: 'green', strokeWidth: 3 },
+          style: { stroke: 'green', strokeWidth: 3, strokeDasharray: '5,5'  },
           label: 'True',
         };
 
@@ -425,15 +425,15 @@ function FlowchartCanvas({
         };
 
         setEdges((eds) => eds.concat([edgeIfToTrue, edgeIfToFalse]));
-        console.log(`Added "If" block with dummy nodes for both branches.`);
-      } else if (nodeType === 'operator') {
+        console.log(`Added "If" block with dummy blocks for both branches.`);
+      } else if (blockType === 'operator') {
         const newNode = {
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
             label: 'Operator',
-            nodeType: 'operator',
+            blockType: 'operator',
             operator: '',
             operand1: '',
             operand2: '',
@@ -455,7 +455,7 @@ function FlowchartCanvas({
             label: '',
           };
           setEdges((eds) => eds.concat(newEdge));
-          console.log(`Connected node "${lastNodeId.current}" to new "Operator" node "${newNode.id}".`);
+          console.log(`Connected block "${lastNodeId.current}" to new "Operator" block "${newNode.id}".`);
         }
 
         lastNodeId.current = newNode.id;
@@ -466,8 +466,8 @@ function FlowchartCanvas({
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
-            label: `${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)}`,
-            nodeType,
+            label: `${blockType.charAt(0).toUpperCase() + blockType.slice(1)}`,
+            blockType,
           },
         };
         setNodes((nds) => nds.concat(newNode));
@@ -477,9 +477,9 @@ function FlowchartCanvas({
   );
 
   // Handler for selection changes
-  const onSelectionChange = useCallback(({ nodes: selectedNodesObj, edges: selectedEdgesObj }) => {
-    const selectedNodeIds = selectedNodesObj.map((node) => node.id);
-    const selectedEdgeIds = selectedEdgesObj.map((edge) => edge.id);
+  const onSelectionChange = useCallback(({ nodes, edges }) => {
+    const selectedNodeIds = nodes.map((node) => node.id);
+    const selectedEdgeIds = edges.map((edge) => edge.id);
     setSelectedNodes(selectedNodeIds);
     setSelectedEdges(selectedEdgeIds);
     console.log(`Selected node IDs: ${selectedNodeIds.join(', ')}`);
@@ -493,9 +493,9 @@ function FlowchartCanvas({
       style={{ width: '100%', height: '100%', position: 'relative' }}
     >
       <ReactFlow
-        nodes={nodes}
+        nodes={blocks}
         edges={edges}
-        nodeTypes={nodeTypes}
+        nodeTypes={blockTypes}
         edgeTypes={edgeTypes}
         snapToGrid={true}
         snapGrid={[15, 15]}
@@ -521,7 +521,7 @@ function FlowchartCanvas({
         onPaneClick={() => {
           setSelectedEdges([]);
           setSelectedNodes([]);
-          console.log('Pane clicked. Deselecting all edges and nodes.');
+          console.log('Pane clicked. Deselecting all edges and blocks.');
         }}
       >
         <Controls />

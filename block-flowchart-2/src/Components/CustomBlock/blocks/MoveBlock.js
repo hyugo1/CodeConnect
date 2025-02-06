@@ -1,4 +1,4 @@
-// src/Components/CustomNode/nodes/MoveNode.js
+// src/Components/CustomNode/blocks/MoveNode.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import {
@@ -11,7 +11,7 @@ import {
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
-import './node.css';
+import './block.css';
 
 const inputStyle = {
   width: '100%',
@@ -54,7 +54,7 @@ const MoveNode = ({ id, data, selected }) => {
   }
 
   return (
-    <div className={`node-container move-node ${selected ? 'selected' : ''}`}
+    <div className={`block-container move-block ${selected ? 'selected' : ''}`}
          style={{ backgroundColor: '#d8f9f9' }}>
       {icon}
       <div>{data.label}</div>
@@ -65,7 +65,7 @@ const MoveNode = ({ id, data, selected }) => {
         className="handle-target-circle"
         style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from another node"
+        data-tooltip-content="Connect from another block"
         isConnectable={true}
       />
       <Handle
@@ -75,7 +75,7 @@ const MoveNode = ({ id, data, selected }) => {
         className="handle-source-square"
         style={{ left: '50%', top: '95%' }}
         data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to another node"
+        data-tooltip-content="Connect to another block"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />

@@ -16,14 +16,14 @@ const ControlPanel = ({
   const handleDelete = () => {
     if (
       window.confirm(
-        `Are you sure you want to delete ${selectedNodes.length} selected node(s) and ${selectedEdges.length} edge(s)?`
+        `Are you sure you want to delete ${selectedNodes.length} selected block(s) and ${selectedEdges.length} edge(s)?`
       )
     ) {
-      // Filter out nodes and edges based on IDs
-      setNodes((nds) => nds.filter((node) => !selectedNodes.includes(node.id)));
+      // Filter out blocks and edges based on IDs
+      setNodes((nds) => nds.filter((block) => !selectedNodes.includes(block.id)));
       setEdges((eds) => eds.filter((edge) => !selectedEdges.includes(edge.id)));
 
-      console.log(`Deleted ${selectedNodes.length} nodes and ${selectedEdges.length} edges.`);
+      console.log(`Deleted ${selectedNodes.length} blocks and ${selectedEdges.length} edges.`);
     }
   };
 

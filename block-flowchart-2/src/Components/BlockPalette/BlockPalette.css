@@ -41,7 +41,7 @@
   
 } */
 
-.dndnode {
+.dndblock {
   margin: 10px 0;
   padding: 10px;
   cursor: grab;
@@ -54,7 +54,7 @@
   align-items: center;
 }
 
-.dndnode span {
+.dndblock span {
   margin-left: 8px;
 }
 

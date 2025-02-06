@@ -3,25 +3,25 @@
 import { useReactFlow } from 'reactflow';
 
 /**
- * Custom hook to update the data of a node given its ID.
+ * Custom hook to update the data of a block given its ID.
  *
- * @param {string} nodeId - The ID of the node to update.
- * @returns {Function} A function to update the node’s data.
+ * @param {string} blockId - The ID of the block to update.
+ * @returns {Function} A function to update the block’s data.
  */
-export const useNodeUpdater = (nodeId) => {
+export const useNodeUpdater = (blockId) => {
   const { setNodes } = useReactFlow();
 
   /**
-   * Updates the node data by merging the new data with the existing data.
+   * Updates the block data by merging the new data with the existing data.
    *
-   * @param {Object} newData - The new data to merge into the node's data.
+   * @param {Object} newData - The new data to merge into the block's data.
    */
   const updateNodeData = (newData) => {
     setNodes((nds) =>
-      nds.map((node) =>
-        node.id === nodeId
-          ? { ...node, data: { ...node.data, ...newData } }
-          : node
+      nds.map((block) =>
+        block.id === blockId
+          ? { ...block, data: { ...block.data, ...newData } }
+          : block
       )
     );
   };

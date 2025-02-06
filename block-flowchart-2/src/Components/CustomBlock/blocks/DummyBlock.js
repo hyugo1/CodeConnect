@@ -1,4 +1,4 @@
-// src/Components/CustomNode/nodes/DummyNode.js
+// src/Components/CustomNode/blocks/DummyNode.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
@@ -10,7 +10,7 @@ const DummyNode = ({ id, data, selected }) => {
     <>
       <style>
         {`
-          .dummy-node {
+          .dummy-block {
             padding: 12px;
             border: 2px dashed #999;
             border-radius: 8px;
@@ -24,14 +24,14 @@ const DummyNode = ({ id, data, selected }) => {
             align-items: center;
             transition: background-color 0.3s ease, border-color 0.3s ease;
           }
-          .dummy-node:hover {
+          .dummy-block:hover {
             background-color: #f0f0f0;
             border-color: #777;
           }
-          /* Note: The selected style will come from .node-container.selected */
+          /* Note: The selected style will come from .block-container.selected */
         `}
       </style>
-      <div className={`node-container dummy-node ${selected ? 'selected' : ''}`}>
+      <div className={`block-container dummy-block ${selected ? 'selected' : ''}`}>
         <FaQuestion style={{ marginBottom: 5 }} />
         <div>{data.label}</div>
         <Handle
@@ -41,7 +41,7 @@ const DummyNode = ({ id, data, selected }) => {
           className="handle-target-circle"
           style={{ left: '50%', top: '0px', background: '#555' }}
           data-tooltip-id={`tooltip-${id}-target`}
-          data-tooltip-content="Connect from previous node"
+          data-tooltip-content="Connect from previous block"
           isConnectable={true}
         />
         <Handle

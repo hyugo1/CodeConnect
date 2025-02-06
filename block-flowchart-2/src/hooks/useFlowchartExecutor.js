@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { evaluate } from 'mathjs';
 
 export function useFlowchartExecutor(
-  nodes,
+  blocks,
   edges,
   setConsoleOutput,
   setCharacterPosition,
@@ -19,13 +19,13 @@ export function useFlowchartExecutor(
   }, [setConsoleOutput, setCharacterPosition, setCharacterMessage]);
 
   /**
-   * Recursive function to traverse and execute nodes.
+   * Recursive function to traverse and execute blocks.
    *
-   * @param {string} nodeId - Current node ID.
-   * @param {Set} visited - Set of visited node IDs (used when not in a loop).
+   * @param {string} blockId - Current block ID.
+   * @param {Set} visited - Set of visited block IDs (used when not in a loop).
    * @param {boolean} inLoop - Flag indicating if we are inside a while loop.
    */
-  const traverse = async (nodeId, visited, inLoop = false) => {
+  const traverse = async (blockId, visited, inLoop = false) => {
     // Increase iteration counter and bail out if too many iterations
     iterationCount++;
     if (iterationCount > MAX_ITERATIONS) {
@@ -35,30 +35,30 @@ export function useFlowchartExecutor(
       return;
     }
 
-    // Find the current node
-    const node = currentNodes.find((n) => n.id === nodeId);
-    if (!node) {
-      outputs.push(`Error: Node with ID ${nodeId} not found.`);
-      console.error(`Node with ID ${nodeId} not found.`);
+    // Find the current block
+    const block = currentNodes.find((n) => n.id === blockId);
+    if (!block) {
+      outputs.push(`Error: Node with ID ${blockId} not found.`);
+      console.error(`Node with ID ${blockId} not found.`);
       setConsoleOutput(outputs.join('\n'));
       return;
     }
 
     // Only use the visited set when not in a loop.
     if (!inLoop) {
-      if (visited.has(nodeId)) {
-        console.warn(`Node ${nodeId} has already been visited. Skipping to prevent infinite loop.`);
+      if (visited.has(blockId)) {
+        console.warn(`Node ${blockId} has already been visited. Skipping to prevent infinite loop.`);
         return;
       }
-      visited.add(nodeId);
+      visited.add(blockId);
     }
 
-    console.log(`\n--- Executing Node: ${node.id} (${node.data.nodeType}) ---`);
-    outputs.push(`Executing node ${node.data.nodeType}`);
+    console.log(`\n--- Executing Node: ${block.id} (${block.data.blockType}) ---`);
+    outputs.push(`Executing block ${block.data.blockType}`);
 
-    switch (node.data.nodeType) {
+    switch (block.data.blockType) {
       case 'start':
-        await executeNextNode(node.id, visited, inLoop);
+        await executeNextNode(block.id, visited, inLoop);
         break;
 
       case 'end':
@@ -70,7 +70,7 @@ export function useFlowchartExecutor(
         break;
 
       case 'setVariable': {
-        const { varName, varValue } = node.data;
+        const { varName, varValue } = block.data;
         if (varName) {
           try {
             const value = evaluate(varValue, context.variables);
@@ -78,8 +78,8 @@ export function useFlowchartExecutor(
             outputs.push(`Set variable ${varName} = ${value}`);
             console.log(`Set variable ${varName} = ${value}`);
           } catch (error) {
-            console.error(`Error evaluating value at node ${node.id}:`, error);
-            outputs.push(`Error evaluating value in node ${node.id}: ${error.message}`);
+            console.error(`Error evaluating value at block ${block.id}:`, error);
+            outputs.push(`Error evaluating value in block ${block.id}: ${error.message}`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
@@ -88,7 +88,7 @@ export function useFlowchartExecutor(
       }
 
       case 'changeVariable': {
-        const { varName, varValue } = node.data;
+        const { varName, varValue } = block.data;
         if (varName && context.variables.hasOwnProperty(varName)) {
           try {
             const value = evaluate(varValue, context.variables);
@@ -100,14 +100,14 @@ export function useFlowchartExecutor(
               `Changed variable ${varName} by ${value}, new value: ${context.variables[varName]}`
             );
           } catch (error) {
-            console.error(`Error changing variable at node ${node.id}:`, error);
-            outputs.push(`Error changing variable in node ${node.id}: ${error.message}`);
+            console.error(`Error changing variable at block ${block.id}:`, error);
+            outputs.push(`Error changing variable in block ${block.id}: ${error.message}`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
         } else {
-          outputs.push(`Variable "${varName}" not found in node ${node.id}.`);
-          console.error(`Variable "${varName}" not found in node ${node.id}.`);
+          outputs.push(`Variable "${varName}" not found in block ${block.id}.`);
+          console.error(`Variable "${varName}" not found in block ${block.id}.`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
@@ -115,48 +115,48 @@ export function useFlowchartExecutor(
       }
 
       case 'if': {
-        const { leftOperand, operator, rightOperand } = node.data;
+        const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
         if (leftOperand && operator && rightOperand) {
           try {
             const condition = `${leftOperand} ${operator} ${rightOperand}`;
-            console.log(`Evaluating condition at node ${node.id}: ${condition}`);
+            console.log(`Evaluating condition at block ${block.id}: ${condition}`);
             conditionMet = evaluate(condition, context.variables);
             outputs.push(`Condition "${condition}" evaluated to ${conditionMet}`);
           } catch (error) {
-            console.error(`Error evaluating condition at node ${node.id}:`, error);
-            outputs.push(`Error evaluating condition in node ${node.id}: ${error.message}`);
+            console.error(`Error evaluating condition at block ${block.id}:`, error);
+            outputs.push(`Error evaluating condition in block ${block.id}: ${error.message}`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
         } else {
-          outputs.push(`Incomplete condition in node ${node.id}.`);
-          console.error(`Incomplete condition in node ${node.id}.`);
+          outputs.push(`Incomplete condition in block ${block.id}.`);
+          console.error(`Incomplete condition in block ${block.id}.`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
-        node.conditionMet = conditionMet;
+        block.conditionMet = conditionMet;
         break;
       }
 
       case 'whileStart': {
-        const { leftOperand, operator, rightOperand } = node.data;
+        const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
         if (leftOperand && operator && rightOperand) {
           try {
             const condition = `${leftOperand} ${operator} ${rightOperand}`;
-            console.log(`Evaluating while condition at node ${node.id}: ${condition}`);
+            console.log(`Evaluating while condition at block ${block.id}: ${condition}`);
             conditionMet = evaluate(condition, context.variables);
             outputs.push(`While condition "${condition}" evaluated to ${conditionMet}`);
           } catch (error) {
-            console.error(`Error evaluating while condition at node ${node.id}:`, error);
-            outputs.push(`Error evaluating while condition in node ${node.id}: ${error.message}`);
+            console.error(`Error evaluating while condition at block ${block.id}:`, error);
+            outputs.push(`Error evaluating while condition in block ${block.id}: ${error.message}`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
         } else {
-          outputs.push(`Incomplete while condition in node ${node.id}.`);
-          console.error(`Incomplete while condition in node ${node.id}.`);
+          outputs.push(`Incomplete while condition in block ${block.id}.`);
+          console.error(`Incomplete while condition in block ${block.id}.`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
@@ -164,28 +164,28 @@ export function useFlowchartExecutor(
         if (conditionMet) {
           // When inside a loop, use a fresh visited set and mark inLoop = true.
           const loopBodyEdge = edges.find(
-            (e) => e.source === node.id && e.sourceHandle === `body-${node.id}`
+            (e) => e.source === block.id && e.sourceHandle === `body-${block.id}`
           );
           if (loopBodyEdge) {
             console.log(`Condition met. Traversing to loop body: ${loopBodyEdge.target}`);
             await traverse(loopBodyEdge.target, new Set(), true);
           } else {
-            outputs.push(`No loop body connected to node ${node.id}.`);
-            console.error(`No loop body connected to node ${node.id}.`);
+            outputs.push(`No loop body connected to block ${block.id}.`);
+            console.error(`No loop body connected to block ${block.id}.`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
         } else {
           // Follow the exit edge when condition fails.
           const exitEdge = edges.find(
-            (e) => e.source === node.id && e.sourceHandle === `exit-${node.id}`
+            (e) => e.source === block.id && e.sourceHandle === `exit-${block.id}`
           );
           if (exitEdge) {
-            console.log(`Condition not met. Exiting loop to node: ${exitEdge.target}`);
+            console.log(`Condition not met. Exiting loop to block: ${exitEdge.target}`);
             await traverse(exitEdge.target, visited, inLoop);
           } else {
-            outputs.push(`No exit path connected to node ${node.id}.`);
-            console.error(`No exit path connected to node ${node.id}.`);
+            outputs.push(`No exit path connected to block ${block.id}.`);
+            console.error(`No exit path connected to block ${block.id}.`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
@@ -195,21 +195,21 @@ export function useFlowchartExecutor(
       }
 
       case 'whileEnd': {
-        const { whileStartNodeId } = node.data;
+        const { whileStartNodeId } = block.data;
         if (whileStartNodeId) {
-          console.log(`Loop end reached. Traversing back to While Start node: ${whileStartNodeId}`);
+          console.log(`Loop end reached. Traversing back to While Start block: ${whileStartNodeId}`);
           // Loop back using a fresh visited set and keep inLoop true.
           await traverse(whileStartNodeId, new Set(), true);
         } else {
           const loopBackEdge = edges.find(
-            (e) => e.source === node.id && e.sourceHandle === `loopBack-${node.id}`
+            (e) => e.source === block.id && e.sourceHandle === `loopBack-${block.id}`
           );
           if (loopBackEdge) {
-            console.log(`Traversing back via loopBack edge to node: ${loopBackEdge.target}`);
+            console.log(`Traversing back via loopBack edge to block: ${loopBackEdge.target}`);
             await traverse(loopBackEdge.target, visited, inLoop);
           } else {
-            outputs.push(`No loop back path found for node ${node.id}.`);
-            console.error(`No loop back path found for node ${node.id}.`);
+            outputs.push(`No loop back path found for block ${block.id}.`);
+            console.error(`No loop back path found for block ${block.id}.`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
@@ -219,10 +219,10 @@ export function useFlowchartExecutor(
       }
 
       case 'print': {
-        const message = node.data.message || '';
+        const message = block.data.message || '';
         if (!message) {
-          outputs.push(`Error: No message set in Print node "${node.id}".`);
-          console.error(`No message set in Print node "${node.id}".`);
+          outputs.push(`Error: No message set in Print block "${block.id}".`);
+          console.error(`No message set in Print block "${block.id}".`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
@@ -250,7 +250,7 @@ export function useFlowchartExecutor(
       }
 
       case 'move': {
-        const { distance, direction } = node.data;
+        const { distance, direction } = block.data;
         if (distance && direction) {
           let newX = context.characterPos?.x || 0;
           let newY = context.characterPos?.y || 0;
@@ -269,8 +269,8 @@ export function useFlowchartExecutor(
               newY += distance;
               break;
             default:
-              outputs.push(`Unknown direction "${direction}" in Move node "${node.id}".`);
-              console.error(`Unknown direction "${direction}" in Move node "${node.id}".`);
+              outputs.push(`Unknown direction "${direction}" in Move block "${block.id}".`);
+              console.error(`Unknown direction "${direction}" in Move block "${block.id}".`);
               setConsoleOutput(outputs.join('\n'));
               return;
           }
@@ -280,17 +280,17 @@ export function useFlowchartExecutor(
           console.log(`Moved ${direction} by ${distance} units to (${newX}, ${newY})`);
           setCharacterPosition({ x: newX, y: newY });
         } else {
-          outputs.push(`Incomplete move data in node "${node.id}".`);
-          console.error(`Incomplete move data in node "${node.id}".`);
+          outputs.push(`Incomplete move data in block "${block.id}".`);
+          console.error(`Incomplete move data in block "${block.id}".`);
         }
         break;
       }
       case 'operator': {
-        // Attempt to evaluate the operator node
+        // Attempt to evaluate the operator block
         try {
           // Map the custom operator names to mathematical symbols.
           let opSymbol = '';
-          switch (node.data.operator) {
+          switch (block.data.operator) {
             case 'add':
               opSymbol = '+';
               break;
@@ -308,47 +308,47 @@ export function useFlowchartExecutor(
           }
 
           //operand1 and operand 2
-          const operand1 = context.variables[node.data.operand1] !== undefined
-            ? context.variables[node.data.operand1]
-            : node.data.operand1;
-          const operand2 = context.variables[node.data.operand2] !== undefined
-            ? context.variables[node.data.operand2]
-            : node.data.operand2;
+          const operand1 = context.variables[block.data.operand1] !== undefined
+            ? context.variables[block.data.operand1]
+            : block.data.operand1;
+          const operand2 = context.variables[block.data.operand2] !== undefined
+            ? context.variables[block.data.operand2]
+            : block.data.operand2;
           const expression = `${operand1} ${opSymbol} ${operand2}`;
     
           // Evaluate the expression using mathjs
           const result = evaluate(expression, context.variables);
     
           // Store the result in the variable specified by result var if applicable
-          if (node.data.resultVar) {
-            context.variables[node.data.resultVar] = result;
-            outputs.push(`Operator node: ${expression} = ${result}`);
-            console.log(`Operator node: ${expression} = ${result}`);
+          if (block.data.resultVar) {
+            context.variables[block.data.resultVar] = result;
+            outputs.push(`Operator block: ${expression} = ${result}`);
+            console.log(`Operator block: ${expression} = ${result}`);
           } else {
-            outputs.push(`Operator node evaluated: ${expression} = ${result}`);
-            console.log(`Operator node evaluated: ${expression} = ${result}`);
+            outputs.push(`Operator block evaluated: ${expression} = ${result}`);
+            console.log(`Operator block evaluated: ${expression} = ${result}`);
           }
         } catch (error) {
-          outputs.push(`Error in operator node ${node.id}: ${error.message}`);
-          console.error(`Error in operator node ${node.id}:`, error);
+          outputs.push(`Error in operator block ${block.id}: ${error.message}`);
+          console.error(`Error in operator block ${block.id}:`, error);
         }
         break;
       }
 
       default:
-        console.warn(`Unknown node type: ${node.data.nodeType}`);
-        outputs.push(`Warning: Unknown node type "${node.data.nodeType}" in node "${node.id}".`);
-        console.error(`Unknown node type: ${node.data.nodeType}`);
+        console.warn(`Unknown block type: ${block.data.blockType}`);
+        outputs.push(`Warning: Unknown block type "${block.data.blockType}" in block "${block.id}".`);
+        console.error(`Unknown block type: ${block.data.blockType}`);
         break;
     }
 
-    // Traverse connected edges for node types that did not return above.
-    const connectedEdges = currentEdges.filter((e) => e.source === node.id);
+    // Traverse connected edges for block types that did not return above.
+    const connectedEdges = currentEdges.filter((e) => e.source === block.id);
     for (const edge of connectedEdges) {
       const targetNodeId = edge.target;
       const targetNode = currentNodes.find((n) => n.id === targetNodeId);
-      if (targetNode && node.data.nodeType === 'if') {
-        const conditionMet = node.conditionMet;
+      if (targetNode && block.data.blockType === 'if') {
+        const conditionMet = block.conditionMet;
         const sourceHandleType = edge.sourceHandle
           ? edge.sourceHandle.split('-')[0]
           : '';
@@ -356,29 +356,29 @@ export function useFlowchartExecutor(
           (sourceHandleType === 'yes' && conditionMet) ||
           (sourceHandleType === 'no' && !conditionMet)
         ) {
-          console.log(`Traversing to node ${targetNodeId} based on condition.`);
+          console.log(`Traversing to block ${targetNodeId} based on condition.`);
           await traverse(targetNodeId, visited, inLoop);
         }
       } else {
-        console.log(`Traversing to node ${targetNodeId}.`);
+        console.log(`Traversing to block ${targetNodeId}.`);
         await traverse(targetNodeId, visited, inLoop);
       }
     }
 
-    console.log(`--- Finished Node: ${node.id} ---\n`);
+    console.log(`--- Finished Node: ${block.id} ---\n`);
   };
 
   /**
-   * Execute the next node connected to the current node.
+   * Execute the next block connected to the current block.
    * @param {string} currentNodeId
-   * @param {Set} visited - Set of visited node IDs.
+   * @param {Set} visited - Set of visited block IDs.
    * @param {boolean} inLoop - Flag indicating if we are inside a while loop.
    */
   const executeNextNode = async (currentNodeId, visited, inLoop = false) => {
     const outgoingEdge = edges.find((edge) => edge.source === currentNodeId);
     if (outgoingEdge) {
       console.log(
-        `Executing next node via edge ${outgoingEdge.id} to node ${outgoingEdge.target}`
+        `Executing next block via edge ${outgoingEdge.id} to block ${outgoingEdge.target}`
       );
       await traverse(outgoingEdge.target, visited, inLoop);
     } else {
@@ -399,13 +399,13 @@ export function useFlowchartExecutor(
     characterPos: { x: 0, y: 0 },
     characterMsg: '',
   };
-  const currentNodes = nodes;
+  const currentNodes = blocks;
   const currentEdges = edges;
 
   // Start traversal with an empty visited set and not in a loop.
   const runFlowchart = async () => {
     await traverse(
-      currentNodes.find((node) => node.type === 'custom' && node.data.nodeType === 'start')
+      currentNodes.find((block) => block.type === 'custom' && block.data.blockType === 'start')
         .id,
       new Set(),
       false
@@ -422,7 +422,7 @@ export function useFlowchartExecutor(
     setCharacterMessage('');
     setCharacterPosition({ x: 0, y: 0 });
     runFlowchart();
-  }, [nodes, edges, setConsoleOutput, setCharacterPosition, setCharacterMessage]);
+  }, [blocks, edges, setConsoleOutput, setCharacterPosition, setCharacterMessage]);
 
   return {
     executeFlowchart,

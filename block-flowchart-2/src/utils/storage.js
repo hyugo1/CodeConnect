@@ -1,12 +1,12 @@
 // src/utils/storage.js
 
 /**
- * Serializes nodes by excluding internal React Flow properties.
- * @param {Array} nodes - The nodes to serialize.
- * @returns {Array} - The serialized nodes.
+ * Serializes blocks by excluding internal React Flow properties.
+ * @param {Array} blocks - The blocks to serialize.
+ * @returns {Array} - The serialized blocks.
  */
-const serializeNodes = (nodes) => {
-  return nodes.map(({ id, type, position, data }) => ({
+const serializeNodes = (blocks) => {
+  return blocks.map(({ id, type, position, data }) => ({
     id,
     type,
     position,
@@ -35,13 +35,13 @@ const serializeEdges = (edges) => {
 };
 
 /**
- * Deserializes nodes by ensuring they have the necessary properties.
- * @param {Array} serializedNodes - The serialized nodes.
- * @returns {Array} - The deserialized nodes.
+ * Deserializes blocks by ensuring they have the necessary properties.
+ * @param {Array} serializedNodes - The serialized blocks.
+ * @returns {Array} - The deserialized blocks.
  */
 const deserializeNodes = (serializedNodes) => {
-  return serializedNodes.map((node) => ({
-    ...node,
+  return serializedNodes.map((block) => ({
+    ...block,
   }));
 };
 
@@ -59,22 +59,22 @@ const deserializeEdges = (serializedEdges) => {
 /**
  * Saves a flowchart to localStorage.
  * @param {string} projectName - The name of the project.
- * @param {Array} nodes - The nodes of the flowchart.
+ * @param {Array} blocks - The blocks of the flowchart.
  * @param {Array} edges - The edges of the flowchart.
  */
-export const saveFlowchart = (projectName, nodes, edges) => {
+export const saveFlowchart = (projectName, blocks, edges) => {
   if (!projectName) {
     throw new Error('Project name is required to save a flowchart.');
   }
 
-  if (nodes.length === 0 && edges.length === 0) {
+  if (blocks.length === 0 && edges.length === 0) {
     throw new Error('Cannot save an empty flowchart.');
   }
 
   const sanitizedProjectName = projectName.trim().replace(/[^a-zA-Z0-9_-]/g, '_');
 
   const flowchartData = {
-    nodes: serializeNodes(nodes),
+    blocks: serializeNodes(blocks),
     edges: serializeEdges(edges),
     savedAt: new Date().toISOString(),
   };
@@ -92,7 +92,7 @@ export const saveFlowchart = (projectName, nodes, edges) => {
 /**
  * Loads a flowchart from localStorage.
  * @param {string} projectName - The name of the project to load.
- * @returns {Object|null} - Returns an object containing nodes and edges, or null if not found.
+ * @returns {Object|null} - Returns an object containing blocks and edges, or null if not found.
  */
 export const loadFlowchart = (projectName) => {
   if (!projectName) {
@@ -114,12 +114,12 @@ export const loadFlowchart = (projectName) => {
   try {
     const flowchartData = JSON.parse(flowchartJSON);
     console.log(`Loaded flowchart "${sanitizedProjectName}":`, flowchartData);
-    if (!flowchartData.nodes || !flowchartData.edges) {
-      console.warn(`Flowchart "${sanitizedProjectName}" is missing nodes or edges.`);
+    if (!flowchartData.blocks || !flowchartData.edges) {
+      console.warn(`Flowchart "${sanitizedProjectName}" is missing blocks or edges.`);
       return null;
     }
     return {
-      nodes: deserializeNodes(flowchartData.nodes) || [],
+      blocks: deserializeNodes(flowchartData.blocks) || [],
       edges: deserializeEdges(flowchartData.edges) || [],
     };
   } catch (error) {

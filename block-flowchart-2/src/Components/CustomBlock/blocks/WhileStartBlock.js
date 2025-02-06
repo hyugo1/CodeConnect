@@ -1,11 +1,11 @@
-// src/Components/CustomNode/nodes/WhileStartNode.js
+// src/Components/CustomBlock/blocks/WhileStartBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaSync } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
-import './node.css';
+import './block.css';
 
 const conditionStyle = {
   display: 'flex',
@@ -28,7 +28,7 @@ const selectStyle = {
   marginRight: '5px',
 };
 
-const WhileStartNode = ({ id, data, selected }) => {
+const WhileStartBlock = ({ id, data, selected }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleLeftOperandChange = (e) => {
@@ -44,7 +44,7 @@ const WhileStartNode = ({ id, data, selected }) => {
   };
 
   return (
-    <div className={`node-container while-start-node ${selected ? 'selected' : ''}`}
+    <div className={`block-container while-start-block ${selected ? 'selected' : ''}`}
          style={{ backgroundColor: '#f9f7d8' }}>
       <FaSync style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
@@ -84,7 +84,7 @@ const WhileStartNode = ({ id, data, selected }) => {
         className="handle-target-circle"
         style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from previous node"
+        data-tooltip-content="Connect from previous block"
         isConnectable={true}
       />
       <Handle
@@ -114,7 +114,7 @@ const WhileStartNode = ({ id, data, selected }) => {
         className="handle-source-square"
         style={{ left: '0%', top: '50%' }}
         data-tooltip-id={`tooltip-${id}-exit`}
-        data-tooltip-content="Connect to next node after loop"
+        data-tooltip-content="Connect to next block after loop"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
@@ -125,4 +125,4 @@ const WhileStartNode = ({ id, data, selected }) => {
   );
 };
 
-export default WhileStartNode;
+export default WhileStartBlock;
