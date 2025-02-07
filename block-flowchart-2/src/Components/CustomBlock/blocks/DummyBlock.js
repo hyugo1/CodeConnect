@@ -1,11 +1,11 @@
-// src/Components/CustomNode/blocks/DummyNode.js
+// src/Components/CustomBlock/blocks/DummyBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 
-const DummyNode = ({ id, data, selected }) => {
+const DummyBlock = ({ id, data, selected }) => {
   return (
     <>
       <style>
@@ -61,4 +61,4 @@ const DummyNode = ({ id, data, selected }) => {
   );
 };
 
-export default DummyNode;
+export default DummyBlock;

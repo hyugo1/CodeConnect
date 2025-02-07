@@ -1,4 +1,4 @@
-// src/Components/CustomNode/blocks/MoveNode.js
+// src/Components/CustomBlock/blocks/MoveBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import {
@@ -23,7 +23,7 @@ const inputStyle = {
   boxSizing: 'border-box',
 };
 
-const MoveNode = ({ id, data, selected }) => {
+const MoveBlock = ({ id, data, selected }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleDistanceChange = (e) => {
@@ -102,4 +102,4 @@ const MoveNode = ({ id, data, selected }) => {
   );
 };
 
-export default MoveNode;
+export default MoveBlock;

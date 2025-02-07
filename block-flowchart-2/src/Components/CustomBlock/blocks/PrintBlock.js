@@ -1,4 +1,4 @@
-// src/Components/CustomNode/blocks/PrintNode.js
+// src/Components/CustomBlock/blocks/PrintBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPrint } from 'react-icons/fa';
@@ -7,7 +7,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const PrintNode = ({ id, data, selected }) => {
+const PrintBlock = ({ id, data, selected }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleChange = (e) => {
@@ -62,4 +62,4 @@ const PrintNode = ({ id, data, selected }) => {
   );
 };
 
-export default PrintNode;
+export default PrintBlock;

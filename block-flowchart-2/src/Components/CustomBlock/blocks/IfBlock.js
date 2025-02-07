@@ -28,7 +28,7 @@ const selectStyle = {
   marginRight: '5px',
 };
 
-const IfNode = ({ id, data, selected }) => {
+const IfBlock = ({ id, data, selected }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleLeftOperandChange = (e) => {
@@ -114,4 +114,4 @@ const IfNode = ({ id, data, selected }) => {
   );
 };
 
-export default IfNode;
+export default IfBlock;

@@ -1,4 +1,4 @@
-// src/Components/CustomNode/blocks/OperatorNode.js
+// src/Components/CustomBlock/blocks/OperatorBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlus, FaMinus, FaTimes, FaDivide } from 'react-icons/fa';
@@ -24,7 +24,7 @@ const operatorIcons = {
   divide: <FaDivide style={{ marginBottom: 5 }} />,
 };
 
-const OperatorNode = ({ id, data, selected }) => {
+const OperatorBlock = ({ id, data, selected }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleOperand1Change = (e) => {
@@ -109,4 +109,4 @@ const OperatorNode = ({ id, data, selected }) => {
   );
 };
 
-export default OperatorNode;
+export default OperatorBlock;

@@ -9,7 +9,7 @@ import WhileEndBlock from './blocks/WhileEndBlock';
 import PrintBlock from './blocks/PrintBlock';
 import MoveBlock from './blocks/MoveBlock';
 import SetVariableBlock from './blocks/SetVariableBlock';
-import ChangeVariable from './blocks/ChangeVariableBlock';
+import ChangeVariableBlock from './blocks/ChangeVariableBlock';
 import OperatorBlock from './blocks/OperatorBlock';
 import DummyBlock from './blocks/DummyBlock';
 
@@ -22,7 +22,7 @@ const blockMapping = {
   print: PrintBlock,
   move: MoveBlock,
   setVariable: SetVariableBlock,
-  changeVariable: ChangeVariable,
+  changeVariable: ChangeVariableBlock,
   operator: OperatorBlock,
   dummy: DummyBlock,
 };

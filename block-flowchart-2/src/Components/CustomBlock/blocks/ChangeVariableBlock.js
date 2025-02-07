@@ -1,4 +1,4 @@
-// src/Components/CustomNode/blocks/ChangeVariable.js
+// src/Components/CustomNode/blocks/ChangeVariableBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlusCircle } from 'react-icons/fa';
@@ -17,7 +17,7 @@ const inputStyle = {
   boxSizing: 'border-box',
 };
 
-const ChangeVariable = ({ id, data, selected }) => {
+const ChangeVariableBlock = ({ id, data, selected }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleVarNameChange = (e) => {
@@ -72,4 +72,4 @@ const ChangeVariable = ({ id, data, selected }) => {
   );
 };
 
-export default ChangeVariable;
+export default ChangeVariableBlock;

@@ -1,4 +1,4 @@
-// src/Components/CustomNode/blocks/EndNode.js
+// src/Components/CustomNode/blocks/EndBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaStop } from 'react-icons/fa';
@@ -6,10 +6,10 @@ import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './block.css';
 
-const EndNode = ({ id, data, selected }) => {
+const EndBlock = ({ id, data, selected }) => {
   return (
     <div className={`block-container end-block ${selected ? 'selected' : ''}`}
-         style={{ backgroundColor: '#f7d8d8' }}  /* Removed minWidth override */
+         style={{ backgroundColor: '#f7d8d8' }}
     >
       <FaStop style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
@@ -28,4 +28,4 @@ const EndNode = ({ id, data, selected }) => {
   );
 };
 
-export default EndNode;
+export default EndBlock;
