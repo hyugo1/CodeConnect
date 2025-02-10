@@ -1,11 +1,12 @@
 // src/App.js
 import React, { useState, useCallback } from 'react';
-import { ReactFlowProvider } from 'reactflow'; // Import the provider
+import { ReactFlowProvider } from 'reactflow';
 import BlockPalette from './Components/BlockPalette/BlockPalette';
 import FlowchartCanvas from './Components/FlowchartCanvas';
 import CharacterDisplay from './Components/CharacterDisplay/CharacterDisplay';
 import Console from './Components/Console/Console';
 import Navbar from './Components/Navbar/Navbar';
+import CodePreview from './Components/CodePreview'; // Import your new component
 import './styles/App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
@@ -79,6 +80,8 @@ function App() {
             characterPosition={characterPosition}
           />
           <Console consoleOutput={consoleOutput} />
+          {/* Add the CodePreview component below the character display */}
+          <CodePreview blocks={blocks} edges={edges} />
         </div>
       </div>
     </div>
