@@ -155,14 +155,14 @@ function FlowchartCanvas({
 
       let newBlock = null;
 
-      if (selectedBlockType === 'operator') {
+      if (selectedBlockType === 'function') {
         newBlock = {
           id: uuidv4(),
           type: 'custom',
           position: blockToReplace.position,
           data: {
-            label: 'Operator',
-            blockType: 'operator',
+            label: 'Function',
+            blockType: 'function',
             operator: '',
             operand1: '',
             operand2: '',
@@ -426,14 +426,14 @@ function FlowchartCanvas({
 
         setEdges((eds) => eds.concat([edgeIfToTrue, edgeIfToFalse]));
         console.log(`Added "If" block with dummy blocks for both branches.`);
-      } else if (blockType === 'operator') {
+      } else if (blockType === 'function') {
         const newBlock = {
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
-            label: 'Operator',
-            blockType: 'operator',
+            label: 'Function',
+            blockType: 'function',
             operator: '',
             operand1: '',
             operand2: '',

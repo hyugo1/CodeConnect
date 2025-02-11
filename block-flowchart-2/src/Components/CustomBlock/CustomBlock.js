@@ -10,7 +10,7 @@ import PrintBlock from './blocks/PrintBlock';
 import MoveBlock from './blocks/MoveBlock';
 import SetVariableBlock from './blocks/SetVariableBlock';
 import ChangeVariableBlock from './blocks/ChangeVariableBlock';
-import OperatorBlock from './blocks/OperatorBlock';
+import FunctionBlock from './blocks/FunctionBlock';
 import DummyBlock from './blocks/DummyBlock';
 
 const blockMapping = {
@@ -23,7 +23,7 @@ const blockMapping = {
   move: MoveBlock,
   setVariable: SetVariableBlock,
   changeVariable: ChangeVariableBlock,
-  operator: OperatorBlock,
+  function: FunctionBlock,
   dummy: DummyBlock,
 };
 

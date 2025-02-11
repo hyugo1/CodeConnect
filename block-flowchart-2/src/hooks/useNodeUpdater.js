@@ -1,5 +1,4 @@
-// src/hooks/useNodeUpdater.js
-
+// /src/hooks/useNodeUpdater.js
 import { useReactFlow } from 'reactflow';
 
 /**
@@ -12,9 +11,9 @@ export const useNodeUpdater = (blockId) => {
   const { setNodes } = useReactFlow();
 
   /**
-   * Updates the block data by merging the new data with the existing data.
+   * Merges the new data into the block's existing data.
    *
-   * @param {Object} newData - The new data to merge into the block's data.
+   * @param {Object} newData - New data to merge.
    */
   const updateNodeData = (newData) => {
     setNodes((nds) =>

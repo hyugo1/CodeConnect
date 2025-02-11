@@ -1,4 +1,4 @@
-// /hooks/useCodeGenerator.js
+// /src/hooks/useCodeGenerator.js
 import { evaluate } from 'mathjs';
 
 /**
@@ -9,7 +9,7 @@ import { evaluate } from 'mathjs';
  * @returns {string} - The generated JavaScript code.
  */
 export function generateJavaScriptCode(blocks, edges) {
-  // Create a map of block IDs to block objects for easy lookup.
+  // Create a lookup map for blocks by their ID.
   const blockMap = blocks.reduce((map, block) => {
     map[block.id] = block;
     return map;
@@ -18,28 +18,27 @@ export function generateJavaScriptCode(blocks, edges) {
   const codeLines = [];
 
   /**
-   * Recursive traversal to generate code.
-   * 
-   * @param {string} blockId - The current block’s ID.
+   * Recursively traverse blocks to build code.
+   *
+   * @param {string} blockId - The current block's ID.
    * @param {number} indentLevel - Current indentation level.
    * @param {Set<string>} visited - Set of already visited block IDs.
    */
   function traverse(blockId, indentLevel = 0, visited = new Set()) {
     const indent = '  '.repeat(indentLevel);
-    
-    //stop to prevent generating it again, if the block with the same ID is already visited
+
+    // Prevent infinite recursion.
     if (visited.has(blockId)) {
-      codeLines.push(indent + `Cycle detected: block ${blockId} already processed. Stopping recursion here.`);
+      codeLines.push(indent + `// Cycle detected: block ${blockId} already processed.`);
       return;
     }
     visited.add(blockId);
 
     const block = blockMap[blockId];
     if (!block) {
-      codeLines.push(indent + `Error: Block ${blockId} not found`);
+      codeLines.push(indent + `// Error: Block ${blockId} not found`);
       return;
     }
-    // codeLines.push(indent + `Block: ${block.data.blockType} (${block.id})`);
 
     switch (block.data.blockType) {
       case 'start':
@@ -52,7 +51,6 @@ export function generateJavaScriptCode(blocks, edges) {
         break;
 
       case 'end':
-        // codeLines.push(indent + 'End of flowchart');
         codeLines.push(indent + 'return;');
         break;
 
@@ -69,35 +67,6 @@ export function generateJavaScriptCode(blocks, edges) {
       case 'changeVariable':
         if (block.data.varName) {
           codeLines.push(indent + `${block.data.varName} += ${block.data.varValue};`);
-        }
-        {
-          const next = getNextBlock(blockId);
-          if (next) traverse(next, indentLevel, new Set(visited));
-        }
-        break;
-
-      case 'operator':
-        if (block.data.expression) {
-          if (block.data.resultVar) {
-            codeLines.push(indent + `var ${block.data.resultVar} = ${block.data.expression};`);
-          } else {
-            codeLines.push(indent + block.data.expression + ';');
-          }
-        } else {
-          let op = '';
-          switch (block.data.operator) {
-            case 'add': op = '+'; break;
-            case 'subtract': op = '-'; break;
-            case 'multiply': op = '*'; break;
-            case 'divide': op = '/'; break;
-            default: op = '?';
-          }
-          const expression = `${block.data.operand1} ${op} ${block.data.operand2}`;
-          if (block.data.resultVar) {
-            codeLines.push(indent + `var ${block.data.resultVar} = ${expression};`);
-          } else {
-            codeLines.push(indent + expression + ';');
-          }
         }
         {
           const next = getNextBlock(blockId);
@@ -134,21 +103,33 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
 
-        case 'whileEnd':
-          // codeLines.push(indent + 'End of while loop (whileEnd block, ignored)');
-          break;
+      case 'whileEnd':
+        // whileEnd is a visual marker; ignore it.
+        break;
 
-        case 'print':
-          {
-            let msg = block.data.message || '';
-            msg = msg.replace(/{(\w+)}/g, '${$1}');
-            codeLines.push(indent + `console.log(\`${msg}\`);`);
-          }
-          {
-            const next = getNextBlock(blockId);
-            if (next) traverse(next, indentLevel, new Set(visited));
-          }
-          break;
+      case 'print': {
+        let msg = block.data.message || '';
+        // Replace {varName} with template literal syntax.
+        msg = msg.replace(/{(\w+)}/g, '${$1}');
+        codeLines.push(indent + `console.log(\`${msg}\`);`);
+        {
+          const next = getNextBlock(blockId);
+          if (next) traverse(next, indentLevel, new Set(visited));
+        }
+        break;
+      }
+
+      case 'function':
+        if (block.data.resultVar && block.data.expression) {
+          codeLines.push(indent + `var ${block.data.resultVar} = ${block.data.expression};`);
+        } else {
+          codeLines.push(indent + '// Incomplete function block');
+        }
+        {
+          const next = getNextBlock(blockId);
+          if (next) traverse(next, indentLevel, new Set(visited));
+        }
+        break;
 
       default:
         codeLines.push(indent + `// Unknown block type: ${block.data.blockType}`);
@@ -161,15 +142,14 @@ export function generateJavaScriptCode(blocks, edges) {
   }
 
   /**
-   * Utility function to get the next block from the current block.
-   * Optionally, filter by a sourceHandle prefix (e.g., "yes", "no", "body", or "exit").
+   * Returns the target block for the given block.
    *
-   * @param {string} currentBlockId - The ID of the current block.
-   * @param {string} [sourceHandleFilter] - Optional filter for the sourceHandle.
-   * @returns {string|null} The target block ID or null.
+   * @param {string} currentBlockId - The current block's ID.
+   * @param {string} [sourceHandleFilter] - Optional filter for the edge's sourceHandle.
+   * @returns {string|null} - The target block's ID, or null if none.
    */
   function getNextBlock(currentBlockId, sourceHandleFilter) {
-    const outgoing = edges.find((edge) => {
+    const outgoing = edges.find(edge => {
       if (edge.source !== currentBlockId) return false;
       if (sourceHandleFilter) {
         return edge.sourceHandle && edge.sourceHandle.startsWith(sourceHandleFilter);
@@ -179,7 +159,7 @@ export function generateJavaScriptCode(blocks, edges) {
     return outgoing ? outgoing.target : null;
   }
 
-  const startBlock = blocks.find((block) => block.data.blockType === 'start');
+  const startBlock = blocks.find(block => block.data.blockType === 'start');
   if (!startBlock) return '// Error: No start block found.';
   traverse(startBlock.id);
   return codeLines.join('\n');
