@@ -1,4 +1,3 @@
-// /src/hooks/useFlowchartExecutor.js
 import { useCallback } from 'react';
 import { evaluate } from 'mathjs';
 
@@ -10,6 +9,8 @@ import { evaluate } from 'mathjs';
  * @param {Function} setConsoleOutput - Function to update console output.
  * @param {Function} setCharacterPosition - Function to update character position.
  * @param {Function} setCharacterMessage - Function to update character message.
+ * @param {Function} setActiveBlockId - Function to update the active block id.
+ * @param {Function} setActiveEdgeId - Function to update the active edge id.
  * @returns {Object} - { executeFlowchart, resetExecution }
  */
 export function useFlowchartExecutor(
@@ -17,7 +18,9 @@ export function useFlowchartExecutor(
   edges,
   setConsoleOutput,
   setCharacterPosition,
-  setCharacterMessage
+  setCharacterMessage,
+  setActiveBlockId,
+  setActiveEdgeId
 ) {
   const MAX_ITERATIONS = 100;
 
@@ -26,10 +29,20 @@ export function useFlowchartExecutor(
     setConsoleOutput('');
     setCharacterPosition({ x: 0, y: 0 });
     setCharacterMessage('');
+    if (typeof setActiveBlockId === 'function') {
+      setActiveBlockId(null);
+    } else {
+      console.error('setActiveBlockId is not a function in resetExecution:', setActiveBlockId);
+    }
+    if (typeof setActiveEdgeId === 'function') {
+      setActiveEdgeId(null);
+    } else {
+      console.error('setActiveEdgeId is not a function in resetExecution:', setActiveEdgeId);
+    }
     console.log('Console and Character have been reset.');
-  }, [setConsoleOutput, setCharacterPosition, setCharacterMessage]);
+  }, [setConsoleOutput, setCharacterPosition, setCharacterMessage, setActiveBlockId, setActiveEdgeId]);
 
-  // Create an execution context.
+  // Execution context.
   const context = {
     variables: {},
     characterPos: { x: 0, y: 0 },
@@ -56,7 +69,6 @@ export function useFlowchartExecutor(
       setConsoleOutput(outputs.join('\n'));
       return;
     }
-
     const block = currentNodes.find(n => n.id === blockId);
     if (!block) {
       outputs.push(`Error: Node with ID ${blockId} not found.`);
@@ -64,7 +76,6 @@ export function useFlowchartExecutor(
       setConsoleOutput(outputs.join('\n'));
       return;
     }
-
     if (!inLoop) {
       if (visited.has(blockId)) {
         console.warn(`Node ${blockId} already visited. Skipping to prevent infinite loop.`);
@@ -72,6 +83,13 @@ export function useFlowchartExecutor(
       }
       visited.add(blockId);
     }
+    // Mark the current block as active.
+    if (typeof setActiveBlockId === 'function') {
+      setActiveBlockId(block.id);
+    } else {
+      console.error('setActiveBlockId is not a function!', setActiveBlockId);
+    }
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     console.log(`\n--- Executing Node: ${block.id} (${block.data.blockType}) ---`);
     outputs.push(`Executing block ${block.data.blockType}`);
@@ -88,15 +106,23 @@ export function useFlowchartExecutor(
         setCharacterMessage(context.characterMsg);
         break;
       case 'setVariable': {
-        const { varName, varValue } = block.data;
+        const { varName, varValue, valueType } = block.data;
         if (varName) {
           try {
-            const value = evaluate(varValue, context.variables);
+            let value;
+            if (valueType === 'string') {
+              value = varValue;
+            } else if (valueType === 'array') {
+              value = varValue.split(',').map(item => item.trim());
+            } else {
+              // int
+              value = evaluate(varValue, context.variables);
+            }
             context.variables[varName] = value;
-            outputs.push(`Set variable ${varName} = ${value}`);
-            console.log(`Set variable ${varName} = ${value}`);
+            outputs.push(`Set variable ${varName} = ${JSON.stringify(value)}`);
+            console.log(`Set variable ${varName} = ${JSON.stringify(value)}`);
           } catch (error) {
-            console.error(`Error evaluating value at block ${block.id}:`, error);
+            console.error(`Error evaluating value in block ${block.id}:`, error);
             outputs.push(`Error evaluating value in block ${block.id}: ${error.message}`);
             setConsoleOutput(outputs.join('\n'));
             return;
@@ -105,13 +131,42 @@ export function useFlowchartExecutor(
         break;
       }
       case 'changeVariable': {
-        const { varName, varValue } = block.data;
+        const { varName, varValue, valueType, operation } = block.data;
         if (varName && context.variables.hasOwnProperty(varName)) {
           try {
-            const value = evaluate(varValue, context.variables);
-            context.variables[varName] += value;
-            outputs.push(`Changed variable ${varName} by ${value}, new value: ${context.variables[varName]}`);
-            console.log(`Changed variable ${varName} by ${value}, new value: ${context.variables[varName]}`);
+            if (valueType === 'string') {
+              // For strings, simply replace the current value with the new one.
+              context.variables[varName] = varValue;
+            } else if (valueType === 'array') {
+              // For arrays, parse the new items from varValue
+              let newItems = varValue.split(',')
+                .map(item => item.trim())
+                .filter(item => item !== '');
+      
+              // If the variable isn't currently an array, replace it with a new array
+              // (unless you want an error).
+              if (!Array.isArray(context.variables[varName])) {
+                context.variables[varName] = [];
+              }
+      
+              if (operation === 'remove') {
+                // Remove each of the newItems from the existing array.
+                // e.g. if existing array is [ "1", "2", "3" ] and newItems is [ "2", "3" ],
+                // result becomes [ "1" ].
+                context.variables[varName] = context.variables[varName].filter(
+                  el => !newItems.includes(el)
+                );
+              } else {
+                // Default to "add"
+                context.variables[varName] = context.variables[varName].concat(newItems);
+              }
+            } else {
+              // Default: treat as number and add (using mathjs evaluate)
+              const value = evaluate(varValue, context.variables);
+              context.variables[varName] += value;
+            }
+            outputs.push(`Changed variable ${varName} to ${JSON.stringify(context.variables[varName])}`);
+            console.log(`Changed variable ${varName} to ${JSON.stringify(context.variables[varName])}`);
           } catch (error) {
             console.error(`Error changing variable at block ${block.id}:`, error);
             outputs.push(`Error changing variable in block ${block.id}: ${error.message}`);
@@ -150,6 +205,7 @@ export function useFlowchartExecutor(
         block.conditionMet = conditionMet;
         break;
       }
+
       case 'whileStart': {
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
@@ -201,6 +257,7 @@ export function useFlowchartExecutor(
         }
         return; // Do not traverse beyond whileStart.
       }
+
       case 'whileEnd': {
         const { whileStartNodeId } = block.data;
         if (whileStartNodeId) {
@@ -222,6 +279,7 @@ export function useFlowchartExecutor(
         }
         return; // Do not continue after whileEnd.
       }
+
       case 'print': {
         const message = block.data.message || '';
         if (!message) {
@@ -241,10 +299,12 @@ export function useFlowchartExecutor(
         outputs.push(`Print: ${evaluatedMessage}`);
         console.log(`Print: ${evaluatedMessage}`);
         setCharacterMessage(evaluatedMessage);
+        // await new Promise(resolve => setTimeout(resolve, 1000));
         await new Promise(resolve => setTimeout(resolve, 1000));
         setCharacterMessage('');
         break;
       }
+
       case 'move': {
         const { distance, direction } = block.data;
         if (distance && direction) {
@@ -279,8 +339,8 @@ export function useFlowchartExecutor(
         }
         break;
       }
+
       case 'function': {
-        // Evaluate the function block: compute the expression and assign the result.
         if (block.data.resultVar && block.data.expression) {
           try {
             const result = evaluate(block.data.expression, context.variables);
@@ -296,13 +356,14 @@ export function useFlowchartExecutor(
         }
         break;
       }
+
       default:
         outputs.push(`Warning: Unknown block type "${block.data.blockType}" in block "${block.id}".`);
         console.error(`Unknown block type: ${block.data.blockType}`);
         break;
     }
 
-    // Traverse connected edges for blocks that continue execution.
+    // Traverse outgoing edges.
     const connectedEdges = currentEdges.filter(e => e.source === block.id);
     for (const edge of connectedEdges) {
       const targetNodeId = edge.target;
@@ -311,10 +372,22 @@ export function useFlowchartExecutor(
         const conditionMet = block.conditionMet;
         const sourceHandleType = edge.sourceHandle ? edge.sourceHandle.split('-')[0] : '';
         if ((sourceHandleType === 'yes' && conditionMet) || (sourceHandleType === 'no' && !conditionMet)) {
+          if (typeof setActiveEdgeId === 'function') {
+            setActiveEdgeId(edge.id);
+          } else {
+            console.error('setActiveEdgeId is not a function!', setActiveEdgeId);
+          }
+          await new Promise(resolve => setTimeout(resolve, 200));
           console.log(`Traversing to block ${targetNodeId} based on condition.`);
           await traverse(targetNodeId, visited, inLoop);
         }
       } else {
+        if (typeof setActiveEdgeId === 'function') {
+          setActiveEdgeId(edge.id);
+        } else {
+          console.error('setActiveEdgeId is not a function!', setActiveEdgeId);
+        }
+        await new Promise(resolve => setTimeout(resolve, 200));
         console.log(`Traversing to block ${targetNodeId}.`);
         await traverse(targetNodeId, visited, inLoop);
       }
@@ -326,6 +399,12 @@ export function useFlowchartExecutor(
   async function executeNextNode(currentNodeId, visited, inLoop = false) {
     const outgoingEdge = edges.find(e => e.source === currentNodeId);
     if (outgoingEdge) {
+      if (typeof setActiveEdgeId === 'function') {
+        setActiveEdgeId(outgoingEdge.id);
+      } else {
+        console.error('setActiveEdgeId is not a function!', setActiveEdgeId);
+      }
+      await new Promise(resolve => setTimeout(resolve, 200));
       console.log(`Executing next block via edge ${outgoingEdge.id} to block ${outgoingEdge.target}`);
       await traverse(outgoingEdge.target, visited, inLoop);
     } else {
@@ -338,7 +417,9 @@ export function useFlowchartExecutor(
   }
 
   async function runFlowchart() {
-    const startBlock = currentNodes.find(block => block.type === 'custom' && block.data.blockType === 'start');
+    const startBlock = currentNodes.find(
+      block => block.type === 'custom' && block.data.blockType === 'start'
+    );
     if (startBlock) {
       await traverse(startBlock.id, new Set(), false);
       setConsoleOutput(outputs.join('\n'));
@@ -356,7 +437,15 @@ export function useFlowchartExecutor(
     setCharacterMessage('');
     setCharacterPosition({ x: 0, y: 0 });
     runFlowchart();
-  }, [blocks, edges, setConsoleOutput, setCharacterPosition, setCharacterMessage]);
+  }, [
+    blocks,
+    edges,
+    setConsoleOutput,
+    setCharacterPosition,
+    setCharacterMessage,
+    setActiveBlockId,
+    setActiveEdgeId,
+  ]);
 
   return {
     executeFlowchart,

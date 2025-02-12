@@ -1,5 +1,4 @@
 // src/Components/BlockPalette/BlockPalette.js
-
 import React, { useState, useEffect } from 'react';
 import {
   FaPlay,
@@ -14,7 +13,7 @@ import {
 import './BlockPalette.css';
 
 const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag }) => {
-  // state to track for collapse
+  // State to track collapse
   const [collapsed, setCollapsed] = useState(false);
 
   const onDragStart = (event, blockType) => {
@@ -42,11 +41,13 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
     alignItems: 'center',
   };
 
+
   const blocks = [
     { type: 'start', label: 'Start', color: '#d3f9d8', icon: <FaPlay /> },
     { type: 'end', label: 'End', color: '#f9d8d8', icon: <FaStop /> },
     { type: 'if', label: 'If-Then', color: '#d8d8f9', icon: <FaQuestion /> },
     { type: 'while', label: 'While', color: '#f9f7d8', icon: <FaSync /> },
+    { type: 'forLoop', label: 'For Loop Block', color: '#e0ffe0', icon: <FaSync /> },
     { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint /> },
     { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> },
     { type: 'function', label: 'Function', color: '#f9d8f9', icon: <FaPlusCircle /> },

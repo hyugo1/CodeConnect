@@ -1,6 +1,3 @@
-// src/Components/CustomBlock/CustomBlock.js
-import React from 'react';
-
 import StartBlock from './blocks/StartBlock';
 import EndBlock from './blocks/EndBlock';
 import IfBlock from './blocks/IfBlock';
@@ -12,6 +9,8 @@ import SetVariableBlock from './blocks/SetVariableBlock';
 import ChangeVariableBlock from './blocks/ChangeVariableBlock';
 import FunctionBlock from './blocks/FunctionBlock';
 import DummyBlock from './blocks/DummyBlock';
+import ForLoopStartBlock from './blocks/ForLoopStartBlock';
+import ForLoopEndBlock from './blocks/ForLoopEndBlock';
 
 const blockMapping = {
   start: StartBlock,
@@ -25,20 +24,23 @@ const blockMapping = {
   changeVariable: ChangeVariableBlock,
   function: FunctionBlock,
   dummy: DummyBlock,
+  forLoopStart: ForLoopStartBlock,
+  forLoopEnd: ForLoopEndBlock,
 };
 
-const CustomBlock = ({ id, data, selected }) => {
+const CustomBlock = ({ id, data, selected, activeBlockId }) => {
   const SpecificBlock = blockMapping[data.blockType];
+  const isActive = id === activeBlockId;
 
   if (!SpecificBlock) {
     return (
-      <div className={`block-container ${selected ? 'selected' : ''}`}>
+      <div className={`block-container ${selected ? 'selected' : ''} ${isActive ? 'active' : ''}`}>
         <div>Unknown Block</div>
       </div>
     );
   }
 
-  return <SpecificBlock id={id} data={data} selected={selected} />;
+  return <SpecificBlock id={id} data={data} selected={selected} active={isActive} />;
 };
 
 export default CustomBlock;

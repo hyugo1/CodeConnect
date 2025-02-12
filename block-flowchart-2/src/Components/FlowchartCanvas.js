@@ -364,6 +364,94 @@ function FlowchartCanvas({
           eds.concat([edgeStartToChange, edgeChangeToDummy, edgeDummyToEnd, loopBackEdge])
         );
         console.log(`Added "While" block with blocks and edges.`);
+      } else if (blockType === 'forLoop') {
+        // Create For Loop Start block
+        const forLoopStartBlock = {
+          id: uuidv4(),
+          type: 'custom',
+          position: { x: snappedX, y: snappedY },
+          data: {
+            label: 'For Loop Start',
+            blockType: 'forLoopStart',
+            arrayVar: '',
+            indexVar: 'i',
+          },
+        };
+      
+        // Create For Loop End block
+        const forLoopEndBlock = {
+          id: uuidv4(),
+          type: 'custom',
+          position: { x: snappedX + 200, y: snappedY },
+          data: {
+            label: 'For Loop End',
+            blockType: 'forLoopEnd',
+            forLoopStartBlockId: forLoopStartBlock.id, // link back to start
+          },
+        };
+      
+        // Link the two blocks together
+        forLoopStartBlock.data.forLoopEndBlockId = forLoopEndBlock.id;
+        forLoopEndBlock.data.forLoopStartBlockId = forLoopStartBlock.id;
+      
+        // Create a Dummy block to represent the loop body
+        const dummyBlock = {
+          id: uuidv4(),
+          type: 'custom',
+          position: { x: snappedX + 100, y: snappedY + 150 },
+          data: {
+            label: 'Dummy',
+            blockType: 'dummy',
+          },
+        };
+      
+        // Add the blocks to the nodes state
+        setNodes((nds) => nds.concat([forLoopStartBlock, dummyBlock, forLoopEndBlock]));
+      
+        // Create edges connecting the blocks:
+        // 1. Edge from ForLoopStart to Dummy block
+        const edgeStartToDummy = {
+          id: uuidv4(),
+          source: forLoopStartBlock.id,
+          target: dummyBlock.id,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: '#555', strokeWidth: 3 },
+          label: '',
+          sourceHandle: `body-${forLoopStartBlock.id}`,  // must match the handle ID in ForLoopStartBlock
+        };
+      
+        // 2. Edge from Dummy block to ForLoopEnd block
+        const edgeDummyToEnd = {
+          id: uuidv4(),
+          source: dummyBlock.id,
+          target: forLoopEndBlock.id,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: '#555', strokeWidth: 3 },
+          label: '',
+        };
+      
+        // 3. Loop-back edge from ForLoopEnd back to ForLoopStart
+        const loopBackEdge = {
+          id: uuidv4(),
+          source: forLoopEndBlock.id,
+          target: forLoopStartBlock.id,
+          sourceHandle: `loopBack-${forLoopEndBlock.id}`,  // must match the handle in ForLoopEndBlock
+          targetHandle: `loopBack-${forLoopStartBlock.id}`,  // must match the handle in ForLoopStartBlock
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: '#555', strokeWidth: 3 },
+          label: 'Loop',
+        };
+      
+        // Add the new edges to the edges state
+        setEdges((eds) => eds.concat([edgeStartToDummy, edgeDummyToEnd, loopBackEdge]));
+      
+        console.log(`Added "For Loop" blocks with start, dummy, and end edges.`);
       } else if (blockType === 'if') {
         const ifBlock = {
           id: uuidv4(),

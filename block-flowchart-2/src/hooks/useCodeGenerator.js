@@ -56,7 +56,20 @@ export function generateJavaScriptCode(blocks, edges) {
 
       case 'setVariable':
         if (block.data.varName) {
-          codeLines.push(indent + `var ${block.data.varName} = ${block.data.varValue};`);
+          if (block.data.valueType === 'string') {
+            codeLines.push(indent + `var ${block.data.varName} = "${block.data.varValue}";`);
+          } else if (block.data.valueType === 'array') {
+            // Default varValue to empty string if undefined
+            const rawValue = block.data.varValue || "";
+            const items = rawValue.split(',')
+              .map(item => item.trim())
+              .filter(item => item !== '');
+            const arrayLiteral = `[${items.map(item => `"${item}"`).join(', ')}]`;
+            codeLines.push(indent + `var ${block.data.varName} = ${arrayLiteral};`);
+          } else {
+            // Default: assume number (or expression).
+            codeLines.push(indent + `var ${block.data.varName} = ${block.data.varValue};`);
+          }
         }
         {
           const next = getNextBlock(blockId);
@@ -66,8 +79,39 @@ export function generateJavaScriptCode(blocks, edges) {
 
       case 'changeVariable':
         if (block.data.varName) {
-          codeLines.push(indent + `${block.data.varName} += ${block.data.varValue};`);
+          const vt = block.data.valueType || 'number';
+          const op = block.data.operation || 'add';
+          
+          if (vt === 'string') {
+            codeLines.push(indent + `${block.data.varName} = "${block.data.varValue}";`);
+          } else if (vt === 'array') {
+            const rawValue = block.data.varValue || "";
+            const items = rawValue.split(',')
+              .map(item => item.trim())
+              .filter(item => item !== '');
+            const arrayLiteral = `[${items.map(item => `"${item}"`).join(', ')}]`;
+            
+            switch (op) {
+              case 'push':
+                codeLines.push(indent + `${block.data.varName}.push(...${arrayLiteral});`);
+                break;
+              case 'pop':
+                codeLines.push(indent + `for (let i = 0; i < ${items.length}; i++) {`);
+                codeLines.push(indent + `  ${block.data.varName}.pop();`);
+                codeLines.push(indent + `}`);
+                break;
+              case 'remove':
+                codeLines.push(indent + `${block.data.varName} = ${block.data.varName}.filter(el => !${arrayLiteral}.includes(el));`);
+                break;
+              case 'add':
+              default:
+                codeLines.push(indent + `${block.data.varName} = ${block.data.varName}.concat(${arrayLiteral});`);
+            }
+          } else {
+            codeLines.push(indent + `${block.data.varName} += ${block.data.varValue};`);
+          }
         }
+        // Continue traversal after changeVariable
         {
           const next = getNextBlock(blockId);
           if (next) traverse(next, indentLevel, new Set(visited));
@@ -109,7 +153,6 @@ export function generateJavaScriptCode(blocks, edges) {
 
       case 'print': {
         let msg = block.data.message || '';
-        // Replace {varName} with template literal syntax.
         msg = msg.replace(/{(\w+)}/g, '${$1}');
         codeLines.push(indent + `console.log(\`${msg}\`);`);
         {
@@ -129,6 +172,23 @@ export function generateJavaScriptCode(blocks, edges) {
           const next = getNextBlock(blockId);
           if (next) traverse(next, indentLevel, new Set(visited));
         }
+        break;
+
+      case 'forLoopStart':
+        {
+          const arrayVar = block.data.arrayVar || 'arr';
+          const indexVar = block.data.indexVar || 'i';
+          codeLines.push(indent + `for (let ${indexVar} = 0; ${indexVar} < ${arrayVar}.length; ${indexVar}++) {`);
+          const loopBody = getNextBlock(block.id, 'body');
+          if (loopBody) traverse(loopBody, indentLevel + 1, new Set(visited));
+          codeLines.push(indent + '}');
+          const exitBlock = getNextBlock(block.id, 'exit');
+          if (exitBlock) traverse(exitBlock, indentLevel, new Set(visited));
+        }
+        break;
+
+      case 'forLoopEnd':
+        // forLoopEnd is a visual marker; ignore it.
         break;
 
       default:
