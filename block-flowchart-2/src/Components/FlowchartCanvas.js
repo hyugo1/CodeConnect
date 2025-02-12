@@ -354,7 +354,7 @@ function FlowchartCanvas({
           sourceHandle: `loopBack-${whileEndBlock.id}`,
           targetHandle: `loopBack-${whileStartBlock.id}`,
           type: 'custom',
-          animated: true,
+          animated: false,
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: '#555', strokeWidth: 3 },
           label: 'Loop',
@@ -408,7 +408,7 @@ function FlowchartCanvas({
           type: 'custom',
           animated: false,
           markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: 'green', strokeWidth: 3, strokeDasharray: '5,5'  },
+          style: { stroke: 'green', strokeWidth: 3},
           label: 'True',
         };
 
@@ -420,7 +420,7 @@ function FlowchartCanvas({
           type: 'custom',
           animated: false,
           markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: 'red', strokeWidth: 3, strokeDasharray: '5,5' },
+          style: { stroke: 'red', strokeWidth: 3},
           label: 'False',
         };
 
@@ -449,7 +449,7 @@ function FlowchartCanvas({
             source: lastBlockId.current,
             target: newBlock.id,
             type: 'custom',
-            animated: true,
+            animated: false,
             markerEnd: { type: MarkerType.ArrowClosed },
             style: { stroke: '#555', strokeWidth: 3 },
             label: '',

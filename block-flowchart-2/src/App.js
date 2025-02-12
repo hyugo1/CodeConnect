@@ -6,7 +6,7 @@ import FlowchartCanvas from './Components/FlowchartCanvas';
 import CharacterDisplay from './Components/CharacterDisplay/CharacterDisplay';
 import Console from './Components/Console/Console';
 import Navbar from './Components/Navbar/Navbar';
-import CodePreview from './Components/CodePreview'; // Import your new component
+import CodePreview from './Components/CodePreview';
 import './styles/App.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
