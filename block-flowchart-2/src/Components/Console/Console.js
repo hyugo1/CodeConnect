@@ -1,13 +1,25 @@
 // src/Components/Console.js
-
-import React from 'react';
-// import './Console.css';
+import React, { useState } from 'react';
+import './Console.css';
 
 function Console({ consoleOutput }) {
+  const [isMinimized, setIsMinimized] = useState(false);
+
+  const toggleMinimize = () => {
+    setIsMinimized(prev => !prev);
+  };
+
   return (
-    <div className="console">
-      <h3>Console Output</h3>
-      <pre>{consoleOutput}</pre>
+    <div className={`console ${isMinimized ? 'minimized' : 'expanded'}`}>
+      <div className="console-header">
+        <h3>Console Output</h3>
+        <button className="console-toggle-button" onClick={toggleMinimize}>
+          {isMinimized ? 'Expand' : 'Minimize'}
+        </button>
+      </div>
+      <pre className="console-pre">
+        {consoleOutput}
+      </pre>
     </div>
   );
 }

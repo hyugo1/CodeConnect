@@ -79,9 +79,8 @@ function App() {
             characterMessage={characterMessage}
             characterPosition={characterPosition}
           />
-          <Console consoleOutput={consoleOutput} />
-          {/* Add the CodePreview component below the character display */}
           <CodePreview blocks={blocks} edges={edges} />
+          <Console consoleOutput={consoleOutput} />
         </div>
       </div>
     </div>

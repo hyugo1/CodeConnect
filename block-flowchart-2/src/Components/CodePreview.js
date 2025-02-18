@@ -1,22 +1,25 @@
 // src/Components/CodePreview.js
-import React from 'react';
-import { generateJavaScriptCode } from '../hooks/useCodeGenerator'; // adjust the path if needed
+import React, { useState } from 'react';
+import { generateJavaScriptCode } from '../hooks/useCodeGenerator';
+import './Console/Console.css';
 
 const CodePreview = ({ blocks, edges }) => {
+  const [isMinimized, setIsMinimized] = useState(false);
   const generatedCode = generateJavaScriptCode(blocks, edges);
-  
+
+  const toggleMinimize = () => {
+    setIsMinimized(prev => !prev);
+  };
+
   return (
-    <div style={{ marginTop: '1rem' }}>
-      <h3>Generated Code</h3>
-      <pre
-        style={{
-          background: '#f4f4f4',
-          padding: '1rem',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          overflowX: 'auto',
-        }}
-      >
+    <div className={`code-preview ${isMinimized ? 'minimized' : 'expanded'}`}>
+      <div className="console-header">
+        <h3>Generated Code</h3>
+        <button className="console-toggle-button" onClick={toggleMinimize}>
+          {isMinimized ? 'Expand' : 'Minimize'}
+        </button>
+      </div>
+      <pre className="console-pre">
         {generatedCode}
       </pre>
     </div>

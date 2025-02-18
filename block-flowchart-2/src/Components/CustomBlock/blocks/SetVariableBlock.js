@@ -9,12 +9,9 @@ import './block.css';
 const SetVariableBlock = ({ id, data, selected }) => {
   const updateNodeData = useNodeUpdater(id);
   
-  // Default to "number" if no type is provided.
-  const valueType = data.valueType || 'number';
-  
-  // Toggle button will cycle through these types.
-  const types = ['number', 'string', 'array'];
-  const currentIndex = types.indexOf(valueType);
+  // Only allow "number" and "string" types for now.
+  const types = ['number', 'string']; // 'array' option removed
+  const currentIndex = types.indexOf(data.valueType || 'number');
   const nextType = types[(currentIndex + 1) % types.length];
 
   const handleVarNameChange = (e) => {
@@ -29,20 +26,17 @@ const SetVariableBlock = ({ id, data, selected }) => {
     updateNodeData({ valueType: nextType });
   };
 
-  // Set the placeholder text based on the current value type.
   let placeholderText;
-  if (valueType === 'number') {
+  if ((data.valueType || 'number') === 'number') {
     placeholderText = 'Value (number)';
-  } else if (valueType === 'string') {
+  } else if (data.valueType === 'string') {
     placeholderText = 'Value (string)';
-  } else if (valueType === 'array') {
-    placeholderText = 'Value (comma separated)';
   }
 
   return (
     <div
       className={`block-container ${selected ? 'selected' : ''}`}
-      style={{ position: 'relative' }} // allows positioning of the toggle button
+      style={{ position: 'relative' }}
     >
       <FaPenFancy style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
@@ -81,7 +75,6 @@ const SetVariableBlock = ({ id, data, selected }) => {
         onChange={handleVarValueChange}
         className="block-input"
       />
-      {/* Toggle Button in the top right corner */}
       <button
         onClick={toggleValueType}
         style={{
@@ -97,7 +90,7 @@ const SetVariableBlock = ({ id, data, selected }) => {
         }}
         title="Toggle variable type"
       >
-        {valueType.charAt(0).toUpperCase() + valueType.slice(1)}
+        {(data.valueType || 'number').charAt(0).toUpperCase() + (data.valueType || 'number').slice(1)}
       </button>
     </div>
   );

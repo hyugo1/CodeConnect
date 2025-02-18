@@ -1,11 +1,9 @@
 /* src/Components/BlockPalette/BlockPalette.css */
 
-/* src/Components/BlockPalette/BlockPalette.css */
-
 .aside-container {
   position: relative;
   padding: 10px;
-  background-color: #eee;
+  /* background-color: #eee; */
   width: 220px;
   box-sizing: border-box;
   overflow-y: auto;

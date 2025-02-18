@@ -1,4 +1,3 @@
-// /src/hooks/useCodeGenerator.js
 import { evaluate } from 'mathjs';
 
 /**
@@ -58,15 +57,18 @@ export function generateJavaScriptCode(blocks, edges) {
         if (block.data.varName) {
           if (block.data.valueType === 'string') {
             codeLines.push(indent + `var ${block.data.varName} = "${block.data.varValue}";`);
-          } else if (block.data.valueType === 'array') {
-            // Default varValue to empty string if undefined
+          }
+          /* Array handling commented out:
+          else if (block.data.valueType === 'array') {
             const rawValue = block.data.varValue || "";
             const items = rawValue.split(',')
               .map(item => item.trim())
               .filter(item => item !== '');
             const arrayLiteral = `[${items.map(item => `"${item}"`).join(', ')}]`;
             codeLines.push(indent + `var ${block.data.varName} = ${arrayLiteral};`);
-          } else {
+          }
+          */
+          else {
             // Default: assume number (or expression).
             codeLines.push(indent + `var ${block.data.varName} = ${block.data.varValue};`);
           }
@@ -84,7 +86,9 @@ export function generateJavaScriptCode(blocks, edges) {
           
           if (vt === 'string') {
             codeLines.push(indent + `${block.data.varName} = "${block.data.varValue}";`);
-          } else if (vt === 'array') {
+          }
+          /* Array handling commented out:
+          else if (vt === 'array') {
             const rawValue = block.data.varValue || "";
             const items = rawValue.split(',')
               .map(item => item.trim())
@@ -107,11 +111,12 @@ export function generateJavaScriptCode(blocks, edges) {
               default:
                 codeLines.push(indent + `${block.data.varName} = ${block.data.varName}.concat(${arrayLiteral});`);
             }
-          } else {
+          }
+          */
+          else {
             codeLines.push(indent + `${block.data.varName} += ${block.data.varValue};`);
           }
         }
-        // Continue traversal after changeVariable
         {
           const next = getNextBlock(blockId);
           if (next) traverse(next, indentLevel, new Set(visited));

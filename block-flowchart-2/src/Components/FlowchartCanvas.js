@@ -255,7 +255,6 @@ function FlowchartCanvas({
       // Convert the drop point to the flow's coordinate system
       const position = project(dropPoint);
 
-      // Optionally snap to grid (15px grid)
       const snappedX = Math.round(position.x / 15) * 15;
       const snappedY = Math.round(position.y / 15) * 15;
 
@@ -419,7 +418,7 @@ function FlowchartCanvas({
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: '#555', strokeWidth: 3 },
           label: '',
-          sourceHandle: `body-${forLoopStartBlock.id}`,  // must match the handle ID in ForLoopStartBlock
+          sourceHandle: `body-${forLoopStartBlock.id}`,
         };
       
         // 2. Edge from Dummy block to ForLoopEnd block
@@ -439,8 +438,8 @@ function FlowchartCanvas({
           id: uuidv4(),
           source: forLoopEndBlock.id,
           target: forLoopStartBlock.id,
-          sourceHandle: `loopBack-${forLoopEndBlock.id}`,  // must match the handle in ForLoopEndBlock
-          targetHandle: `loopBack-${forLoopStartBlock.id}`,  // must match the handle in ForLoopStartBlock
+          sourceHandle: `loopBack-${forLoopEndBlock.id}`,
+          targetHandle: `loopBack-${forLoopStartBlock.id}`,
           type: 'custom',
           animated: false,
           markerEnd: { type: MarkerType.ArrowClosed },
