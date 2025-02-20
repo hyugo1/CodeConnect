@@ -1,3 +1,4 @@
+// src/Components/CustomEdge/CustomEdge.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlusCircle } from 'react-icons/fa';
@@ -16,10 +17,9 @@ const inputStyle = {
   boxSizing: 'border-box',
 };
 
-const ChangeVariableBlock = ({ id, data, selected }) => {
+const ChangeVariableBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
-  // Only allow "number" and "string"
   const valueType = data.valueType || 'number';
   const valueTypes = ['number', 'string'];
   const currentTypeIndex = valueTypes.indexOf(valueType);
@@ -46,7 +46,9 @@ const ChangeVariableBlock = ({ id, data, selected }) => {
 
   return (
     <div
-      className={`block-container change-variable ${selected ? 'selected' : ''}`}
+      className={`block-container change-variable ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
       style={{ background: '#e0ffe0', position: 'relative' }}
     >
       <FaPlusCircle style={{ marginBottom: 5 }} />
@@ -101,7 +103,7 @@ const ChangeVariableBlock = ({ id, data, selected }) => {
           borderRadius: '3px',
           padding: '2px 5px',
           fontSize: '10px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
         title="Toggle change value type"
       >

@@ -1,4 +1,3 @@
-// src/Components/CustomEdge/CustomEdge.js
 import React, { useState } from 'react';
 import { getBezierPath, getMarkerEnd } from 'reactflow';
 import './CustomEdge.css';
@@ -15,6 +14,7 @@ const CustomEdge = ({
   markerEnd,
   label,
   selected,
+  activeEdgeId, // Prop injected via wrapper
 }) => {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -26,8 +26,8 @@ const CustomEdge = ({
   });
 
   const markerType = getMarkerEnd(markerEnd, 'end');
-
   const [isHovered, setIsHovered] = useState(false);
+  const executing = id === activeEdgeId; // Determine if this edge is executing
 
   // Increase strokeWidth to 30 for a larger clickable area
   const invisiblePathStyle = {
@@ -48,16 +48,15 @@ const CustomEdge = ({
         fill="none"
         onClick={(event) => {
           event.stopPropagation();
-          // Selection is handled elsewhere (e.g. via onEdgeClick in ReactFlow)
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       />
-      {/* Visible edge path */}
+      {/* Visible edge path with "executing" class when active */}
       <path
         id={id}
         style={{ ...style, fill: 'none' }}
-        className={`react-flow__edge-path ${selected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
+        className={`react-flow__edge-path ${selected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${executing ? 'executing' : ''}`}
         d={edgePath}
         markerEnd={markerType}
       />

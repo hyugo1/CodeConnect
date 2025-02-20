@@ -1,3 +1,4 @@
+// src/Components/CustomBlock/blocks/SetVariableBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPenFancy } from 'react-icons/fa';
@@ -6,11 +7,11 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const SetVariableBlock = ({ id, data, selected }) => {
+const SetVariableBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   
   // Only allow "number" and "string" types for now.
-  const types = ['number', 'string']; // 'array' option removed
+  const types = ['number', 'string'];
   const currentIndex = types.indexOf(data.valueType || 'number');
   const nextType = types[(currentIndex + 1) % types.length];
 
@@ -35,7 +36,9 @@ const SetVariableBlock = ({ id, data, selected }) => {
 
   return (
     <div
-      className={`block-container ${selected ? 'selected' : ''}`}
+      className={`block-container ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
       style={{ position: 'relative' }}
     >
       <FaPenFancy style={{ marginBottom: 5 }} />
@@ -86,11 +89,12 @@ const SetVariableBlock = ({ id, data, selected }) => {
           borderRadius: '3px',
           padding: '2px 5px',
           fontSize: '10px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
         title="Toggle variable type"
       >
-        {(data.valueType || 'number').charAt(0).toUpperCase() + (data.valueType || 'number').slice(1)}
+        {(data.valueType || 'number').charAt(0).toUpperCase() +
+          (data.valueType || 'number').slice(1)}
       </button>
     </div>
   );

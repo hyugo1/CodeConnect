@@ -1,4 +1,4 @@
-// src/Components/CustomNode/blocks/IfNode.js
+// src/Components/CustomNode/blocks/IfBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
@@ -28,7 +28,7 @@ const selectStyle = {
   marginRight: '5px',
 };
 
-const IfBlock = ({ id, data, selected }) => {
+const IfBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleLeftOperandChange = (e) => {
@@ -44,8 +44,12 @@ const IfBlock = ({ id, data, selected }) => {
   };
 
   return (
-    <div className={`block-container if-block ${selected ? 'selected' : ''}`}
-         style={{ backgroundColor: '#d8d8f9' }}>
+    <div
+      className={`block-container if-block ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
+      style={{ backgroundColor: '#d8d8f9' }}
+    >
       <FaQuestion style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
       <Handle

@@ -23,7 +23,7 @@ const inputStyle = {
   boxSizing: 'border-box',
 };
 
-const MoveBlock = ({ id, data, selected }) => {
+const MoveBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleDistanceChange = (e) => {
@@ -54,8 +54,12 @@ const MoveBlock = ({ id, data, selected }) => {
   }
 
   return (
-    <div className={`block-container move-block ${selected ? 'selected' : ''}`}
-         style={{ backgroundColor: '#d8f9f9' }}>
+    <div
+      className={`block-container move-block ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
+      style={{ backgroundColor: '#d8f9f9' }}
+    >
       {icon}
       <div>{data.label}</div>
       <Handle

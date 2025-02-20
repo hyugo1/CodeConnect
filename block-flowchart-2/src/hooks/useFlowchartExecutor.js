@@ -1,18 +1,6 @@
 import { useCallback } from 'react';
 import { evaluate } from 'mathjs';
 
-/**
- * Executes the flowchart by traversing and evaluating blocks.
- *
- * @param {Array} blocks - The array of block objects.
- * @param {Array} edges - The array of edge objects.
- * @param {Function} setConsoleOutput - Function to update console output.
- * @param {Function} setCharacterPosition - Function to update character position.
- * @param {Function} setCharacterMessage - Function to update character message.
- * @param {Function} setActiveBlockId - Function to update the active block id.
- * @param {Function} setActiveEdgeId - Function to update the active edge id.
- * @returns {Object} - { executeFlowchart, resetExecution }
- */
 export function useFlowchartExecutor(
   blocks,
   edges,
@@ -23,22 +11,23 @@ export function useFlowchartExecutor(
   setActiveEdgeId
 ) {
   const MAX_ITERATIONS = 100;
+  const BLOCK_DELAY = 800;   // time a block stays active
+  const EDGE_DELAY = 800;    // time an edge stays active
+  const PRINT_DELAY = 1000;
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   // Reset execution state.
   const resetExecution = useCallback(() => {
     setConsoleOutput('');
     setCharacterPosition({ x: 0, y: 0 });
     setCharacterMessage('');
-    if (typeof setActiveBlockId === 'function') {
-      setActiveBlockId(null);
-    }
-    if (typeof setActiveEdgeId === 'function') {
-      setActiveEdgeId(null);
-    }
+    setActiveBlockId(null);
+    setActiveEdgeId(null);
     console.log('Console and Character have been reset.');
   }, [setConsoleOutput, setCharacterPosition, setCharacterMessage, setActiveBlockId, setActiveEdgeId]);
 
-  // Execution context.
+  // Execution context: holds runtime variables and character state.
   const context = {
     variables: {},
     characterPos: { x: 0, y: 0 },
@@ -58,7 +47,7 @@ export function useFlowchartExecutor(
       setConsoleOutput(outputs.join('\n'));
       return;
     }
-    const block = currentNodes.find(n => n.id === blockId);
+    const block = currentNodes.find((n) => n.id === blockId);
     if (!block) {
       outputs.push(`Error: Node with ID ${blockId} not found.`);
       console.error(`Node with ID ${blockId} not found.`);
@@ -72,11 +61,9 @@ export function useFlowchartExecutor(
     }
     visited.add(blockId);
 
-    if (typeof setActiveBlockId === 'function') {
-      setActiveBlockId(block.id);
-    }
-    // Small delay for visualization
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Set the active block and wait a constant time.
+    setActiveBlockId(block.id);
+    await delay(BLOCK_DELAY);
 
     console.log(`\n--- Executing Node: ${block.id} (${block.data.blockType}) ---`);
     outputs.push(`Executing block ${block.data.blockType}`);
@@ -88,6 +75,9 @@ export function useFlowchartExecutor(
       case 'end':
         outputs.push('Execution ended.');
         console.log('Execution ended.');
+        // Clear active block and edge so animations stop
+        setActiveBlockId(null);
+        setActiveEdgeId(null);
         setConsoleOutput(outputs.join('\n'));
         setCharacterPosition(context.characterPos);
         setCharacterMessage(context.characterMsg);
@@ -213,10 +203,13 @@ export function useFlowchartExecutor(
 
         if (conditionMet) {
           const loopBodyEdge = edges.find(
-            e => e.source === block.id && e.sourceHandle === `body-${block.id}`
+            (e) => e.source === block.id && e.sourceHandle === `body-${block.id}`
           );
           if (loopBodyEdge) {
             console.log(`Condition met. Traversing to loop body: ${loopBodyEdge.target}`);
+            setActiveEdgeId(loopBodyEdge.id);
+            await delay(EDGE_DELAY);
+            setActiveEdgeId(null);
             await traverse(loopBodyEdge.target, new Set(), true);
           } else {
             outputs.push(`No loop body connected to block ${block.id}.`);
@@ -226,10 +219,13 @@ export function useFlowchartExecutor(
           }
         } else {
           const exitEdge = edges.find(
-            e => e.source === block.id && e.sourceHandle === `exit-${block.id}`
+            (e) => e.source === block.id && e.sourceHandle === `exit-${block.id}`
           );
           if (exitEdge) {
             console.log(`Condition not met. Exiting loop to block: ${exitEdge.target}`);
+            setActiveEdgeId(exitEdge.id);
+            await delay(EDGE_DELAY);
+            setActiveEdgeId(null);
             await traverse(exitEdge.target, new Set(), inLoop);
           } else {
             outputs.push(`No exit path connected to block ${block.id}.`);
@@ -244,13 +240,15 @@ export function useFlowchartExecutor(
         const { whileStartNodeId } = block.data;
         if (whileStartNodeId) {
           console.log(`Loop end reached. Traversing back to While Start block: ${whileStartNodeId}`);
+          await delay(BLOCK_DELAY);
           await traverse(whileStartNodeId, new Set(), true);
         } else {
           const loopBackEdge = edges.find(
-            e => e.source === block.id && e.sourceHandle === `loopBack-${block.id}`
+            (e) => e.source === block.id && e.sourceHandle === `loopBack-${block.id}`
           );
           if (loopBackEdge) {
             console.log(`Traversing back via loopBack edge to block: ${loopBackEdge.target}`);
+            await delay(BLOCK_DELAY);
             await traverse(loopBackEdge.target, new Set(), true);
           } else {
             outputs.push(`No loop back path found for block ${block.id}.`);
@@ -269,18 +267,16 @@ export function useFlowchartExecutor(
           setConsoleOutput(outputs.join('\n'));
           return;
         }
-        let evaluatedMessage = message.replace(/{(\w+)}/g, (match, varName) => {
-          return context.variables.hasOwnProperty(varName)
-            ? context.variables[varName]
-            : match;
-        });
+        let evaluatedMessage = message.replace(/{(\w+)}/g, (match, varName) =>
+          context.variables.hasOwnProperty(varName) ? context.variables[varName] : match
+        );
         if (evaluatedMessage === message && context.variables.hasOwnProperty(message)) {
           evaluatedMessage = context.variables[message].toString();
         }
         outputs.push(`Print: ${evaluatedMessage}`);
         console.log(`Print: ${evaluatedMessage}`);
         setCharacterMessage(evaluatedMessage);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await delay(PRINT_DELAY);
         setCharacterMessage('');
         break;
       }
@@ -318,22 +314,23 @@ export function useFlowchartExecutor(
         }
         break;
       }
-      case 'function': {
-        if (block.data.resultVar && block.data.expression) {
-          try {
-            const result = evaluate(block.data.expression, context.variables);
-            context.variables[block.data.resultVar] = result;
-            outputs.push(`Function block: ${block.data.resultVar} = ${result}`);
-            console.log(`Function block: ${block.data.resultVar} = ${result}`);
-          } catch (error) {
-            outputs.push(`Error in function block ${block.id}: ${error.message}`);
-            console.error(`Error in function block ${block.id}:`, error);
-          }
-        } else {
-          outputs.push('// Incomplete function block');
-        }
-        break;
-      }
+      // case 'function': {
+      //   if (block.data.resultVar && block.data.expression) {
+      //     try {
+      //       const result = evaluate(block.data.expression, context.variables);
+      //       context.variables[block.data.resultVar] = result;
+      //       outputs.push(`Function block: ${block.data.resultVar} = ${result}`);
+      //       console.log(`Function block: ${block.data.resultVar} = ${result}`);
+      //     } catch (error) {
+      //       outputs.push(`Error in function block ${block.id}: ${error.message}`);
+      //       console.error(`Error in function block ${block.id}:`, error);
+      //     }
+      //   } 
+      //   else {
+      //     outputs.push('// Incomplete function block');
+      //   }
+      //   break;
+      // }
       default:
         outputs.push(`Warning: Unknown block type "${block.data.blockType}" in block "${block.id}".`);
         console.error(`Unknown block type: ${block.data.blockType}`);
@@ -341,31 +338,25 @@ export function useFlowchartExecutor(
     }
 
     // Traverse outgoing edges.
-    // If the block is an "if" block, only traverse the edge whose sourceHandle matches the evaluated condition.
-    const connectedEdges = currentEdges.filter(e => e.source === block.id);
+    const connectedEdges = currentEdges.filter((e) => e.source === block.id);
     for (const edge of connectedEdges) {
-      // If current block is an "if" block, check condition and sourceHandle
       if (block.data.blockType === 'if') {
         const sourceHandleType = edge.sourceHandle ? edge.sourceHandle.split('-')[0] : '';
         if (
           (sourceHandleType === 'yes' && block.conditionMet) ||
           (sourceHandleType === 'no' && !block.conditionMet)
         ) {
-          if (typeof setActiveEdgeId === 'function') {
-            setActiveEdgeId(edge.id);
-          }
-          await new Promise(resolve => setTimeout(resolve, 200));
-          console.log(`Traversing to block ${edge.target} based on condition.`);
+          setActiveEdgeId(edge.id);
+          await delay(EDGE_DELAY);
+          setActiveEdgeId(null);
           await traverse(edge.target, visited, inLoop);
         } else {
           console.log(`Skipping branch on edge ${edge.id} as its condition does not match.`);
         }
       } else {
-        if (typeof setActiveEdgeId === 'function') {
-          setActiveEdgeId(edge.id);
-        }
-        await new Promise(resolve => setTimeout(resolve, 200));
-        console.log(`Traversing to block ${edge.target}.`);
+        setActiveEdgeId(edge.id);
+        await delay(EDGE_DELAY);
+        setActiveEdgeId(null);
         await traverse(edge.target, visited, inLoop);
       }
     }
@@ -374,12 +365,11 @@ export function useFlowchartExecutor(
   }
 
   async function executeNextNode(currentNodeId, visited, inLoop = false) {
-    const outgoingEdge = edges.find(e => e.source === currentNodeId);
+    const outgoingEdge = currentEdges.find((e) => e.source === currentNodeId);
     if (outgoingEdge) {
-      if (typeof setActiveEdgeId === 'function') {
-        setActiveEdgeId(outgoingEdge.id);
-      }
-      await new Promise(resolve => setTimeout(resolve, 200));
+      setActiveEdgeId(outgoingEdge.id);
+      await delay(EDGE_DELAY);
+      setActiveEdgeId(null);
       console.log(`Executing next block via edge ${outgoingEdge.id} to block ${outgoingEdge.target}`);
       await traverse(outgoingEdge.target, visited, inLoop);
     } else {
@@ -393,7 +383,7 @@ export function useFlowchartExecutor(
 
   async function runFlowchart() {
     const startBlock = currentNodes.find(
-      block => block.type === 'custom' && block.data.blockType === 'start'
+      (block) => block.type === 'custom' && block.data.blockType === 'start'
     );
     if (startBlock) {
       await traverse(startBlock.id, new Set(), false);

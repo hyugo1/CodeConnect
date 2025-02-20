@@ -6,10 +6,14 @@ import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './block.css';
 
-const StartBlock = ({ id, data, selected }) => {
+const StartBlock = ({ id, data, selected, executing }) => {
   return (
-    <div className={`block-container start-block ${selected ? 'selected' : ''}`}
-         style={{ backgroundColor: '#d3f9d8' }}>
+    <div
+      className={`block-container start-block ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
+      style={{ backgroundColor: '#d3f9d8' }}
+    >
       <FaPlay style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
       <Handle

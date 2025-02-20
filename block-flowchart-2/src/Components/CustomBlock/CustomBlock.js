@@ -1,3 +1,5 @@
+// src/Components/CustomBlock/CustomBlock.js
+import React from 'react';
 import StartBlock from './blocks/StartBlock';
 import EndBlock from './blocks/EndBlock';
 import IfBlock from './blocks/IfBlock';
@@ -29,18 +31,14 @@ const blockMapping = {
 };
 
 const CustomBlock = ({ id, data, selected, activeBlockId }) => {
+  // Determine whether this block is executing
+  const executing = id === activeBlockId;
   const SpecificBlock = blockMapping[data.blockType];
-  const isActive = id === activeBlockId;
-
   if (!SpecificBlock) {
-    return (
-      <div className={`block-container ${selected ? 'selected' : ''} ${isActive ? 'active' : ''}`}>
-        <div>Unknown Block</div>
-      </div>
-    );
+    return <div className={executing ? 'executing' : ''}>Unknown Block</div>;
   }
 
-  return <SpecificBlock id={id} data={data} selected={selected} active={isActive} />;
+  return <SpecificBlock id={id} data={data} selected={selected} executing={executing} />;
 };
 
 export default CustomBlock;

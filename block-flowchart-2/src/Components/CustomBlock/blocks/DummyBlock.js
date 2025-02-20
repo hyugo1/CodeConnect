@@ -5,7 +5,7 @@ import { FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 
-const DummyBlock = ({ id, data, selected }) => {
+const DummyBlock = ({ id, data, selected, executing }) => {
   return (
     <>
       <style>
@@ -28,10 +28,13 @@ const DummyBlock = ({ id, data, selected }) => {
             background-color: #f0f0f0;
             border-color: #777;
           }
-          /* Note: The selected style will come from .block-container.selected */
         `}
       </style>
-      <div className={`block-container dummy-block ${selected ? 'selected' : ''}`}>
+      <div
+        className={`block-container dummy-block ${selected ? 'selected' : ''} ${
+          executing ? 'executing' : ''
+        }`}
+      >
         <FaQuestion style={{ marginBottom: 5 }} />
         <div>{data.label}</div>
         <Handle

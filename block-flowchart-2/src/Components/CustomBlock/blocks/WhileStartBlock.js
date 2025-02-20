@@ -28,7 +28,7 @@ const selectStyle = {
   marginRight: '5px',
 };
 
-const WhileStartBlock = ({ id, data, selected }) => {
+const WhileStartBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleLeftOperandChange = (e) => {
@@ -44,8 +44,12 @@ const WhileStartBlock = ({ id, data, selected }) => {
   };
 
   return (
-    <div className={`block-container while-start-block ${selected ? 'selected' : ''}`}
-         style={{ backgroundColor: '#f9f7d8' }}>
+    <div
+      className={`block-container while-start-block ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
+      style={{ backgroundColor: '#f9f7d8' }}
+    >
       <FaSync style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
       <div style={conditionStyle}>

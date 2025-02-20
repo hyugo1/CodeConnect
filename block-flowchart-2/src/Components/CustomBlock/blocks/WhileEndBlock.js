@@ -6,10 +6,14 @@ import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './block.css';
 
-const WhileEndBlock = ({ id, data, selected }) => {
+const WhileEndBlock = ({ id, data, selected, executing }) => {
   return (
-    <div className={`block-container while-end-block ${selected ? 'selected' : ''}`}
-         style={{ backgroundColor: '#f9f7d8' }}>
+    <div
+      className={`block-container while-end-block ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
+      style={{ backgroundColor: '#f9f7d8' }}
+    >
       <FaSync style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
       {/* Entrance Handle */}

@@ -16,23 +16,23 @@ const functionStyle = {
   boxSizing: 'border-box',
 };
 
-const FunctionBlock = ({ id, data, selected }) => {
+const FunctionBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
-  // Update the result variable (the left-hand side of the assignment)
   const handleResultVarChange = (e) => {
     updateNodeData({ resultVar: e.target.value });
   };
 
-  // Update the free-form expression (the right-hand side)
   const handleExpressionChange = (e) => {
     updateNodeData({ expression: e.target.value });
   };
 
   return (
     <div
-      className={`block-container function-block ${selected ? 'selected' : ''}`}
-      style={{ backgroundColor: '#f0e68c' }}  // Light khaki background, for example
+      className={`block-container function-block ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
+      style={{ backgroundColor: '#f0e68c' }}
     >
       <div style={{ fontWeight: 'bold' }}>{data.label || 'Function'}</div>
       <Handle
@@ -57,8 +57,6 @@ const FunctionBlock = ({ id, data, selected }) => {
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-source`} place="top" />
-      
-      {/* Input for the left-hand side variable */}
       <input
         type="text"
         placeholder="Result Variable (e.g., a)"
@@ -66,8 +64,6 @@ const FunctionBlock = ({ id, data, selected }) => {
         onChange={handleResultVarChange}
         style={functionStyle}
       />
-
-      {/* Input for the right-hand side expression */}
       <input
         type="text"
         placeholder="Expression (e.g., b*c*d*e)"

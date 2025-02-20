@@ -7,7 +7,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const PrintBlock = ({ id, data, selected }) => {
+const PrintBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const handleChange = (e) => {
@@ -16,7 +16,9 @@ const PrintBlock = ({ id, data, selected }) => {
 
   return (
     <div
-      className={`block-container print-block ${selected ? 'selected' : ''}`}
+      className={`block-container print-block ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
       style={{ backgroundColor: '#ffeeba' }}
     >
       <FaPrint style={{ marginBottom: 5 }} />
