@@ -61,7 +61,7 @@ function FlowchartCanvas({
   }, [blocks]);
 
   // Use the flowchart executor hook and pass the active ID setters
-  const { executeFlowchart, resetExecution } = useFlowchartExecutor(
+  const { executeFlowchart, resetExecution, setSpeedMultiplier } = useFlowchartExecutor(
     blocks,
     edges,
     setConsoleOutput,
@@ -560,6 +560,7 @@ function FlowchartCanvas({
       <ControlPanel
         executeFlowchart={executeFlowchart}
         resetExecution={resetExecution}
+        setSpeedMultiplier={setSpeedMultiplier}
         selectedNodes={selectedNodes}
         selectedEdges={selectedEdges}
         setNodes={setNodes}

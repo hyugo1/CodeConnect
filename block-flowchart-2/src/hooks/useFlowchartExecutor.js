@@ -11,20 +11,51 @@ export function useFlowchartExecutor(
   setActiveEdgeId
 ) {
   const MAX_ITERATIONS = 100;
-  const BLOCK_DELAY = 800;   // time a block stays active
-  const EDGE_DELAY = 800;    // time an edge stays active
-  const PRINT_DELAY = 1000;
+  const BASE_BLOCK_DELAY = 800;   // base time a block stays active
+  const BASE_EDGE_DELAY = 800;    // base time an edge stays active
+  const PRINT_DELAY = 1000;       // delay for print blocks
 
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const speedRef = useRef(2);
+  const [paused, setPaused] = useState(false);
 
-  // Reset execution state.
+  const delay = async (ms) => {
+    let remaining = ms / speedRef.current;
+    while (remaining > 0) {
+      if (paused) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      } else {
+        const chunk = Math.min(50, remaining);
+        const t0 = Date.now();
+        await new Promise((resolve) => setTimeout(resolve, chunk));
+        const t1 = Date.now();
+        remaining -= (t1 - t0);
+      }
+    }
+  };
+
+  const setSpeedMultiplier = useCallback((multiplier) => {
+    speedRef.current = multiplier;
+    console.log(`Speed multiplier set to ${multiplier}`);
+  }, []);
+
+  // Toggle pause/resume. TODO: NEEDS FIXING  
+  const togglePause = useCallback(() => {
+    setPaused((prev) => {
+      const newVal = !prev;
+      console.log(`Paused: ${newVal}`);
+      return newVal;
+    });
+  }, []);
+
+  // Reset execution state and unpause.
   const resetExecution = useCallback(() => {
     setConsoleOutput('');
     setCharacterPosition({ x: 0, y: 0 });
     setCharacterMessage('');
     setActiveBlockId(null);
     setActiveEdgeId(null);
-    console.log('Console and Character have been reset.');
+    setPaused(false);
+    console.log('Execution has been reset.');
   }, [setConsoleOutput, setCharacterPosition, setCharacterMessage, setActiveBlockId, setActiveEdgeId]);
 
   // Execution context: holds runtime variables and character state.
@@ -63,7 +94,7 @@ export function useFlowchartExecutor(
 
     // Set the active block and wait a constant time.
     setActiveBlockId(block.id);
-    await delay(BLOCK_DELAY);
+    await delay(BASE_BLOCK_DELAY);
 
     console.log(`\n--- Executing Node: ${block.id} (${block.data.blockType}) ---`);
     outputs.push(`Executing block ${block.data.blockType}`);
@@ -89,13 +120,7 @@ export function useFlowchartExecutor(
             let value;
             if (valueType === 'string') {
               value = varValue;
-            }
-            /* Array handling commented out:
-            else if (valueType === 'array') {
-              value = varValue.split(',').map(item => item.trim());
-            }
-            */
-            else {
+            } else {
               value = evaluate(varValue, context.variables);
             }
             context.variables[varName] = value;
@@ -116,25 +141,7 @@ export function useFlowchartExecutor(
           try {
             if (valueType === 'string') {
               context.variables[varName] = varValue;
-            }
-            /* Array handling commented out:
-            else if (valueType === 'array') {
-              let newItems = varValue.split(',')
-                .map(item => item.trim())
-                .filter(item => item !== '');
-              if (!Array.isArray(context.variables[varName])) {
-                context.variables[varName] = [];
-              }
-              if (operation === 'remove') {
-                context.variables[varName] = context.variables[varName].filter(
-                  el => !newItems.includes(el)
-                );
-              } else {
-                context.variables[varName] = context.variables[varName].concat(newItems);
-              }
-            }
-            */
-            else {
+            } else {
               const value = evaluate(varValue, context.variables);
               context.variables[varName] += value;
             }
@@ -208,7 +215,7 @@ export function useFlowchartExecutor(
           if (loopBodyEdge) {
             console.log(`Condition met. Traversing to loop body: ${loopBodyEdge.target}`);
             setActiveEdgeId(loopBodyEdge.id);
-            await delay(EDGE_DELAY);
+            await delay(BASE_EDGE_DELAY);
             setActiveEdgeId(null);
             await traverse(loopBodyEdge.target, new Set(), true);
           } else {
@@ -224,7 +231,7 @@ export function useFlowchartExecutor(
           if (exitEdge) {
             console.log(`Condition not met. Exiting loop to block: ${exitEdge.target}`);
             setActiveEdgeId(exitEdge.id);
-            await delay(EDGE_DELAY);
+            await delay(BASE_EDGE_DELAY);
             setActiveEdgeId(null);
             await traverse(exitEdge.target, new Set(), inLoop);
           } else {
@@ -240,7 +247,7 @@ export function useFlowchartExecutor(
         const { whileStartNodeId } = block.data;
         if (whileStartNodeId) {
           console.log(`Loop end reached. Traversing back to While Start block: ${whileStartNodeId}`);
-          await delay(BLOCK_DELAY);
+          await delay(BASE_BLOCK_DELAY);
           await traverse(whileStartNodeId, new Set(), true);
         } else {
           const loopBackEdge = edges.find(
@@ -248,7 +255,7 @@ export function useFlowchartExecutor(
           );
           if (loopBackEdge) {
             console.log(`Traversing back via loopBack edge to block: ${loopBackEdge.target}`);
-            await delay(BLOCK_DELAY);
+            await delay(BASE_BLOCK_DELAY);
             await traverse(loopBackEdge.target, new Set(), true);
           } else {
             outputs.push(`No loop back path found for block ${block.id}.`);
@@ -268,7 +275,9 @@ export function useFlowchartExecutor(
           return;
         }
         let evaluatedMessage = message.replace(/{(\w+)}/g, (match, varName) =>
-          context.variables.hasOwnProperty(varName) ? context.variables[varName] : match
+          context.variables.hasOwnProperty(varName)
+            ? context.variables[varName]
+            : match
         );
         if (evaluatedMessage === message && context.variables.hasOwnProperty(message)) {
           evaluatedMessage = context.variables[message].toString();
@@ -314,23 +323,6 @@ export function useFlowchartExecutor(
         }
         break;
       }
-      // case 'function': {
-      //   if (block.data.resultVar && block.data.expression) {
-      //     try {
-      //       const result = evaluate(block.data.expression, context.variables);
-      //       context.variables[block.data.resultVar] = result;
-      //       outputs.push(`Function block: ${block.data.resultVar} = ${result}`);
-      //       console.log(`Function block: ${block.data.resultVar} = ${result}`);
-      //     } catch (error) {
-      //       outputs.push(`Error in function block ${block.id}: ${error.message}`);
-      //       console.error(`Error in function block ${block.id}:`, error);
-      //     }
-      //   } 
-      //   else {
-      //     outputs.push('// Incomplete function block');
-      //   }
-      //   break;
-      // }
       default:
         outputs.push(`Warning: Unknown block type "${block.data.blockType}" in block "${block.id}".`);
         console.error(`Unknown block type: ${block.data.blockType}`);
@@ -347,7 +339,7 @@ export function useFlowchartExecutor(
           (sourceHandleType === 'no' && !block.conditionMet)
         ) {
           setActiveEdgeId(edge.id);
-          await delay(EDGE_DELAY);
+          await delay(BASE_EDGE_DELAY);
           setActiveEdgeId(null);
           await traverse(edge.target, visited, inLoop);
         } else {
@@ -355,7 +347,7 @@ export function useFlowchartExecutor(
         }
       } else {
         setActiveEdgeId(edge.id);
-        await delay(EDGE_DELAY);
+        await delay(BASE_EDGE_DELAY);
         setActiveEdgeId(null);
         await traverse(edge.target, visited, inLoop);
       }
@@ -368,7 +360,7 @@ export function useFlowchartExecutor(
     const outgoingEdge = currentEdges.find((e) => e.source === currentNodeId);
     if (outgoingEdge) {
       setActiveEdgeId(outgoingEdge.id);
-      await delay(EDGE_DELAY);
+      await delay(BASE_EDGE_DELAY);
       setActiveEdgeId(null);
       console.log(`Executing next block via edge ${outgoingEdge.id} to block ${outgoingEdge.target}`);
       await traverse(outgoingEdge.target, visited, inLoop);
@@ -401,6 +393,9 @@ export function useFlowchartExecutor(
     setConsoleOutput('');
     setCharacterMessage('');
     setCharacterPosition({ x: 0, y: 0 });
+    // Reset speed to default (sped-up version: multiplier = 2)
+    speedRef.current = 2;
+    setPaused(false);
     runFlowchart();
   }, [
     blocks,
@@ -415,5 +410,8 @@ export function useFlowchartExecutor(
   return {
     executeFlowchart,
     resetExecution,
+    setSpeedMultiplier,
+    togglePause,
+    paused,
   };
 }
