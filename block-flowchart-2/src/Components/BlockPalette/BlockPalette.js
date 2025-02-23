@@ -49,7 +49,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
     { type: 'while', label: 'While', color: '#f9f7d8', icon: <FaSync /> },
     // { type: 'forLoop', label: 'For Loop Block', color: '#e0ffe0', icon: <FaSync /> },
     { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint /> },
-    { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> },
+    // { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> },
     // { type: 'function', label: 'Function', color: '#f9d8f9', icon: <FaPlusCircle /> },
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy /> },
     { type: 'changeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle /> },
