@@ -13,7 +13,7 @@ export function useFlowchartExecutor(
   const MAX_ITERATIONS = 100;
   const BASE_BLOCK_DELAY = 800;   // base time a block stays active
   const BASE_EDGE_DELAY = 800;    // base time an edge stays active
-  const PRINT_DELAY = 1000;       // delay for print blocks
+  const PRINT_DELAY = 4000;       // extended delay for print blocks
 
   const speedRef = useRef(2);
   const [paused, setPaused] = useState(false);
@@ -38,7 +38,6 @@ export function useFlowchartExecutor(
     console.log(`Speed multiplier set to ${multiplier}`);
   }, []);
 
-  // Toggle pause/resume. TODO: NEEDS FIXING  
   const togglePause = useCallback(() => {
     setPaused((prev) => {
       const newVal = !prev;
@@ -47,7 +46,6 @@ export function useFlowchartExecutor(
     });
   }, []);
 
-  // Reset execution state and unpause.
   const resetExecution = useCallback(() => {
     setConsoleOutput('');
     setCharacterPosition({ x: 0, y: 0 });
@@ -58,7 +56,6 @@ export function useFlowchartExecutor(
     console.log('Execution has been reset.');
   }, [setConsoleOutput, setCharacterPosition, setCharacterMessage, setActiveBlockId, setActiveEdgeId]);
 
-  // Execution context: holds runtime variables and character state.
   const context = {
     variables: {},
     characterPos: { x: 0, y: 0 },
@@ -85,14 +82,12 @@ export function useFlowchartExecutor(
       setConsoleOutput(outputs.join('\n'));
       return;
     }
-    // Prevent infinite loops (unless in a loop context)
     if (!inLoop && visited.has(blockId)) {
       console.warn(`Node ${blockId} already visited. Skipping to prevent infinite loop.`);
       return;
     }
     visited.add(blockId);
 
-    // Set the active block and wait a constant time.
     setActiveBlockId(block.id);
     await delay(BASE_BLOCK_DELAY);
 
@@ -243,29 +238,29 @@ export function useFlowchartExecutor(
         }
         return; // Do not traverse beyond whileStart.
       }
-      case 'whileEnd': {
-        const { whileStartNodeId } = block.data;
-        if (whileStartNodeId) {
-          console.log(`Loop end reached. Traversing back to While Start block: ${whileStartNodeId}`);
-          await delay(BASE_BLOCK_DELAY);
-          await traverse(whileStartNodeId, new Set(), true);
-        } else {
-          const loopBackEdge = edges.find(
-            (e) => e.source === block.id && e.sourceHandle === `loopBack-${block.id}`
-          );
-          if (loopBackEdge) {
-            console.log(`Traversing back via loopBack edge to block: ${loopBackEdge.target}`);
-            await delay(BASE_BLOCK_DELAY);
-            await traverse(loopBackEdge.target, new Set(), true);
-          } else {
-            outputs.push(`No loop back path found for block ${block.id}.`);
-            console.error(`No loop back path found for block ${block.id}.`);
-            setConsoleOutput(outputs.join('\n'));
-            return;
-          }
-        }
-        return; // Do not continue after whileEnd.
-      }
+      // case 'whileEnd': {
+      //   const { whileStartNodeId } = block.data;
+      //   if (whileStartNodeId) {
+      //     console.log(`Loop end reached. Traversing back to While Start block: ${whileStartNodeId}`);
+      //     await delay(BASE_BLOCK_DELAY);
+      //     await traverse(whileStartNodeId, new Set(), true);
+      //   } else {
+      //     const loopBackEdge = edges.find(
+      //       (e) => e.source === block.id && e.sourceHandle === `loopBack-${block.id}`
+      //     );
+      //     if (loopBackEdge) {
+      //       console.log(`Traversing back via loopBack edge to block: ${loopBackEdge.target}`);
+      //       await delay(BASE_BLOCK_DELAY);
+      //       await traverse(loopBackEdge.target, new Set(), true);
+      //     } else {
+      //       outputs.push(`No loop back path found for block ${block.id}.`);
+      //       console.error(`No loop back path found for block ${block.id}.`);
+      //       setConsoleOutput(outputs.join('\n'));
+      //       return;
+      //     }
+      //   }
+      //   return; // Do not continue after whileEnd.
+      // }
       case 'print': {
         const message = block.data.message || '';
         if (!message) {
@@ -393,7 +388,6 @@ export function useFlowchartExecutor(
     setConsoleOutput('');
     setCharacterMessage('');
     setCharacterPosition({ x: 0, y: 0 });
-    // Reset speed to default (sped-up version: multiplier = 2)
     speedRef.current = 2;
     setPaused(false);
     runFlowchart();

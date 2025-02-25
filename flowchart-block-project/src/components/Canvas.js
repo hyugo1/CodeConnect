@@ -74,7 +74,7 @@ const Canvas = ({ isPalette }) => {
               }}
             >
               {block.name}
-              <div style={{ fontSize: '20px', marginTop: '10px' }}>↓</div> {/* Arrow symbol */}
+              <div style={{ fontsize: '20px', marginTop: '10px' }}>↓</div> {/* Arrow symbol */}
             </div>
           </Draggable>
         ))}

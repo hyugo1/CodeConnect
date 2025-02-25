@@ -1,4 +1,4 @@
-// src/Components/CustomEdge/CustomEdge.js
+// src/Components/CustomBlock/blocks/ChangeVariableBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlusCircle } from 'react-icons/fa';
@@ -7,23 +7,13 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const inputStyle = {
-  width: '100%',
-  marginTop: 6,
-  padding: '5px',
-  borderRadius: '3px',
-  border: '1px solid #ccc',
-  fontSize: '12px',
-  boxSizing: 'border-box',
-};
-
 const ChangeVariableBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
   const valueType = data.valueType || 'number';
-  const valueTypes = ['number', 'string'];
-  const currentTypeIndex = valueTypes.indexOf(valueType);
-  const nextType = valueTypes[(currentTypeIndex + 1) % valueTypes.length];
+  const types = ['number', 'string'];
+  const currentTypeIndex = types.indexOf(valueType);
+  const nextType = types[(currentTypeIndex + 1) % types.length];
 
   const handleVarNameChange = (e) => {
     updateNodeData({ varName: e.target.value });
@@ -37,18 +27,16 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
     updateNodeData({ valueType: nextType });
   };
 
-  let placeholderText;
+  let placeholderText = '';
   if (valueType === 'number') {
-    placeholderText = 'Change Value (number)';
-  } else if (valueType === 'string') {
-    placeholderText = 'Change Value (string)';
+    placeholderText = 'Enter arithmetic expression (e.g., 2+3)';
+  } else {
+    placeholderText = 'Enter new text value';
   }
 
   return (
     <div
-      className={`block-container change-variable ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container change-variable ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ background: '#e0ffe0', position: 'relative' }}
     >
       <FaPlusCircle style={{ marginBottom: 5 }} />
@@ -81,7 +69,14 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
         placeholder="Variable Name"
         value={data.varName || ''}
         onChange={handleVarNameChange}
-        style={inputStyle}
+        style={{
+          width: '100%',
+          marginTop: 10,
+          padding: '5px',
+          borderRadius: '3px',
+          border: '1px solid #ccc',
+          fontsize: '20px',
+        }}
       />
 
       <input
@@ -89,7 +84,14 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
         placeholder={placeholderText}
         value={data.varValue || ''}
         onChange={handleVarValueChange}
-        style={inputStyle}
+        style={{
+          width: '100%',
+          marginTop: 10,
+          padding: '5px',
+          borderRadius: '3px',
+          border: '1px solid #ccc',
+          fontsize: '20px',
+        }}
       />
 
       <button

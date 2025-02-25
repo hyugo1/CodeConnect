@@ -23,7 +23,7 @@ const DraggableBlock = ({ id, type, name }) => {
       }}
     >
       {name}
-      <div style={{ fontSize: '20px', marginTop: '10px' }}>↓</div> {/* Arrow symbol */}
+      <div style={{ fontsize: '20px', marginTop: '10px' }}>↓</div> {/* Arrow symbol */}
     </div>
   );
 };
@@ -53,7 +53,7 @@ export default DraggableBlock;
 //       }}
 //     >
 //       {name}
-//       <div style={{ fontSize: '20px', marginTop: '10px' }}>↓</div>
+//       <div style={{ fontsize: '20px', marginTop: '10px' }}>↓</div>
 //     </div>
 //   );
 // };

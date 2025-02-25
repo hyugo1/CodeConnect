@@ -1,3 +1,4 @@
+// src/hooks/useCodeGenerator.js
 import { evaluate } from 'mathjs';
 
 /**
@@ -15,6 +16,15 @@ export function generateJavaScriptCode(blocks, edges) {
   }, {});
 
   const codeLines = [];
+
+  // Helper function: if the right operand is not a number and not quoted, wrap it in quotes.
+  function autoQuote(operand) {
+    if (typeof operand !== 'string' || operand.trim() === '') return operand;
+    if (!isNaN(parseFloat(operand))) return operand;
+    const trimmed = operand.trim();
+    if (trimmed.startsWith('"') || trimmed.startsWith("'")) return trimmed;
+    return `"${trimmed}"`;
+  }
 
   /**
    * Recursively traverse blocks to build code.
@@ -39,7 +49,10 @@ export function generateJavaScriptCode(blocks, edges) {
       return;
     }
 
-    switch (block.data.blockType) {
+    // Convert block type to lowercase for case-insensitive matching.
+    const type = (block.data.blockType || '').toLowerCase();
+
+    switch (type) {
       case 'start':
         codeLines.push(indent + 'function runFlowchart() {');
         {
@@ -53,23 +66,11 @@ export function generateJavaScriptCode(blocks, edges) {
         codeLines.push(indent + 'return;');
         break;
 
-      case 'setVariable':
+      case 'setvariable':
         if (block.data.varName) {
           if (block.data.valueType === 'string') {
             codeLines.push(indent + `var ${block.data.varName} = "${block.data.varValue}";`);
-          }
-          /* Array handling commented out:
-          else if (block.data.valueType === 'array') {
-            const rawValue = block.data.varValue || "";
-            const items = rawValue.split(',')
-              .map(item => item.trim())
-              .filter(item => item !== '');
-            const arrayLiteral = `[${items.map(item => `"${item}"`).join(', ')}]`;
-            codeLines.push(indent + `var ${block.data.varName} = ${arrayLiteral};`);
-          }
-          */
-          else {
-            // Default: assume number (or expression).
+          } else {
             codeLines.push(indent + `var ${block.data.varName} = ${block.data.varValue};`);
           }
         }
@@ -79,41 +80,12 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
 
-      case 'changeVariable':
+      case 'changevariable':
         if (block.data.varName) {
           const vt = block.data.valueType || 'number';
-          const op = block.data.operation || 'add';
-          
           if (vt === 'string') {
             codeLines.push(indent + `${block.data.varName} = "${block.data.varValue}";`);
-          }
-          /* Array handling commented out:
-          else if (vt === 'array') {
-            const rawValue = block.data.varValue || "";
-            const items = rawValue.split(',')
-              .map(item => item.trim())
-              .filter(item => item !== '');
-            const arrayLiteral = `[${items.map(item => `"${item}"`).join(', ')}]`;
-            
-            switch (op) {
-              case 'push':
-                codeLines.push(indent + `${block.data.varName}.push(...${arrayLiteral});`);
-                break;
-              case 'pop':
-                codeLines.push(indent + `for (let i = 0; i < ${items.length}; i++) {`);
-                codeLines.push(indent + `  ${block.data.varName}.pop();`);
-                codeLines.push(indent + `}`);
-                break;
-              case 'remove':
-                codeLines.push(indent + `${block.data.varName} = ${block.data.varName}.filter(el => !${arrayLiteral}.includes(el));`);
-                break;
-              case 'add':
-              default:
-                codeLines.push(indent + `${block.data.varName} = ${block.data.varName}.concat(${arrayLiteral});`);
-            }
-          }
-          */
-          else {
+          } else {
             codeLines.push(indent + `${block.data.varName} += ${block.data.varValue};`);
           }
         }
@@ -125,7 +97,9 @@ export function generateJavaScriptCode(blocks, edges) {
 
       case 'if':
         if (block.data.leftOperand && block.data.operator && block.data.rightOperand) {
-          const condition = `${block.data.leftOperand} ${block.data.operator} ${block.data.rightOperand}`;
+          const left = block.data.leftOperand;
+          const right = autoQuote(block.data.rightOperand);
+          const condition = `${left} ${block.data.operator} ${right}`;
           codeLines.push(indent + `if (${condition}) {`);
           const trueBranch = getNextBlock(blockId, 'yes');
           if (trueBranch) traverse(trueBranch, indentLevel + 1, new Set(visited));
@@ -138,26 +112,27 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
 
-      case 'whileStart':
+      case 'whilestart':
         if (block.data.leftOperand && block.data.operator && block.data.rightOperand) {
-          const condition = `${block.data.leftOperand} ${block.data.operator} ${block.data.rightOperand}`;
+          const left = block.data.leftOperand;
+          const right = autoQuote(block.data.rightOperand);
+          const condition = `${left} ${block.data.operator} ${right}`;
+          // Generate a standard while loop.
           codeLines.push(indent + `while (${condition}) {`);
-          const loopBody = getNextBlock(blockId, 'body');
-          if (loopBody) traverse(loopBody, indentLevel + 1, new Set(visited));
-          codeLines.push(indent + '}');
-          const exitBlock = getNextBlock(blockId, 'exit');
-          if (exitBlock) traverse(exitBlock, indentLevel, new Set(visited));
+          const trueBranch = getNextBlock(blockId, 'true');
+          if (trueBranch) traverse(trueBranch, indentLevel + 1, new Set(visited));
+          codeLines.push(indent + `}`);
+          // Generate code for the false branch (i.e., what happens after the loop)
+          const falseBranch = getNextBlock(blockId, 'false');
+          if (falseBranch) traverse(falseBranch, indentLevel, new Set(visited));
         } else {
           codeLines.push(indent + '// Incomplete while condition');
         }
         break;
 
-      case 'whileEnd':
-        // whileEnd is a visual marker; ignore it.
-        break;
-
       case 'print': {
         let msg = block.data.message || '';
+        // Replace {var} with template literal placeholders.
         msg = msg.replace(/{(\w+)}/g, '${$1}');
         codeLines.push(indent + `console.log(\`${msg}\`);`);
         {
@@ -166,35 +141,6 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
       }
-
-      case 'function':
-        if (block.data.resultVar && block.data.expression) {
-          codeLines.push(indent + `var ${block.data.resultVar} = ${block.data.expression};`);
-        } else {
-          codeLines.push(indent + '// Incomplete function block');
-        }
-        {
-          const next = getNextBlock(blockId);
-          if (next) traverse(next, indentLevel, new Set(visited));
-        }
-        break;
-
-      case 'forLoopStart':
-        {
-          const arrayVar = block.data.arrayVar || 'arr';
-          const indexVar = block.data.indexVar || 'i';
-          codeLines.push(indent + `for (let ${indexVar} = 0; ${indexVar} < ${arrayVar}.length; ${indexVar}++) {`);
-          const loopBody = getNextBlock(block.id, 'body');
-          if (loopBody) traverse(loopBody, indentLevel + 1, new Set(visited));
-          codeLines.push(indent + '}');
-          const exitBlock = getNextBlock(block.id, 'exit');
-          if (exitBlock) traverse(exitBlock, indentLevel, new Set(visited));
-        }
-        break;
-
-      case 'forLoopEnd':
-        // forLoopEnd is a visual marker; ignore it.
-        break;
 
       default:
         codeLines.push(indent + `// Unknown block type: ${block.data.blockType}`);
@@ -224,7 +170,9 @@ export function generateJavaScriptCode(blocks, edges) {
     return outgoing ? outgoing.target : null;
   }
 
-  const startBlock = blocks.find(block => block.data.blockType === 'start');
+  const startBlock = blocks.find(
+    block => (block.data.blockType || '').toLowerCase() === 'start'
+  );
   if (!startBlock) return '// Error: No start block found.';
   traverse(startBlock.id);
   return codeLines.join('\n');

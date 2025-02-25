@@ -56,7 +56,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
           padding: '5px',
           borderRadius: '3px',
           border: '1px solid #ccc',
-          fontSize: '12px',
+          fontsize: '20px',
           boxSizing: 'border-box',
         }}
       />

@@ -62,7 +62,7 @@ const CustomEdge = ({
       />
       {label && (
         <text>
-          <textPath href={`#${id}`} style={{ fontSize: 12 }} startOffset="50%" textAnchor="middle">
+          <textPath href={`#${id}`} style={{ fontSize: 18 }} startOffset="50%" textAnchor="middle">
             {label}
           </textPath>
         </text>

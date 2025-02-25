@@ -6,7 +6,6 @@ import {
   FaQuestion,
   FaSync,
   FaPrint,
-  FaArrowsAltH,
   FaPenFancy,
   FaPlusCircle,
 } from 'react-icons/fa';
@@ -41,19 +40,26 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
     alignItems: 'center',
   };
 
-
+  // Define blocks with an additional "category" property.
   const blocks = [
-    { type: 'start', label: 'Start', color: '#d3f9d8', icon: <FaPlay /> },
-    { type: 'end', label: 'End', color: '#f9d8d8', icon: <FaStop /> },
-    { type: 'if', label: 'If-Then', color: '#d8d8f9', icon: <FaQuestion /> },
-    { type: 'while', label: 'While', color: '#f9f7d8', icon: <FaSync /> },
-    // { type: 'forLoop', label: 'For Loop Block', color: '#e0ffe0', icon: <FaSync /> },
-    { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint /> },
-    // { type: 'move', label: 'Move', color: '#d8f9f9', icon: <FaArrowsAltH /> },
-    // { type: 'function', label: 'Function', color: '#f9d8f9', icon: <FaPlusCircle /> },
-    { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy /> },
-    { type: 'changeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle /> },
+    { type: 'start', label: 'Start', color: '#d3f9d8', icon: <FaPlay />, category: 'Basic Blocks: Start' },
+    { type: 'end', label: 'End', color: '#f9d8d8', icon: <FaStop />, category: 'Basic Blocks: End' },
+    { type: 'if', label: 'If-Then', color: '#d8d8f9', icon: <FaQuestion />, category: 'Control Blocks' },
+    { type: 'while', label: 'While', color: '#f9f7d8', icon: <FaSync />, category: 'Control Blocks' },
+    { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint />, category: 'I/O Blocks' },
+    { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy />, category: 'Variable Blocks' },
+    { type: 'changeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle />, category: 'Variable Blocks' },
   ];
+
+  // Group blocks by their category.
+  const groupedBlocks = blocks.reduce((groups, block) => {
+    const cat = block.category || 'Other';
+    if (!groups[cat]) {
+      groups[cat] = [];
+    }
+    groups[cat].push(block);
+    return groups;
+  }, {});
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -71,7 +77,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
       style={{
         padding: '10px',
         backgroundColor: '#eee',
-        width: collapsed ? '40px' : '220px',
+        width: collapsed ? '40px' : '250px',
         overflowY: 'auto',
         height: '100vh',
         transition: 'width 0.3s',
@@ -96,21 +102,28 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
       {!collapsed && (
         <>
           <h3 style={{ textAlign: 'center' }}>Blocks</h3>
-          {blocks.map((block) => (
-            <div
-              key={block.type}
-              style={{
-                ...blockStyle,
-                backgroundColor: block.color,
-                border: '2px solid #555',
-              }}
-              onClick={() => onSelectBlock(block.type)}
-              onDragStart={(event) => onDragStart(event, block.type)}
-              onDragEnd={onDragEnd}
-              draggable
-            >
-              {block.icon}
-              <span style={{ marginLeft: '8px' }}>{block.label}</span>
+          {Object.keys(groupedBlocks).map((category) => (
+            <div key={category}>
+              <h4 style={{ marginTop: '20px', marginBottom: '5px', borderBottom: '1px solid #555' }}>
+                {category}
+              </h4>
+              {groupedBlocks[category].map((block) => (
+                <div
+                  key={block.type}
+                  style={{
+                    ...blockStyle,
+                    backgroundColor: block.color,
+                    border: '2px solid #555',
+                  }}
+                  onClick={() => onSelectBlock(block.type)}
+                  onDragStart={(event) => onDragStart(event, block.type)}
+                  onDragEnd={onDragEnd}
+                  draggable
+                >
+                  {block.icon}
+                  <span style={{ marginLeft: '8px' }}>{block.label}</span>
+                </div>
+              ))}
             </div>
           ))}
         </>

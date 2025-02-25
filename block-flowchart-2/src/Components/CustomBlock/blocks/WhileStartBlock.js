@@ -12,20 +12,22 @@ const conditionStyle = {
   alignItems: 'center',
   marginTop: 10,
 };
+
 const inputStyle = {
   flex: 1,
   padding: '5px',
   borderRadius: '3px',
   border: '1px solid #ccc',
-  fontSize: '12px',
   marginRight: '5px',
+  fontSize: '20px',
 };
+
 const selectStyle = {
   padding: '5px',
   borderRadius: '3px',
   border: '1px solid #ccc',
-  fontSize: '12px',
   marginRight: '5px',
+  fontSize: '20px',
 };
 
 const WhileStartBlock = ({ id, data, selected, executing }) => {
@@ -45,13 +47,11 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
 
   return (
     <div
-      className={`block-container while-start-block ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container while-start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#f9f7d8' }}
     >
       <FaSync style={{ marginBottom: 5 }} />
-      <div>{data.label}</div>
+      <div>{data.label || 'While'}</div>
       <div style={conditionStyle}>
         <input
           type="text"
@@ -81,6 +81,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
           style={inputStyle}
         />
       </div>
+      {/* Incoming handle */}
       <Handle
         type="target"
         position={Position.Top}
@@ -91,40 +92,31 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="Connect from previous block"
         isConnectable={true}
       />
+      {/* True branch handle */}
       <Handle
         type="source"
         position={Position.Bottom}
-        id={`body-${id}`}
+        id={`true-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '95%' }}
-        data-tooltip-id={`tooltip-${id}-body`}
-        data-tooltip-content="Connect to loop body"
+        style={{ left: '25%', top: '100%' }}
+        data-tooltip-id={`tooltip-${id}-true`}
+        data-tooltip-content="If condition true, connect to loop body"
         isConnectable={true}
       />
+      {/* Loopback target handle on the left for connecting back to While Start */}
       <Handle
         type="target"
-        position={Position.Right}
+        position={Position.Left}
         id={`loopBack-${id}`}
         className="handle-target-circle"
-        style={{ left: '100%', top: '50%' }}
+        style={{ left: '0%', top: '50%' }}
         data-tooltip-id={`tooltip-${id}-loopBack`}
         data-tooltip-content="Connect back to While Start for looping"
         isConnectable={true}
       />
-      <Handle
-        type="source"
-        position={Position.Left}
-        id={`exit-${id}`}
-        className="handle-source-square"
-        style={{ left: '0%', top: '50%' }}
-        data-tooltip-id={`tooltip-${id}-exit`}
-        data-tooltip-content="Connect to next block after loop"
-        isConnectable={true}
-      />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
-      <Tooltip id={`tooltip-${id}-body`} place="top" />
+      <Tooltip id={`tooltip-${id}-true`} place="top" />
       <Tooltip id={`tooltip-${id}-loopBack`} place="top" />
-      <Tooltip id={`tooltip-${id}-exit`} place="top" />
     </div>
   );
 };
