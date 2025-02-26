@@ -624,13 +624,14 @@ function FlowchartCanvas({
       <ControlPanel
         executeFlowchart={executeFlowchart}
         resetExecution={resetExecution}
+        togglePause={() => {}}       // no-op function
+        paused={false}               // default to not paused
         setSpeedMultiplier={setSpeedMultiplier}
         selectedNodes={selectedNodes}
         selectedEdges={selectedEdges}
         setNodes={setNodes}
         setEdges={setEdges}
-      />
-
+/>
       {/* The BlockPalette for replacing dummy blocks */}
       {paletteVisible && (
         <BlockPalette

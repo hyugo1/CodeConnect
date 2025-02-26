@@ -103,6 +103,17 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="If condition true, connect to loop body"
         isConnectable={true}
       />
+      {/* False branch handle */}
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id={`false-${id}`}
+        className="handle-source-square"
+        style={{ left: '75%', top: '100%' }}
+        data-tooltip-id={`tooltip-${id}-false`}
+        data-tooltip-content="If condition false, go to the next block "
+        isConnectable={true}
+      />
       {/* Loopback target handle on the left for connecting back to While Start */}
       <Handle
         type="target"
