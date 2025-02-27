@@ -17,14 +17,14 @@ const inputStyle = {
   padding: '5px',
   borderRadius: '3px',
   border: '1px solid #ccc',
-  fontsize: '20px',
+  // fontsize: '20px',
   marginRight: '5px',
 };
 const selectStyle = {
   padding: '5px',
   borderRadius: '3px',
   border: '1px solid #ccc',
-  fontsize: '20px',
+  // fontsize: '20px',
   marginRight: '5px',
 };
 

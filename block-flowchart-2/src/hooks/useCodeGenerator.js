@@ -18,11 +18,23 @@ export function generateJavaScriptCode(blocks, edges) {
   const codeLines = [];
 
   // Helper function: if the right operand is not a number and not quoted, wrap it in quotes.
+  // function autoQuote(operand) {
+  //   if (typeof operand !== 'string' || operand.trim() === '') return operand;
+  //   if (!isNaN(parseFloat(operand))) return operand;
+  //   const trimmed = operand.trim();
+  //   if (trimmed.startsWith('"') || trimmed.startsWith("'")) return trimmed;
+  //   return `"${trimmed}"`;
+  // }
   function autoQuote(operand) {
     if (typeof operand !== 'string' || operand.trim() === '') return operand;
-    if (!isNaN(parseFloat(operand))) return operand;
     const trimmed = operand.trim();
+    // If it’s a valid variable name (identifier), return it as-is.
+    if (/^[a-zA-Z_$][a-zA-Z_$0-9]*$/.test(trimmed)) return trimmed;
+    // If it can be parsed as a number, leave it as a number.
+    if (!isNaN(parseFloat(trimmed))) return trimmed;
+    // If already quoted, return as-is.
     if (trimmed.startsWith('"') || trimmed.startsWith("'")) return trimmed;
+    // Otherwise, wrap it in quotes.
     return `"${trimmed}"`;
   }
 
@@ -38,7 +50,7 @@ export function generateJavaScriptCode(blocks, edges) {
 
     // Prevent infinite recursion.
     if (visited.has(blockId)) {
-      codeLines.push(indent + `// Cycle detected: block ${blockId} already processed.`);
+      // codeLines.push(indent + `// Cycle detected: block ${blockId} already processed.`);
       return;
     }
     visited.add(blockId);

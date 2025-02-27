@@ -48,12 +48,12 @@ const ControlPanel = ({
       {/* <button onClick={togglePause} className="pause-button" title="Pause/Resume Execution"> */}
         {/* {paused ? <><FaPlayCircle /> Resume</> : <><FaPause /> Pause</>} */}
       {/* </button> */}
-      <button onClick={handleSpeedUp} className="speed-button" title="Speed Up Execution">
+      {/* <button onClick={handleSpeedUp} className="speed-button" title="Speed Up Execution">
         <FaRocket /> Speed Up
       </button>
       <button onClick={handleNormalSpeed} className="speed-button" title="Normal Speed">
         <FaTachometerAlt /> Normal Speed
-      </button>
+      </button> */}
       {(selectedNodes.length > 0 || selectedEdges.length > 0) && (
         <button onClick={handleDelete} className="delete-button" title="Delete Selected">
           <FaTrash /> Delete Selected

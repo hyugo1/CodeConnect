@@ -75,7 +75,7 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
           padding: '5px',
           borderRadius: '3px',
           border: '1px solid #ccc',
-          fontsize: '20px',
+          // fontsize: '20px',
         }}
       />
 
@@ -90,7 +90,7 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
           padding: '5px',
           borderRadius: '3px',
           border: '1px solid #ccc',
-          fontsize: '20px',
+          // fontsize: '20px',
         }}
       />
 
@@ -104,7 +104,7 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
           border: '1px solid #aaa',
           borderRadius: '3px',
           padding: '2px 5px',
-          fontSize: '10px',
+          // fontSize: '10px',
           cursor: 'pointer',
         }}
         title="Toggle change value type"

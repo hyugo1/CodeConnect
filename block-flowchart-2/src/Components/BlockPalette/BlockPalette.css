@@ -59,3 +59,7 @@
 aside h3 {
   text-align: center;
 }
+
+.block-container input[type="text"] {
+  font-size: 18px;
+}

@@ -19,7 +19,7 @@ const inputStyle = {
   borderRadius: '3px',
   border: '1px solid #ccc',
   marginRight: '5px',
-  fontSize: '20px',
+  // fontSize: '20px',
 };
 
 const selectStyle = {
@@ -27,7 +27,7 @@ const selectStyle = {
   borderRadius: '3px',
   border: '1px solid #ccc',
   marginRight: '5px',
-  fontSize: '20px',
+  // fontSize: '20px',
 };
 
 const WhileStartBlock = ({ id, data, selected, executing }) => {

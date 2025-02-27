@@ -70,7 +70,7 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
         value={data.varName || ''}
         onChange={handleVarNameChange}
         className="block-input"
-        style={{ fontsize: '20px' }}
+        // style={{ fontsize: '20px' }}
       />
       <input
         type="text"
@@ -78,7 +78,7 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
         value={data.varValue || ''}
         onChange={handleVarValueChange}
         className="block-input"
-        style={{ fontsize: '20px' }}
+        // style={{ fontsize: '20px' }}
       />
       <button
         onClick={toggleValueType}
@@ -90,7 +90,7 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
           border: '1px solid #aaa',
           borderRadius: '3px',
           padding: '2px 5px',
-          fontsize: '20px',
+          // fontsize: '20px',
           cursor: 'pointer',
         }}
         title="Toggle variable type"
