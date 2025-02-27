@@ -91,33 +91,30 @@ function FlowchartCanvas({
       const originalSourceHandle = params.sourceHandle;
       let sourceHandleType = params.sourceHandle;
       if (sourceHandleType) {
+        // Extract the prefix before the dash (e.g., "body" from "body-<id>")
         sourceHandleType = sourceHandleType.split('-')[0];
       }
-
+  
       let label = '';
       let edgeStyle = { stroke: '#555', strokeWidth: 3 };
-
+  
       switch (sourceHandleType) {
         case 'yes':
+        case 'true':
+        case 'body':
           label = 'True';
           edgeStyle = { stroke: 'green', strokeWidth: 3 };
           break;
         case 'no':
-          label = 'False';
-          edgeStyle = { stroke: 'red', strokeWidth: 3 };
-          break;
-        case 'true':
-          label = 'True';
-          edgeStyle = { stroke: 'green', strokeWidth: 3 };
-          break;
         case 'false':
+        case 'exit':
           label = 'False';
           edgeStyle = { stroke: 'red', strokeWidth: 3 };
           break;
         default:
           label = '';
       }
-
+  
       setEdges((eds) =>
         addEdge(
           {
@@ -277,7 +274,7 @@ function FlowchartCanvas({
             rightOperand: '',
           },
         };
-
+      
         const dummyBody = {
           id: uuidv4(),
           type: 'custom',
@@ -288,7 +285,7 @@ function FlowchartCanvas({
             dummyAllowed: true,
           },
         };
-
+      
         const dummyExit = {
           id: uuidv4(),
           type: 'custom',
@@ -299,33 +296,33 @@ function FlowchartCanvas({
             dummyAllowed: true,
           },
         };
-
+      
         setNodes((nds) => nds.concat([whileStartBlock, dummyBody, dummyExit]));
-
+      
         const edgeWhileTrue = {
           id: uuidv4(),
           source: whileStartBlock.id,
           target: dummyBody.id,
-          sourceHandle: `true-${whileStartBlock.id}`,
+          sourceHandle: `body-${whileStartBlock.id}`,
           type: 'custom',
           animated: false,
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: 'green', strokeWidth: 3 },
           label: 'True',
         };
-
+      
         const edgeWhileFalse = {
           id: uuidv4(),
           source: whileStartBlock.id,
           target: dummyExit.id,
-          sourceHandle: `false-${whileStartBlock.id}`,
+          sourceHandle: `exit-${whileStartBlock.id}`,
           type: 'custom',
           animated: false,
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: 'red', strokeWidth: 3 },
           label: 'False',
         };
-
+      
         const loopBackEdge = {
           id: uuidv4(),
           source: dummyBody.id,
@@ -339,7 +336,7 @@ function FlowchartCanvas({
           label: 'Loop',
         };
         setEdges((eds) => eds.concat([edgeWhileTrue, edgeWhileFalse, loopBackEdge]));
-
+      
         console.log('Added "While Start" block with dummy blocks and a loopback edge.');
       } else if (blockType === 'if') {
         const ifBlock = {

@@ -1,4 +1,4 @@
-// src/Components/CustomBlock/blocks/WhileStartBlock.js
+// src/Components/CustomNode/blocks/WhileStartBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaSync } from 'react-icons/fa';
@@ -19,7 +19,6 @@ const inputStyle = {
   borderRadius: '3px',
   border: '1px solid #ccc',
   marginRight: '5px',
-  // fontSize: '20px',
 };
 
 const selectStyle = {
@@ -27,7 +26,6 @@ const selectStyle = {
   borderRadius: '3px',
   border: '1px solid #ccc',
   marginRight: '5px',
-  // fontSize: '20px',
 };
 
 const WhileStartBlock = ({ id, data, selected, executing }) => {
@@ -92,29 +90,29 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="Connect from previous block"
         isConnectable={true}
       />
-      {/* True branch handle */}
+      {/* Loop body handle (for when the condition is true) */}
       <Handle
         type="source"
         position={Position.Bottom}
-        id={`true-${id}`}
+        id={`body-${id}`}
         className="handle-source-square"
         style={{ left: '25%', top: '100%' }}
-        data-tooltip-id={`tooltip-${id}-true`}
-        data-tooltip-content="If condition true, connect to loop body"
+        data-tooltip-id={`tooltip-${id}-body`}
+        data-tooltip-content="If condition true, enter loop body"
         isConnectable={true}
       />
-      {/* False branch handle */}
+      {/* Exit handle (for when the condition is false) */}
       <Handle
         type="source"
         position={Position.Bottom}
-        id={`false-${id}`}
+        id={`exit-${id}`}
         className="handle-source-square"
         style={{ left: '75%', top: '100%' }}
-        data-tooltip-id={`tooltip-${id}-false`}
-        data-tooltip-content="If condition false, go to the next block "
+        data-tooltip-id={`tooltip-${id}-exit`}
+        data-tooltip-content="If condition false, exit loop"
         isConnectable={true}
       />
-      {/* Loopback target handle on the left for connecting back to While Start */}
+      {/* Loopback target handle for connecting back to this block */}
       <Handle
         type="target"
         position={Position.Left}
@@ -126,7 +124,8 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
-      <Tooltip id={`tooltip-${id}-true`} place="top" />
+      <Tooltip id={`tooltip-${id}-body`} place="top" />
+      <Tooltip id={`tooltip-${id}-exit`} place="top" />
       <Tooltip id={`tooltip-${id}-loopBack`} place="top" />
     </div>
   );
