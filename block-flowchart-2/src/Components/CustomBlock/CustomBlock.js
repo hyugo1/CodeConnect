@@ -1,4 +1,3 @@
-// src/Components/CustomBlock/CustomBlock.js
 import React from 'react';
 import StartBlock from './blocks/StartBlock';
 import EndBlock from './blocks/EndBlock';
@@ -26,9 +25,17 @@ const CustomBlock = ({ id, data, selected, activeBlockId, onReplace }) => {
   if (!SpecificBlock) {
     return <div className={executing ? 'executing' : ''}>Unknown Block</div>;
   }
-
-  // For dummy blocks, pass down the onReplace callback
-  return <SpecificBlock id={id} data={data} selected={selected} executing={executing} onReplace={onReplace} />;
+  
+  return (
+    <SpecificBlock
+      id={id}
+      data={data}
+      selected={selected}
+      executing={executing}
+      // Only pass onReplace to dummy blocks
+      onReplace={data.blockType === 'dummy' ? onReplace : undefined}
+    />
+  );
 };
 
 export default CustomBlock;

@@ -11,10 +11,10 @@ export function useFlowchartExecutor(
   setActiveEdgeId
 ) {
   const MAX_ITERATIONS = 100;
-  const MAX_VISITS_PER_NODE = 10; // Prevent a node from being processed too many times.
-  const BASE_BLOCK_DELAY = 800;   // time a block stays active
-  const BASE_EDGE_DELAY = 800;    // time an edge stays active
-  const PRINT_DELAY = 4000;       // extended delay for print blocks
+  const MAX_VISITS_PER_NODE = 10;
+  const BASE_BLOCK_DELAY = 800;
+  const BASE_EDGE_DELAY = 800;
+  const PRINT_DELAY = 4000;
 
   const speedRef = useRef(2);
   const [paused, setPaused] = useState(false);
@@ -69,14 +69,14 @@ export function useFlowchartExecutor(
   const currentNodes = blocks;
   const currentEdges = edges;
 
-  // Helper function to auto-quote an operand if it is a string literal.
+  // Updated autoQuote: if the operand is a variable in context, return it unquoted.
   function autoQuote(operand) {
     if (typeof operand !== 'string' || operand.trim() === '') return operand;
-    // If operand is numeric, return it as-is.
+    if (context.variables.hasOwnProperty(operand)) return operand;
     if (!isNaN(parseFloat(operand))) return operand;
     const trimmed = operand.trim();
-    // If already quoted, return it.
-    if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    if ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+        (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
       return trimmed;
     }
     return `"${trimmed}"`;
@@ -107,7 +107,6 @@ export function useFlowchartExecutor(
       return;
     }
 
-    // Mark the node as active.
     setActiveBlockId(block.id);
     await delay(BASE_BLOCK_DELAY);
 
@@ -117,7 +116,7 @@ export function useFlowchartExecutor(
     switch (block.data.blockType) {
       case 'start':
         await executeNextNode(block.id, visitCounts);
-        break;
+        return; // FIX: Return immediately to avoid processing outgoing edges twice.
       case 'end':
         outputs.push('Execution ended.');
         console.log('Execution ended.');
@@ -179,19 +178,15 @@ export function useFlowchartExecutor(
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
         if (leftOperand && operator && rightOperand) {
-          // For equality or inequality on strings, do a direct JS comparison.
+          // For equality/inequality with strings, do a direct JS comparison.
           if ((operator === '==' || operator === '!=') &&
               typeof context.variables[leftOperand] === 'string') {
-            // Remove quotes from the rightOperand if present.
             const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            if (operator === '==') {
-              conditionMet = context.variables[leftOperand] === rightValue;
-            } else {
-              conditionMet = context.variables[leftOperand] !== rightValue;
-            }
+            conditionMet = operator === '==' 
+              ? context.variables[leftOperand] === rightValue 
+              : context.variables[leftOperand] !== rightValue;
             outputs.push(`Condition ${leftOperand} ${operator} ${rightValue} evaluated to ${conditionMet}`);
           } else {
-            // Otherwise, build the condition string.
             const condition = `${leftOperand} ${operator} ${autoQuote(rightOperand)}`;
             outputs.push(`Evaluating condition: ${condition}`);
             conditionMet = evaluate(condition, context.variables);
@@ -212,11 +207,9 @@ export function useFlowchartExecutor(
           if ((operator === '==' || operator === '!=') &&
               typeof context.variables[leftOperand] === 'string') {
             const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            if (operator === '==') {
-              conditionMet = context.variables[leftOperand] === rightValue;
-            } else {
-              conditionMet = context.variables[leftOperand] !== rightValue;
-            }
+            conditionMet = operator === '==' 
+              ? context.variables[leftOperand] === rightValue 
+              : context.variables[leftOperand] !== rightValue;
             outputs.push(`While condition ${leftOperand} ${operator} ${rightValue} evaluated to ${conditionMet}`);
           } else {
             const condition = `${leftOperand} ${operator} ${autoQuote(rightOperand)}`;
@@ -263,7 +256,7 @@ export function useFlowchartExecutor(
             return;
           }
         }
-        return; // End traversal for whileStart after handling loop.
+        return;
       }
       case 'print': {
         let message = block.data.message || '';
@@ -328,7 +321,6 @@ export function useFlowchartExecutor(
         break;
     }
 
-    // Traverse outgoing edges.
     const connectedEdges = currentEdges.filter((e) => e.source === block.id);
     for (const edge of connectedEdges) {
       if (block.data.blockType === 'if') {
