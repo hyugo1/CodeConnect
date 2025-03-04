@@ -1,14 +1,11 @@
-// src/App.js
 import React, { useState, useCallback } from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import BlockPalette from './Components/BlockPalette/BlockPalette';
 import FlowchartCanvas from './Components/FlowchartCanvas';
-import CharacterDisplay from './Components/CharacterDisplay/CharacterDisplay';
-import Console from './Components/Console/Console';
 import Navbar from './Components/Navbar/Navbar';
-import CodePreview from './Components/CodePreview';
-import './styles/App.css';
+import RightPanel from './Components/RightPanel/RightPanel';
 import 'react-toastify/dist/ReactToastify.css';
+import './styles/App.css';
 import { ToastContainer } from 'react-toastify';
 
 function App() {
@@ -32,7 +29,7 @@ function App() {
 
   return (
     <div className="App">
-      {/* **Navbar at the Top** */}
+      {/* Navbar at the Top */}
       <Navbar
         blocks={blocks}
         edges={edges}
@@ -40,20 +37,19 @@ function App() {
         setEdges={setEdges}
       />
 
-      {/* **Toast Notifications** */}
+      {/* Toast Notifications */}
       <ToastContainer />
 
-      {/* **Main Content** */}
+      {/* Main Content */}
       <div className="app-container">
-        {/* **Left BlockPalette** */}
+        {/* Left BlockPalette */}
         <BlockPalette
           onSelectBlock={handleSelectBlock}
           isDragging={isDragging}
           setIsDragging={setIsDragging}
           setCancelDrag={setCancelDrag}
         />
-        {/* Wrap the FlowchartCanvas in the ReactFlowProvider */}
-        {/* **Middle Flowchart Canvas** */}
+        {/* Flowchart Canvas */}
         <ReactFlowProvider>
           <FlowchartCanvas
             blocks={blocks}
@@ -73,15 +69,14 @@ function App() {
           />
         </ReactFlowProvider>
 
-        {/* **Right Panel** */}
-        <div className="right-panel">
-          <CharacterDisplay
-            characterMessage={characterMessage}
-            characterPosition={characterPosition}
-          />
-          <CodePreview blocks={blocks} edges={edges} />
-          <Console consoleOutput={consoleOutput} />
-        </div>
+        {/* Right Panel */}
+        <RightPanel
+          characterMessage={characterMessage}
+          characterPosition={characterPosition}
+          blocks={blocks}
+          edges={edges}
+          consoleOutput={consoleOutput}
+        />
       </div>
     </div>
   );

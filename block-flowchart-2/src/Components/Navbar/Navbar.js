@@ -1,5 +1,3 @@
-// src/Components/Navbar/Navbar.js
-
 import React, { useState, useEffect } from 'react';
 import {
   saveFlowchart,
@@ -8,18 +6,17 @@ import {
   deleteProject,
 } from '../../utils/storage';
 import './Navbar.css';
-import { FaFolderOpen, FaTrash } from 'react-icons/fa'; // Import icons for better UI
-import { toast } from 'react-toastify'; // Import toast for notifications
+import { FaFolderOpen, FaTrash, FaLightbulb } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
   const [projectName, setProjectName] = useState('');
   const [savedProjects, setSavedProjects] = useState(getSavedProjects());
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
-  // Refresh saved projects when component mounts
   useEffect(() => {
     const projects = getSavedProjects();
-    console.log('Navbar useEffect - updated saved projects:', projects);
     setSavedProjects(projects);
   }, []);
 
@@ -34,26 +31,17 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       // Check if a project with the same name already exists
       const existingProjects = getSavedProjects();
       if (existingProjects.includes(sanitizedProjectName)) {
-        if (
-          !window.confirm(
-            `A project named "${sanitizedProjectName}" already exists. Do you want to overwrite it?`
-          )
-        ) {
+        if (!window.confirm(`A project named "${sanitizedProjectName}" already exists. Do you want to overwrite it?`)) {
           return;
         }
       }
 
-      // **Log the blocks and edges being saved**
+      // Optionally log the blocks and edges being saved
       console.log('Current blocks before saving:', JSON.stringify(blocks, null, 2));
       console.log('Current edges before saving:', JSON.stringify(edges, null, 2));
 
-      // **Ensure serialization is correct**
-      const serializedNodes = blocks.map(({ id, type, position, data }) => ({
-        id,
-        type,
-        position,
-        data,
-      }));
+      // Serialize the nodes and edges
+      const serializedNodes = blocks.map(({ id, type, position, data }) => ({ id, type, position, data }));
       const serializedEdges = edges.map(({ id, source, target, sourceHandle, targetHandle, type, animated, markerEnd, style, label }) => ({
         id,
         source,
@@ -67,7 +55,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         label,
       }));
 
-      // **Optionally, verify serialized data**
       console.log('Serialized blocks:', JSON.stringify(serializedNodes, null, 2));
       console.log('Serialized edges:', JSON.stringify(serializedEdges, null, 2));
 
@@ -76,7 +63,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       setProjectName('');
       setIsDropdownOpen(false);
       toast.success(`Flowchart "${sanitizedProjectName}" saved successfully.`);
-      console.log(`Project "${sanitizedProjectName}" saved.`);
     } catch (error) {
       console.error('Error saving flowchart:', error);
       toast.error('Failed to save the flowchart. Please try again.');
@@ -84,19 +70,15 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
   };
 
   const handleLoadFlowchart = (name) => {
-    console.log(`Attempting to load project "${name}".`);
     try {
       const loadedData = loadFlowchart(name);
       if (loadedData) {
-        console.log('Loaded data:', JSON.stringify(loadedData, null, 2));
         setNodes(loadedData.blocks);
         setEdges(loadedData.edges);
         setIsDropdownOpen(false);
         toast.success(`Flowchart "${name}" loaded successfully.`);
-        console.log(`Project "${name}" loaded with blocks:`, loadedData.blocks, 'and edges:', loadedData.edges);
       } else {
         toast.error('Failed to load the selected project.');
-        console.warn(`Failed to load project "${name}".`);
       }
     } catch (error) {
       console.error('Error loading flowchart:', error);
@@ -110,7 +92,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         deleteProject(name);
         setSavedProjects(getSavedProjects());
         toast.success(`Flowchart "${name}" deleted successfully.`);
-        console.log(`Project "${name}" deleted.`);
       } catch (error) {
         console.error('Error deleting project:', error);
         toast.error('Failed to delete the project. Please try again.');
@@ -123,29 +104,40 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       setNodes([]);
       setEdges([]);
       toast.info('Started a new project.');
-      console.log('Flowchart cleared for a new project.');
     }
   };
 
   return (
     <nav className="navbar">
-      <h2>A Lego-like Programming</h2>
-      <div className="save-load-section">
-        <input
-          type="text"
-          placeholder="Project Name"
-          value={projectName}
-          onChange={(e) => setProjectName(e.target.value)}
-          className="project-name-input"
-        />
-        <button onClick={handleSaveFlowchart} className="save-button">
-          Save
-        </button>
-        <button onClick={handleClearFlowchart} className="clear-button">
-          New Project
+      {/* Left Section: Logo and Hint Button */}
+      <div className="navbar-section navbar-left">
+        <h2 className="navbar-title">A Lego-like Programming</h2>
+        <button onClick={() => setShowHint(true)} className="hint-button" title="Show block guide">
+          <FaLightbulb /> Guide
         </button>
       </div>
-      <div className="project-list-section">
+
+      {/* Center Section: Save and New Project */}
+      <div className="navbar-section navbar-center">
+        <div className="save-load-section">
+          <input
+            type="text"
+            placeholder="Project Name"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            className="project-name-input"
+          />
+          <button onClick={handleSaveFlowchart} className="save-button">
+            Save
+          </button>
+          <button onClick={handleClearFlowchart} className="clear-button">
+            New Project
+          </button>
+        </div>
+      </div>
+
+      {/* Right Section: Saved Projects Dropdown */}
+      <div className="navbar-section navbar-right">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="dropdown-button"
@@ -182,6 +174,28 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           </ul>
         )}
       </div>
+
+      {/* Modal for the Guide */}
+      {showHint && (
+        <div className="hint-modal-overlay">
+          <div className="hint-modal-content">
+            <h3>Block Guide</h3>
+            <ul>
+              <li><strong>Start:</strong> Marks the beginning of your program.</li>
+              <li><strong>End:</strong> Marks the end of your program.</li>
+              <li><strong>If:</strong> Represents a conditional decision point.</li>
+              <li><strong>While:</strong> Executes a loop while a condition is true.</li>
+              <li><strong>Print:</strong> Outputs a message or variable to the console.</li>
+              <li><strong>Set Variable:</strong> Initializes a variable with a value.</li>
+              <li><strong>Change Variable:</strong> Modifies an existing variable.</li>
+              <li><strong>Dummy:</strong> A placeholder block that can be replaced.</li>
+            </ul>
+            <button onClick={() => setShowHint(false)} className="hint-close-button">
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

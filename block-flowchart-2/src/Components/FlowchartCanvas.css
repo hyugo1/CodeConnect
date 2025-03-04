@@ -7,7 +7,6 @@
   
   .block-palette {
     width: 220px;
-    /* background-color: #eee; */
     padding: 10px;
     overflow-y: auto;
   }

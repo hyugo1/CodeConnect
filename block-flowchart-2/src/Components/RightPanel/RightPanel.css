@@ -1,0 +1,24 @@
+.right-panel {
+  padding: 10px;
+  background-color: #eee;
+  width: 250px;
+  overflow-y: auto;
+  height: 100vh;
+  transition: width 0.3s;
+  border: 2px solid #555;
+  box-sizing: border-box;
+}
+
+.right-panel.collapsed {
+  width: 60px;
+}
+
+.collapse-button {
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 5px;
+  cursor: pointer;
+  border: 2px solid #555;
+  background-color: #fff;
+  border-radius: 4px;
+}

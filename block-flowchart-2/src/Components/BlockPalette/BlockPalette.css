@@ -17,28 +17,6 @@
   width: 40px;
 }
 
-.toggle-button {
-  position: absolute;
-  top: 50%;
-  right: -20px;
-  transform: translateY(-50%);
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid #555;
-  background-color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  z-index: 100;
-}
-
-/* .aside-content {
-  
-} */
-
 .dndblock {
   margin: 10px 0;
   padding: 10px;
