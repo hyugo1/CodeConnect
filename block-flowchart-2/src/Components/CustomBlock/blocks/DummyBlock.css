@@ -1,0 +1,22 @@
+/* dummyBlock.css */
+@keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+    }
+  }
+  
+  .dummy-replaceable {
+    /* Replaceable dummy blocks get a pulsing green border effect */
+    animation: pulse 2s infinite;
+  }
+  
+  .dummy-fixed {
+    /* Non-replaceable dummy blocks get a fixed red border */
+    border: 2px solid red;
+  }

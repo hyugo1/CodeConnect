@@ -42,7 +42,7 @@ function FlowchartCanvas({
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [selectedEdges, setSelectedEdges] = useState([]);
 
-  // Whether to show the palette for replacing dummy blocks
+  // Palette state for replacing dummy blocks
   const [paletteVisible, setPaletteVisible] = useState(false);
   const [currentDummyBlockId, setCurrentDummyBlockId] = useState(null);
 
@@ -60,6 +60,208 @@ function FlowchartCanvas({
     }
   }, [blocks]);
 
+  // Handler for replacing a dummy block
+  const handleReplaceDummyBlock = useCallback(
+    (dummyId, newBlockType) => {
+      const blockToReplace = blocks.find((block) => block.id === dummyId);
+      if (!blockToReplace) return;
+      if (blockToReplace.data.dummyAllowed === false) {
+        alert("This block cannot be replaced.");
+        return;
+      }
+      if (newBlockType === 'start') {
+        alert("Cannot replace a dummy block with a start block.");
+        return;
+      }
+  
+      // For structured control blocks, create additional dummy nodes and connecting edges
+      if (newBlockType === 'if') {
+        // Update the dummy block to become an If block
+        const updatedIfBlock = {
+          ...blockToReplace,
+          data: {
+            ...blockToReplace.data,
+            label: 'If Then',
+            blockType: 'if',
+            leftOperand: '',
+            operator: '',
+            rightOperand: '',
+          },
+        };
+        // Create new dummy nodes for the True and False branches
+        const dummyTrue = {
+          id: uuidv4(),
+          type: 'custom',
+          position: {
+            x: blockToReplace.position.x - 150,
+            y: blockToReplace.position.y + 150,
+          },
+          data: {
+            label: 'Dummy (True Action)',
+            blockType: 'dummy',
+            dummyAllowed: true,
+          },
+        };
+        const dummyFalse = {
+          id: uuidv4(),
+          type: 'custom',
+          position: {
+            x: blockToReplace.position.x + 150,
+            y: blockToReplace.position.y + 150,
+          },
+          data: {
+            label: 'Dummy (False Action)',
+            blockType: 'dummy',
+            dummyAllowed: true,
+          },
+        };
+  
+        // Replace the dummy block with the updated if block and add new dummy nodes
+        setNodes((nds) =>
+          nds.map((b) => (b.id === dummyId ? updatedIfBlock : b)).concat([dummyTrue, dummyFalse])
+        );
+        // Create new edges from the if block to the true and false dummy nodes
+        const newEdgeIfTrue = {
+          id: uuidv4(),
+          source: updatedIfBlock.id,
+          target: dummyTrue.id,
+          sourceHandle: `yes-${updatedIfBlock.id}`,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: 'green', strokeWidth: 3 },
+          label: 'True',
+        };
+        const newEdgeIfFalse = {
+          id: uuidv4(),
+          source: updatedIfBlock.id,
+          target: dummyFalse.id,
+          sourceHandle: `no-${updatedIfBlock.id}`,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: 'red', strokeWidth: 3 },
+          label: 'False',
+        };
+        setEdges((eds) => eds.concat([newEdgeIfTrue, newEdgeIfFalse]));
+      } else if (newBlockType === 'while') {
+        // Update the dummy block to become a While block
+        const updatedWhileBlock = {
+          ...blockToReplace,
+          data: {
+            ...blockToReplace.data,
+            label: 'While',
+            blockType: 'whileStart',
+            leftOperand: '',
+            operator: '',
+            rightOperand: '',
+          },
+        };
+        // Create dummy nodes for the loop body and the exit path
+        const dummyBody = {
+          id: uuidv4(),
+          type: 'custom',
+          position: {
+            x: blockToReplace.position.x - 100,
+            y: blockToReplace.position.y + 150,
+          },
+          data: {
+            label: 'Dummy (While Loop)',
+            blockType: 'dummy',
+            dummyAllowed: true,
+          },
+        };
+        const dummyExit = {
+          id: uuidv4(),
+          type: 'custom',
+          position: {
+            x: blockToReplace.position.x + 150,
+            y: blockToReplace.position.y + 150,
+          },
+          data: {
+            label: 'Dummy (Exit While Block)',
+            blockType: 'dummy',
+            dummyAllowed: true,
+          },
+        };
+        // Replace the dummy block and add the new dummy nodes
+        setNodes((nds) =>
+          nds.map((b) => (b.id === dummyId ? updatedWhileBlock : b)).concat([dummyBody, dummyExit])
+        );
+        // Create edges connecting the while block to its body and exit nodes
+        const newEdgeWhileTrue = {
+          id: uuidv4(),
+          source: updatedWhileBlock.id,
+          target: dummyBody.id,
+          sourceHandle: `body-${updatedWhileBlock.id}`,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: 'green', strokeWidth: 3 },
+          label: 'True',
+        };
+        const newEdgeWhileFalse = {
+          id: uuidv4(),
+          source: updatedWhileBlock.id,
+          target: dummyExit.id,
+          sourceHandle: `exit-${updatedWhileBlock.id}`,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: 'red', strokeWidth: 3 },
+          label: 'False',
+        };
+        // Also add a loopback edge from the loop body back to the while block
+        const newLoopBackEdge = {
+          id: uuidv4(),
+          source: dummyBody.id,
+          target: updatedWhileBlock.id,
+          sourceHandle: 'loopBack-dummy',
+          targetHandle: `loopBack-${updatedWhileBlock.id}`,
+          type: 'custom',
+          animated: false,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: '#555', strokeWidth: 3 },
+          label: 'Loop',
+        };
+        setEdges((eds) => eds.concat([newEdgeWhileTrue, newEdgeWhileFalse, newLoopBackEdge]));
+      } else {
+        // For all other block types, simply update the dummy block's data
+        let newBlockData;
+        if (newBlockType === 'changeVariable') {
+          newBlockData = {
+            label: 'Change Variable',
+            blockType: 'changeVariable',
+            varName: '',
+            varValue: '',
+          };
+        } else if (newBlockType === 'setVariable') {
+          newBlockData = {
+            label: 'Set Variable',
+            blockType: 'setVariable',
+            varName: '',
+            varValue: '',
+            valueType: 'number',
+          };
+        } else {
+          newBlockData = {
+            label: newBlockType.charAt(0).toUpperCase() + newBlockType.slice(1),
+            blockType: newBlockType,
+          };
+        }
+        const newBlock = {
+          ...blockToReplace,
+          data: { ...blockToReplace.data, ...newBlockData },
+        };
+        setNodes((nds) => nds.map((b) => (b.id === dummyId ? newBlock : b)));
+      }
+      // Hide the palette after replacement
+      setPaletteVisible(false);
+      setCurrentDummyBlockId(null);
+    },
+    [blocks, setNodes, setEdges]
+  );
+
   // Flowchart execution hook
   const { executeFlowchart, resetExecution, setSpeedMultiplier } = useFlowchartExecutor(
     blocks,
@@ -71,21 +273,30 @@ function FlowchartCanvas({
     setActiveEdgeId
   );
 
-  // Wrap CustomBlock so it receives activeBlockId
   const CustomBlockWrapper = useCallback(
-    (props) => <CustomBlock {...props} activeBlockId={activeBlockId} />,
+    (props) => (
+      <CustomBlock
+        {...props}
+        activeBlockId={activeBlockId}
+        onReplace={(dummyId) => {
+          // When the dummy is clicked, set it as current and show the palette.
+          setCurrentDummyBlockId(dummyId);
+          setPaletteVisible(true);
+        }}
+      />
+    ),
     [activeBlockId]
   );
   const nodeTypes = useMemo(() => ({ custom: CustomBlockWrapper }), [CustomBlockWrapper]);
 
-  // Wrap CustomEdge so it receives activeEdgeId
+  // Wrap CustomEdge so it receives activeEdgeId.
   const CustomEdgeWrapper = useCallback(
     (props) => <CustomEdge {...props} activeEdgeId={activeEdgeId} />,
     [activeEdgeId]
   );
   const edgeTypes = useMemo(() => ({ custom: CustomEdgeWrapper }), [CustomEdgeWrapper]);
 
-  // Handler for connecting nodes with edges
+  // Handler for connecting nodes with edges.
   const onConnect = useCallback(
     (params) => {
       const originalSourceHandle = params.sourceHandle;
@@ -94,10 +305,10 @@ function FlowchartCanvas({
         // Extract the prefix before the dash (e.g., "body" from "body-<id>")
         sourceHandleType = sourceHandleType.split('-')[0];
       }
-  
+
       let label = '';
       let edgeStyle = { stroke: '#555', strokeWidth: 3 };
-  
+
       switch (sourceHandleType) {
         case 'yes':
         case 'true':
@@ -114,7 +325,7 @@ function FlowchartCanvas({
         default:
           label = '';
       }
-  
+
       setEdges((eds) =>
         addEdge(
           {
@@ -139,32 +350,37 @@ function FlowchartCanvas({
     [setEdges]
   );
 
-  // Modified onDragOver: Check if dragging over a dummy block.
+  // onDragOver: adjust dropEffect based on whether the target is a dummy block.
   const onDragOver = useCallback((event) => {
     event.preventDefault();
-    // Set default drop effect.
-    event.dataTransfer.dropEffect = 'move';
-
-    // Check if the element under the pointer is a dummy block.
     const targetElement = event.target;
-    const dummyBlock = targetElement.closest('.dummy-block');
-    if (dummyBlock) {
+    if (targetElement.closest('.dummy-block')) {
       event.dataTransfer.dropEffect = 'copy';
+    } else {
+      event.dataTransfer.dropEffect = 'move';
     }
   }, []);
 
-  // Modified onDrop: Replace dummy block if dropping on one.
+  // onDrop handler: create new blocks (or structured blocks) when dropping on the canvas.
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
+
       if (cancelDrag) {
         setCancelDrag(false);
         return;
       }
-
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
       const blockType = event.dataTransfer.getData('application/reactflow');
       if (!blockType) return;
+
+      const targetElement = event.target;
+      const dummyBlockElement = targetElement.closest('.dummy-block');
+      // If the drop is on a dummy block AND the block type is not 'while' or 'if',
+      // let the DummyBlock component handle replacement.
+      if (dummyBlockElement && blockType !== 'while' && blockType !== 'if') {
+        return;
+      }
 
       const dropPoint = {
         x: event.clientX - reactFlowBounds.left,
@@ -174,93 +390,7 @@ function FlowchartCanvas({
       const snappedX = Math.round(position.x / 15) * 15;
       const snappedY = Math.round(position.y / 15) * 15;
 
-      // Check if the drop target is a dummy block.
-      const targetElement = event.target;
-      const dummyBlockElement = targetElement.closest('.dummy-block');
-      if (dummyBlockElement) {
-        const dummyBlockId = dummyBlockElement.dataset.id;
-        const dummyNode = blocks.find((block) => block.id === dummyBlockId);
-
-        if (dummyNode && dummyNode.data.blockType === 'dummy') {
-          // Prevent replacing with an invalid block type.
-          if (blockType === 'start') {
-            alert('Start blocks cannot replace dummy blocks.');
-            return;
-          }
-          // Create a new block using the dummy block's id and position.
-          let newBlock = null;
-          if (blockType === 'changeVariable') {
-            newBlock = {
-              id: dummyNode.id,
-              type: 'custom',
-              position: dummyNode.position,
-              data: {
-                label: 'Change Variable',
-                blockType: 'changeVariable',
-                varName: '',
-                varValue: '',
-              },
-            };
-          } else if (blockType === 'setVariable') {
-            newBlock = {
-              id: dummyNode.id,
-              type: 'custom',
-              position: dummyNode.position,
-              data: {
-                label: 'Set Variable',
-                blockType: 'setVariable',
-                varName: '',
-                varValue: '',
-                valueType: 'number',
-              },
-            };
-          } else if (blockType === 'if') {
-            newBlock = {
-              id: dummyNode.id,
-              type: 'custom',
-              position: dummyNode.position,
-              data: {
-                label: 'If Then',
-                blockType: 'if',
-                leftOperand: '',
-                operator: '',
-                rightOperand: '',
-              },
-            };
-          } else if (blockType === 'while') {
-            newBlock = {
-              id: dummyNode.id,
-              type: 'custom',
-              position: dummyNode.position,
-              data: {
-                label: 'While',
-                blockType: 'while',
-                leftOperand: '',
-                operator: '',
-                rightOperand: '',
-              },
-            };
-          } else {
-            newBlock = {
-              id: dummyNode.id,
-              type: 'custom',
-              position: dummyNode.position,
-              data: {
-                label: blockType.charAt(0).toUpperCase() + blockType.slice(1),
-                blockType,
-              },
-            };
-          }
-
-          // Replace the dummy block.
-          setNodes((nds) =>
-            nds.map((block) => (block.id === dummyNode.id ? newBlock : block))
-          );
-          return;
-        }
-      }
-
-      // If not dropped on a dummy block, proceed with the normal drop logic.
+      // Create structured blocks for 'while' and 'if'
       if (blockType === 'while') {
         const whileStartBlock = {
           id: uuidv4(),
@@ -274,7 +404,6 @@ function FlowchartCanvas({
             rightOperand: '',
           },
         };
-      
         const dummyBody = {
           id: uuidv4(),
           type: 'custom',
@@ -285,7 +414,6 @@ function FlowchartCanvas({
             dummyAllowed: true,
           },
         };
-      
         const dummyExit = {
           id: uuidv4(),
           type: 'custom',
@@ -296,9 +424,8 @@ function FlowchartCanvas({
             dummyAllowed: true,
           },
         };
-      
         setNodes((nds) => nds.concat([whileStartBlock, dummyBody, dummyExit]));
-      
+  
         const edgeWhileTrue = {
           id: uuidv4(),
           source: whileStartBlock.id,
@@ -310,7 +437,6 @@ function FlowchartCanvas({
           style: { stroke: 'green', strokeWidth: 3 },
           label: 'True',
         };
-      
         const edgeWhileFalse = {
           id: uuidv4(),
           source: whileStartBlock.id,
@@ -322,7 +448,6 @@ function FlowchartCanvas({
           style: { stroke: 'red', strokeWidth: 3 },
           label: 'False',
         };
-      
         const loopBackEdge = {
           id: uuidv4(),
           source: dummyBody.id,
@@ -336,8 +461,7 @@ function FlowchartCanvas({
           label: 'Loop',
         };
         setEdges((eds) => eds.concat([edgeWhileTrue, edgeWhileFalse, loopBackEdge]));
-      
-        console.log('Added "While Start" block with dummy blocks and a loopback edge.');
+        console.log('Added "While" block with dummy blocks and a loopback edge.');
       } else if (blockType === 'if') {
         const ifBlock = {
           id: uuidv4(),
@@ -372,6 +496,7 @@ function FlowchartCanvas({
           },
         };
         setNodes((nds) => nds.concat([ifBlock, dummyTrueBlock, dummyFalseBlock]));
+  
         const edgeIfToTrue = {
           id: uuidv4(),
           source: ifBlock.id,
@@ -409,7 +534,7 @@ function FlowchartCanvas({
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
-            label: `${blockType.charAt(0).toUpperCase() + blockType.slice(1)}`,
+            label: blockType.charAt(0).toUpperCase() + blockType.slice(1),
             blockType,
           },
         };
@@ -434,14 +559,14 @@ function FlowchartCanvas({
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: {
-            label: `${blockType.charAt(0).toUpperCase() + blockType.slice(1)}`,
+            label: blockType.charAt(0).toUpperCase() + blockType.slice(1),
             blockType,
           },
         };
         setNodes((nds) => nds.concat(newBlock));
       }
     },
-    [cancelDrag, project, setNodes, setCancelDrag, blocks, setEdges]
+    [cancelDrag, project, setNodes, setEdges, setCancelDrag, blocks]
   );
 
   const onSelectionChange = useCallback(({ nodes, edges }) => {
@@ -493,8 +618,6 @@ function FlowchartCanvas({
       <ControlPanel
         executeFlowchart={executeFlowchart}
         resetExecution={resetExecution}
-        togglePause={() => {}}
-        paused={false}
         setSpeedMultiplier={setSpeedMultiplier}
         selectedNodes={selectedNodes}
         selectedEdges={selectedEdges}
@@ -503,12 +626,33 @@ function FlowchartCanvas({
       />
 
       {paletteVisible && (
-        <BlockPalette
-          onSelectBlock={() => {}}
-          isDragging={isDragging}
-          setIsDragging={setIsDragging}
-          setCancelDrag={setCancelDrag}
-        />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 1000,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setPaletteVisible(false);
+            setCurrentDummyBlockId(null);
+          }}
+        >
+          <BlockPalette
+            onSelectBlock={(selectedBlockType) => {
+              if (!currentDummyBlockId) return;
+              handleReplaceDummyBlock(currentDummyBlockId, selectedBlockType);
+            }}
+            isDragging={isDragging}
+            setIsDragging={setIsDragging}
+            setCancelDrag={setCancelDrag}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
       )}
     </div>
   );

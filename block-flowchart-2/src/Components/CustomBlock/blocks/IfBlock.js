@@ -7,27 +7,6 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const conditionStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  marginTop: 10,
-};
-const inputStyle = {
-  flex: 1,
-  padding: '5px',
-  borderRadius: '3px',
-  border: '1px solid #ccc',
-  // fontsize: '20px',
-  marginRight: '5px',
-};
-const selectStyle = {
-  padding: '5px',
-  borderRadius: '3px',
-  border: '1px solid #ccc',
-  // fontsize: '20px',
-  marginRight: '5px',
-};
-
 const IfBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
@@ -45,9 +24,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
 
   return (
     <div
-      className={`block-container if-block ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container if-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#d8d8f9' }}
     >
       <FaQuestion style={{ marginBottom: 5 }} />
@@ -85,18 +62,19 @@ const IfBlock = ({ id, data, selected, executing }) => {
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-yes`} place="top" />
       <Tooltip id={`tooltip-${id}-no`} place="top" />
-      <div style={conditionStyle}>
+
+      <div className="condition-container">
         <input
           type="text"
           placeholder="Left Operand"
           value={data.leftOperand || ''}
           onChange={handleLeftOperandChange}
-          style={inputStyle}
+          className="operand-input"
         />
         <select
           value={data.operator || ''}
           onChange={handleOperatorChange}
-          style={selectStyle}
+          className="operator-select"
         >
           <option value="">Op</option>
           <option value="<">&lt;</option>
@@ -111,7 +89,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
           placeholder="Right Operand"
           value={data.rightOperand || ''}
           onChange={handleRightOperandChange}
-          style={inputStyle}
+          className="operand-input"
         />
       </div>
     </div>

@@ -1,5 +1,5 @@
 // src/hooks/useCodeGenerator.js
-import { evaluate } from 'mathjs';
+// import { evaluate } from 'mathjs';
 
 /**
  * Generates JavaScript code from the flowchart's blocks and edges.

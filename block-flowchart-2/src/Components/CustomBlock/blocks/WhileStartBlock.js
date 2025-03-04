@@ -7,27 +7,6 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const conditionStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  marginTop: 10,
-};
-
-const inputStyle = {
-  flex: 1,
-  padding: '5px',
-  borderRadius: '3px',
-  border: '1px solid #ccc',
-  marginRight: '5px',
-};
-
-const selectStyle = {
-  padding: '5px',
-  borderRadius: '3px',
-  border: '1px solid #ccc',
-  marginRight: '5px',
-};
-
 const WhileStartBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
 
@@ -45,23 +24,36 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
 
   return (
     <div
-      className={`block-container while-start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
+      className={`block-container while-start-block ${selected ? 'selected' : ''} ${
+        executing ? 'executing' : ''
+      }`}
       style={{ backgroundColor: '#f9f7d8' }}
     >
       <FaSync style={{ marginBottom: 5 }} />
       <div>{data.label || 'While'}</div>
-      <div style={conditionStyle}>
+      <Handle
+        type="target"
+        position={Position.Top}
+        id={`target-${id}`}
+        className="handle-target-circle"
+        style={{ left: '50%', top: '0px' }}
+        data-tooltip-id={`tooltip-${id}-target`}
+        data-tooltip-content="Connect from previous block"
+        isConnectable={true}
+      />
+      {/* Condition inputs styled like in the If block */}
+      <div className="condition-container">
         <input
           type="text"
           placeholder="Left Operand"
           value={data.leftOperand || ''}
           onChange={handleLeftOperandChange}
-          style={inputStyle}
+          className="operand-input"
         />
         <select
           value={data.operator || ''}
           onChange={handleOperatorChange}
-          style={selectStyle}
+          className="operator-select"
         >
           <option value="">Op</option>
           <option value="<">&lt;</option>
@@ -76,20 +68,9 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
           placeholder="Right Operand"
           value={data.rightOperand || ''}
           onChange={handleRightOperandChange}
-          style={inputStyle}
+          className="operand-input"
         />
       </div>
-      {/* Incoming handle */}
-      <Handle
-        type="target"
-        position={Position.Top}
-        id={`target-${id}`}
-        className="handle-target-circle"
-        style={{ left: '50%', top: '0px' }}
-        data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from previous block"
-        isConnectable={true}
-      />
       {/* Loop body handle (for when the condition is true) */}
       <Handle
         type="source"
@@ -101,7 +82,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="If condition true, enter loop body"
         isConnectable={true}
       />
-      {/* Exit handle (for when the condition is false) */}
+      {/* Exit loop handle (for when the condition is false) */}
       <Handle
         type="source"
         position={Position.Bottom}
@@ -112,7 +93,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="If condition false, exit loop"
         isConnectable={true}
       />
-      {/* Loopback target handle for connecting back to this block */}
+      {/* Optional loopback handle for connecting back to this block */}
       <Handle
         type="target"
         position={Position.Left}

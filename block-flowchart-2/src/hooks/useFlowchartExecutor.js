@@ -11,7 +11,7 @@ export function useFlowchartExecutor(
   setActiveBlockId,
   setActiveEdgeId
 ) {
-  // Increase the limit to allow more valid loop iterations.
+  // Constants for execution timing and loop detection
   const MAX_VISITS_PER_NODE = 50;
   const BASE_BLOCK_DELAY = 800;
   const BASE_EDGE_DELAY = 800;
@@ -58,19 +58,18 @@ export function useFlowchartExecutor(
     console.log('Execution has been reset.');
   }, [setConsoleOutput, setCharacterPosition, setCharacterMessage, setActiveBlockId, setActiveEdgeId]);
 
-  // Context for variables and character properties.
+  // Context to hold variables and character state during execution
   const context = {
     variables: {},
     characterPos: { x: 0, y: 0 },
     characterMsg: '',
   };
 
-  let iterationCount = 0;
   const outputs = [];
   const currentNodes = blocks;
   const currentEdges = edges;
 
-  // Updated autoQuote: if the operand is a variable in context, return it unquoted.
+  // autoQuote helper: returns the operand unquoted if it exists in context, otherwise wraps it in quotes
   function autoQuote(operand) {
     if (typeof operand !== 'string' || operand.trim() === '') return operand;
     if (context.variables.hasOwnProperty(operand)) return operand;
@@ -83,8 +82,9 @@ export function useFlowchartExecutor(
     return `"${trimmed}"`;
   }
 
+  // Recursive function to traverse nodes with enhanced error handling and logging
   async function traverse(blockId, visitCounts = new Map()) {
-    // ... (iterationCount and visitCounts logic remain unchanged)
+    try {
     const count = visitCounts.get(blockId) || 0;
     if (count >= MAX_VISITS_PER_NODE) {
       outputs.push(`Error: Block ${blockId} visited too many times. Possible infinite loop.`);
@@ -121,19 +121,18 @@ export function useFlowchartExecutor(
         setCharacterPosition(context.characterPos);
         setCharacterMessage(context.characterMsg);
         return;
-      case 'setVariable': {
-        const { varName, varValue, valueType } = block.data;
-        if (varName) {
+      case 'setVariable':
+        if (block.data.varName) {
           try {
             let value;
-            if (valueType === 'string') {
-              value = varValue;
+            if (block.data.valueType === 'string') {
+              value = block.data.varValue;
             } else {
-              value = evaluate(varValue, context.variables);
+              value = evaluate(block.data.varValue, context.variables);
             }
-            context.variables[varName] = value;
-            outputs.push(`Set variable ${varName} = ${JSON.stringify(value)}`);
-            console.log(`Set variable ${varName} = ${JSON.stringify(value)}`);
+            context.variables[block.data.varName] = value;
+            outputs.push(`Set variable ${block.data.varName} = ${JSON.stringify(value)}`);
+            console.log(`Set variable ${block.data.varName} = ${JSON.stringify(value)}`);
           } catch (error) {
             console.error(`Error evaluating value in block ${block.id}:`, error);
             outputs.push(`Error evaluating value in block ${block.id}: ${error.message}`);
@@ -142,19 +141,17 @@ export function useFlowchartExecutor(
           }
         }
         break;
-      }
-      case 'changeVariable': {
-        const { varName, varValue, valueType } = block.data;
-        if (varName && context.variables.hasOwnProperty(varName)) {
+      case 'changeVariable':
+        if (block.data.varName && context.variables.hasOwnProperty(block.data.varName)) {
           try {
-            if (valueType === 'string') {
-              context.variables[varName] = varValue;
+            if (block.data.valueType === 'string') {
+              context.variables[block.data.varName] = block.data.varValue;
             } else {
-              const value = evaluate(varValue, context.variables);
-              context.variables[varName] += value;
+              const value = evaluate(block.data.varValue, context.variables);
+              context.variables[block.data.varName] += value;
             }
-            outputs.push(`Changed variable ${varName} to ${JSON.stringify(context.variables[varName])}`);
-            console.log(`Changed variable ${varName} to ${JSON.stringify(context.variables[varName])}`);
+            outputs.push(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
+            console.log(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
           } catch (error) {
             console.error(`Error changing variable in block ${block.id}:`, error);
             outputs.push(`Error changing variable in block ${block.id}: ${error.message}`);
@@ -162,18 +159,16 @@ export function useFlowchartExecutor(
             return;
           }
         } else {
-          outputs.push(`Variable "${varName}" not found in block ${block.id}.`);
-          console.error(`Variable "${varName}" not found in block ${block.id}.`);
+          outputs.push(`Variable "${block.data.varName}" not found in block ${block.id}.`);
+          console.error(`Variable "${block.data.varName}" not found in block ${block.id}.`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
         break;
-      }
       case 'if': {
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
         if (leftOperand && operator && rightOperand) {
-          // For equality/inequality with strings, do a direct JS comparison.
           if ((operator === '==' || operator === '!=') &&
               typeof context.variables[leftOperand] === 'string') {
             const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
@@ -219,7 +214,7 @@ export function useFlowchartExecutor(
         }
 
         if (conditionMet) {
-          const loopBodyEdge = edges.find(
+          const loopBodyEdge = currentEdges.find(
             (e) => e.source === block.id && e.sourceHandle === `body-${block.id}`
           );
           if (loopBodyEdge) {
@@ -235,7 +230,7 @@ export function useFlowchartExecutor(
             return;
           }
         } else {
-          const exitEdge = edges.find(
+          const exitEdge = currentEdges.find(
             (e) => e.source === block.id && e.sourceHandle === `exit-${block.id}`
           );
           if (exitEdge) {
@@ -316,8 +311,10 @@ export function useFlowchartExecutor(
         break;
     }
 
+    // Process all connected edges with individual error handling
     const connectedEdges = currentEdges.filter((e) => e.source === block.id);
     for (const edge of connectedEdges) {
+    try {
       if (block.data.blockType === 'if') {
         const sourceHandleType = edge.sourceHandle ? edge.sourceHandle.split('-')[0] : '';
         if (
@@ -337,9 +334,20 @@ export function useFlowchartExecutor(
         setActiveEdgeId(null);
         await traverse(edge.target, new Map(visitCounts));
       }
+    } catch (edgeError) {
+      console.error(`Error processing edge ${edge.id}:`, edgeError);
+      outputs.push(`Error processing edge ${edge.id}: ${edgeError.message}`);
+      setConsoleOutput(outputs.join('\n'));
+      return;
+      }
     }
 
     console.log(`--- Finished Node: ${block.id} ---\n`);
+  } catch (traverseError) {
+    console.error(`Unexpected error in traverse at block ${blockId}:`, traverseError);
+    outputs.push(`Unexpected error in block ${blockId}: ${traverseError.message}`);
+    setConsoleOutput(outputs.join('\n'));
+  }
   }
 
   async function executeNextNode(currentNodeId, visitCounts) {
@@ -373,7 +381,7 @@ export function useFlowchartExecutor(
   }
 
   const executeFlowchart = useCallback(() => {
-    iterationCount = 0;
+    // iterationCount = 0;
     outputs.length = 0;
     context.variables = {};
     setConsoleOutput('');

@@ -5,14 +5,18 @@
   --block-selected-border: #007bff;
   --block-shadow: rgba(0, 0, 0, 0.1);
   --transition-time: 0.3s;
+  --default-block-width: 200px; 
+  --conditional-block-width: 300px;
+  --operand-width: 100px; 
+  --operator-width: 60px; 
 }
 
 .block-container {
+  width: var(--default-block-width);
   padding: 12px;
   border: 2px solid var(--block-border);
   border-radius: 8px;
   position: relative;
-  min-width: 180px;
   text-align: center;
   font-weight: 600;
   background-color: var(--block-bg);
@@ -28,24 +32,26 @@
   box-shadow: 0 2px 4px var(--block-shadow);
 }
 
-/* Hover Animation */
 .block-container:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px var(--block-shadow);
 }
 
-/* Selected State */
 .block-container.selected {
   border-color: var(--block-selected-border);
   background-color: var(--block-selected-bg);
   box-shadow: 0 4px 12px var(--block-shadow);
 }
 
-/* Input Fields */
+.if-block,
+.while-start-block {
+  width: var(--conditional-block-width);
+}
+
 .block-input {
   width: 100%;
   margin-top: 10px;
-  padding: 8px;
+  padding: 6px;
   border-radius: 4px;
   border: 1px solid #ccc;
   font-size: 14px;
@@ -56,6 +62,33 @@
 .block-input:focus {
   outline: none;
   border-color: var(--block-selected-border);
+}
+
+.operand-input {
+  width: var(--operand-width);
+  padding: 5px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  text-align: center;
+  margin-right: 5px;
+}
+
+.operator-select {
+  width: var(--operator-width);
+  padding: 5px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  text-align: center;
+  margin-right: 5px;
+}
+
+.condition-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .handle-target-circle {

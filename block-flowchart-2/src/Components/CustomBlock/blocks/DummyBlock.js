@@ -1,38 +1,68 @@
-import React from 'react';
+// src/Components/CustomBlock/blocks/DummyBlock.js
+import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
+import './DummyBlock.css';
 
 const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
-  // Called when a draggable block is dropped onto this dummy block
+  const [isDragOver, setIsDragOver] = useState(false);
+
   const handleDrop = (event) => {
     event.preventDefault();
+    event.stopPropagation();
+    setIsDragOver(false);
     const blockType = event.dataTransfer.getData('application/reactflow');
     if (blockType === 'start') {
       alert('Start blocks cannot replace dummy blocks.');
       return;
     }
-    // Call the onReplace callback (if provided) with this dummy block’s id and the dropped block type.
     if (onReplace) {
       onReplace(id, blockType);
     }
   };
 
-  // Allow drops on this element
   const handleDragOver = (event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'copy';
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (event) => {
+    event.preventDefault();
+    setIsDragOver(false);
+  };
+
+  // Enable keyboard users to trigger replacement
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.stopPropagation();
+      if (onReplace) {
+        onReplace(id);
+      }
+    }
+  };
+
+  const handleClick = (event) => {
+    event.stopPropagation();
+    if (onReplace) {
+      onReplace(id);
+    }
   };
 
   return (
     <div
-      className={`block-container dummy-block ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container dummy-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''} ${isDragOver ? 'drag-over' : ''}`}
       data-id={id}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      aria-label="Dummy block – click or drop to replace"
+      onKeyPress={handleKeyPress}
     >
       <FaQuestion style={{ marginBottom: 5 }} />
       <div>{data.label}</div>
