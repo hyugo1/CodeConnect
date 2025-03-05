@@ -7,6 +7,9 @@ import PrintBlock from './blocks/PrintBlock';
 import SetVariableBlock from './blocks/SetVariableBlock';
 import ChangeVariableBlock from './blocks/ChangeVariableBlock';
 import DummyBlock from './blocks/DummyBlock';
+// import ResizeBlock from './blocks/ResizeBlock';
+// import RotateBlock from './blocks/RotateBlock';
+import MoveBlock from './blocks/MoveBlock';
 
 const blockMapping = {
   start: StartBlock,
@@ -17,6 +20,9 @@ const blockMapping = {
   setVariable: SetVariableBlock,
   changeVariable: ChangeVariableBlock,
   dummy: DummyBlock,
+  // resize: ResizeBlock,
+  // rotate: RotateBlock,
+  move: MoveBlock,
 };
 
 const CustomBlock = ({ id, data, selected, activeBlockId, onReplace }) => {

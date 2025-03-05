@@ -8,6 +8,9 @@ import {
   FaPrint,
   FaPenFancy,
   FaPlusCircle,
+  FaArrowsAltH,
+  FaSyncAlt,
+  FaExpandArrowsAlt
 } from 'react-icons/fa';
 import './BlockPalette.css';
 
@@ -49,6 +52,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag 
     { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint />, category: 'I/O Blocks' },
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy />, category: 'Variable Blocks' },
     { type: 'changeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle />, category: 'Variable Blocks' },
+    { type: 'move', label: 'Move Character', color: '#d8f9f9', icon: <FaArrowsAltH />, category: 'Character Action Blocks' },
   ];
 
   // Group blocks by their category.

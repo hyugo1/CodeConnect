@@ -61,8 +61,10 @@ function FlowchartCanvas({
   }, [blocks]);
 
   // Handler for replacing a dummy block
+  
   const handleReplaceDummyBlock = useCallback(
     (dummyId, newBlockType) => {
+      // Find the dummy node to replace.
       const blockToReplace = blocks.find((block) => block.id === dummyId);
       if (!blockToReplace) return;
       if (blockToReplace.data.dummyAllowed === false) {
@@ -74,9 +76,17 @@ function FlowchartCanvas({
         return;
       }
   
-      // For structured control blocks, create additional dummy nodes and connecting edges
+    // Trigger a flash animation before replacement.
+    setNodes((nds) =>
+      nds.map((b) =>
+        b.id === dummyId ? { ...b, data: { ...b.data, flash: true } } : b
+      )
+    );
+
+    // Delay replacement until after the flash (500ms).
+    setTimeout(() => {
       if (newBlockType === 'if') {
-        // Update the dummy block to become an If block
+        // Replace dummy with an If block.
         const updatedIfBlock = {
           ...blockToReplace,
           data: {
@@ -86,9 +96,10 @@ function FlowchartCanvas({
             leftOperand: '',
             operator: '',
             rightOperand: '',
+            flash: false,
           },
         };
-        // Create new dummy nodes for the True and False branches
+        // Create new dummy nodes for True/False branches.
         const dummyTrue = {
           id: uuidv4(),
           type: 'custom',
@@ -115,12 +126,10 @@ function FlowchartCanvas({
             dummyAllowed: true,
           },
         };
-  
-        // Replace the dummy block with the updated if block and add new dummy nodes
         setNodes((nds) =>
           nds.map((b) => (b.id === dummyId ? updatedIfBlock : b)).concat([dummyTrue, dummyFalse])
         );
-        // Create new edges from the if block to the true and false dummy nodes
+        // Create new edges from the If block to the dummy branches.
         const newEdgeIfTrue = {
           id: uuidv4(),
           source: updatedIfBlock.id,
@@ -145,7 +154,7 @@ function FlowchartCanvas({
         };
         setEdges((eds) => eds.concat([newEdgeIfTrue, newEdgeIfFalse]));
       } else if (newBlockType === 'while') {
-        // Update the dummy block to become a While block
+        // Replace dummy with a While block.
         const updatedWhileBlock = {
           ...blockToReplace,
           data: {
@@ -155,9 +164,10 @@ function FlowchartCanvas({
             leftOperand: '',
             operator: '',
             rightOperand: '',
+            flash: false,
           },
         };
-        // Create dummy nodes for the loop body and the exit path
+        // Create dummy nodes for the loop body and exit path.
         const dummyBody = {
           id: uuidv4(),
           type: 'custom',
@@ -184,11 +194,10 @@ function FlowchartCanvas({
             dummyAllowed: true,
           },
         };
-        // Replace the dummy block and add the new dummy nodes
         setNodes((nds) =>
           nds.map((b) => (b.id === dummyId ? updatedWhileBlock : b)).concat([dummyBody, dummyExit])
         );
-        // Create edges connecting the while block to its body and exit nodes
+        // Create edges for the while block.
         const newEdgeWhileTrue = {
           id: uuidv4(),
           source: updatedWhileBlock.id,
@@ -211,7 +220,6 @@ function FlowchartCanvas({
           style: { stroke: 'red', strokeWidth: 3 },
           label: 'False',
         };
-        // Also add a loopback edge from the loop body back to the while block
         const newLoopBackEdge = {
           id: uuidv4(),
           source: dummyBody.id,
@@ -226,7 +234,7 @@ function FlowchartCanvas({
         };
         setEdges((eds) => eds.concat([newEdgeWhileTrue, newEdgeWhileFalse, newLoopBackEdge]));
       } else {
-        // For all other block types, simply update the dummy block's data
+        // For any other block type, replace the dummy block.
         let newBlockData;
         if (newBlockType === 'changeVariable') {
           newBlockData = {
@@ -251,15 +259,16 @@ function FlowchartCanvas({
         }
         const newBlock = {
           ...blockToReplace,
-          data: { ...blockToReplace.data, ...newBlockData },
+          data: { ...blockToReplace.data, ...newBlockData, flash: false, className: 'replacement-success' },
         };
+        // Fully replace the dummy node.
         setNodes((nds) => nds.map((b) => (b.id === dummyId ? newBlock : b)));
       }
-      // Hide the palette after replacement
       setPaletteVisible(false);
       setCurrentDummyBlockId(null);
+    }, 500);
     },
-    [blocks, setNodes, setEdges]
+    [blocks, setNodes, setEdges, setPaletteVisible, setCurrentDummyBlockId]
   );
 
   // Flowchart execution hook

@@ -151,6 +151,11 @@
   color: #2980b9;
   transition: color 0.3s;
 }
+.load-button {
+  /* color: #3498db; */
+  color: black;
+  background-color: #2980b9;
+}
 
 .delete-button {
   color: #c0392b;

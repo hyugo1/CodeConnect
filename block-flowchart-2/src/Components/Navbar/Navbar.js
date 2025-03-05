@@ -177,25 +177,28 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
 
       {/* Modal for the Guide */}
       {showHint && (
-        <div className="hint-modal-overlay">
-          <div className="hint-modal-content">
-            <h3>Block Guide</h3>
-            <ul>
-              <li><strong>Start:</strong> Marks the beginning of your program.</li>
-              <li><strong>End:</strong> Marks the end of your program.</li>
-              <li><strong>If:</strong> Represents a conditional decision point.</li>
-              <li><strong>While:</strong> Executes a loop while a condition is true.</li>
-              <li><strong>Print:</strong> Outputs a message or variable to the console.</li>
-              <li><strong>Set Variable:</strong> Initializes a variable with a value.</li>
-              <li><strong>Change Variable:</strong> Modifies an existing variable.</li>
-              <li><strong>Dummy:</strong> A placeholder block that can be replaced.</li>
-            </ul>
-            <button onClick={() => setShowHint(false)} className="hint-close-button">
-              Close
-            </button>
-          </div>
+      <div className="hint-modal-overlay">
+        <div className="hint-modal-content">
+          <h3>Block Guide</h3>
+          <ul>
+            <li><strong>Start:</strong> Marks the beginning of your program.</li>
+            <li><strong>End:</strong> Marks the end of your program.</li>
+            <li><strong>If:</strong> Represents a conditional decision point.</li>
+            <li><strong>While:</strong> Executes a loop while a condition is true.</li>
+            <li><strong>Print:</strong> Outputs a message or variable to the console.</li>
+            <li><strong>Set Variable:</strong> Initializes a variable with a value.</li>
+            <li><strong>Change Variable:</strong> Modifies an existing variable.</li>
+            <li><strong>Move:</strong> Moves a character. Enter the distance you want the character to move.</li>
+            {/* <li><strong>Rotate:</strong> Rotates the character by the specified angle. Enter an angle in degrees to adjust the character's orientation.</li> */}
+            {/* <li><strong>Resize:</strong>Resizes the character. Enter a size to adjust the character's size.</li> */}
+            <li><strong>Dummy:</strong> A placeholder block that can be replaced with a specific action.</li>
+          </ul>
+          <button onClick={() => setShowHint(false)} className="hint-close-button">
+            Close
+          </button>
         </div>
-      )}
+      </div>
+    )}
     </nav>
   );
 };

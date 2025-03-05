@@ -153,7 +153,21 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
       }
-
+      // New case: move
+      case 'move':
+        if (block.data.distance && block.data.direction) {
+          codeLines.push(
+            indent +
+              `moveCharacter(${block.data.direction}, ${block.data.distance})`
+          );
+        } else {
+          codeLines.push(indent + '// Incomplete move block data');
+        }
+        {
+          const next = getNextBlock(blockId);
+          if (next) traverse(next, indentLevel, new Set(visited));
+        }
+        break;
       default:
         codeLines.push(indent + `// Unknown block type: ${block.data.blockType}`);
         {
@@ -172,7 +186,7 @@ export function generateJavaScriptCode(blocks, edges) {
    * @returns {string|null} - The target block's ID, or null if none.
    */
   function getNextBlock(currentBlockId, sourceHandleFilter) {
-    const outgoing = edges.find(edge => {
+    const outgoing = edges.find((edge) => {
       if (edge.source !== currentBlockId) return false;
       if (sourceHandleFilter) {
         return edge.sourceHandle && edge.sourceHandle.startsWith(sourceHandleFilter);
@@ -183,7 +197,7 @@ export function generateJavaScriptCode(blocks, edges) {
   }
 
   const startBlock = blocks.find(
-    block => (block.data.blockType || '').toLowerCase() === 'start'
+    (block) => (block.data.blockType || '').toLowerCase() === 'start'
   );
   if (!startBlock) return '// Error: No start block found.';
   traverse(startBlock.id);

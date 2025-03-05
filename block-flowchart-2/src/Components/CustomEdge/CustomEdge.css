@@ -34,20 +34,20 @@
 }
 
 .block-container.executing {
-  animation: blockPulse 0.4s ease-out infinite;
+  animation: blockPulse 0.5s ease-out;
 }
 
 @keyframes blockPulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(34, 255, 119, 0.7);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 10px 5px rgba(34, 255, 119, 0.5);
+    box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.5);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(34, 255, 119, 0.7);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
   }
 }

@@ -1,5 +1,4 @@
-// src/Components/CustomBlock/blocks/DummyBlock.js
-import React, { useState } from 'react';
+import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
@@ -7,17 +6,16 @@ import 'react-tooltip/dist/react-tooltip.css';
 import './DummyBlock.css';
 
 const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
-  const [isDragOver, setIsDragOver] = useState(false);
-
   const handleDrop = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    setIsDragOver(false);
     const blockType = event.dataTransfer.getData('application/reactflow');
     if (blockType === 'start') {
       alert('Start blocks cannot replace dummy blocks.');
       return;
     }
+    // Instead of triggering replacement immediately,
+    // let the palette trigger it via onReplace.
     if (onReplace) {
       onReplace(id, blockType);
     }
@@ -26,34 +24,28 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
   const handleDragOver = (event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'copy';
-    setIsDragOver(true);
   };
 
   const handleDragLeave = (event) => {
     event.preventDefault();
-    setIsDragOver(false);
   };
 
-  // Enable keyboard users to trigger replacement
+  // Note: onClick and onKeyPress can also call onReplace if desired.
+  const handleClick = (event) => {
+    event.stopPropagation();
+    if (onReplace) onReplace(id);
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.stopPropagation();
-      if (onReplace) {
-        onReplace(id);
-      }
-    }
-  };
-
-  const handleClick = (event) => {
-    event.stopPropagation();
-    if (onReplace) {
-      onReplace(id);
+      if (onReplace) onReplace(id);
     }
   };
 
   return (
     <div
-      className={`block-container dummy-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''} ${isDragOver ? 'drag-over' : ''}`}
+      className={`block-container dummy-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''} ${data.flash ? 'replacement-success' : ''}`}
       data-id={id}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
