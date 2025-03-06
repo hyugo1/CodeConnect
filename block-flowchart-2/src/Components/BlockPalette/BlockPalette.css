@@ -3,14 +3,12 @@
 .aside-container {
   position: relative;
   padding: 10px;
-  /* background-color: #eee; */
   width: 220px;
   box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: visible;
-  height: 100vh;
+  height: 100vh; 
   transition: width 0.3s;
   border: 2px solid #555;
+  overflow-y: auto;
 }
 
 .collapsed {
@@ -39,5 +37,5 @@ aside h3 {
 }
 
 .block-container input[type="text"] {
-  font-size: 18px;
+  font-size: 16px;
 }

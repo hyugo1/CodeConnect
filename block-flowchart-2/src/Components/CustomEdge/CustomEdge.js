@@ -61,7 +61,7 @@ const CustomEdge = ({
         markerEnd={markerType}
       />
       {label && (
-        <text>
+        <text dy="-5">
           <textPath href={`#${id}`} style={{ fontSize: 18 }} startOffset="50%" textAnchor="middle">
             {label}
           </textPath>

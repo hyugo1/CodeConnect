@@ -3,11 +3,12 @@
   --block-border: #777;
   --block-selected-bg: #e7f0ff;
   --block-selected-border: #007bff;
-  --block-shadow: rgba(0, 0, 0, 0.1);
+  /* Increased shadow opacity and size */
+  --block-shadow: rgba(0, 0, 0, 0.3);
   --transition-time: 0.3s;
   --default-block-width: 200px; 
   --conditional-block-width: 300px;
-  --operand-width: 100px; 
+  --operand-width: 108px; 
   --operator-width: 60px; 
 }
 
@@ -29,18 +30,19 @@
     border-color var(--transition-time),
     box-shadow var(--transition-time),
     transform var(--transition-time);
-  box-shadow: 0 2px 4px var(--block-shadow);
+  /* Updated shadow for a more pronounced effect */
+  box-shadow: 0 4px 8px var(--block-shadow);
 }
 
 .block-container:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--block-shadow);
+  box-shadow: 0 6px 12px var(--block-shadow);
 }
 
 .block-container.selected {
   border-color: var(--block-selected-border);
   background-color: var(--block-selected-bg);
-  box-shadow: 0 4px 12px var(--block-shadow);
+  box-shadow: 0 8px 16px var(--block-shadow);
 }
 
 .if-block,

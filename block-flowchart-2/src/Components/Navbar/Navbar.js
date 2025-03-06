@@ -111,7 +111,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     <nav className="navbar">
       {/* Left Section: Logo and Hint Button */}
       <div className="navbar-section navbar-left">
-        <h2 className="navbar-title">A Lego-like Programming</h2>
+        <h2 className="navbar-title">A Lego-like Visual Programming</h2>
         <button onClick={() => setShowHint(true)} className="hint-button" title="Show block guide">
           <FaLightbulb /> Guide
         </button>
@@ -177,28 +177,44 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
 
       {/* Modal for the Guide */}
       {showHint && (
-      <div className="hint-modal-overlay">
-        <div className="hint-modal-content">
-          <h3>Block Guide</h3>
-          <ul>
-            <li><strong>Start:</strong> Marks the beginning of your program.</li>
-            <li><strong>End:</strong> Marks the end of your program.</li>
-            <li><strong>If:</strong> Represents a conditional decision point.</li>
-            <li><strong>While:</strong> Executes a loop while a condition is true.</li>
-            <li><strong>Print:</strong> Outputs a message or variable to the console.</li>
-            <li><strong>Set Variable:</strong> Initializes a variable with a value.</li>
-            <li><strong>Change Variable:</strong> Modifies an existing variable.</li>
-            <li><strong>Move:</strong> Moves a character. Enter the distance you want the character to move.</li>
-            {/* <li><strong>Rotate:</strong> Rotates the character by the specified angle. Enter an angle in degrees to adjust the character's orientation.</li> */}
-            {/* <li><strong>Resize:</strong>Resizes the character. Enter a size to adjust the character's size.</li> */}
-            <li><strong>Dummy:</strong> A placeholder block that can be replaced with a specific action.</li>
-          </ul>
-          <button onClick={() => setShowHint(false)} className="hint-close-button">
-            Close
-          </button>
+        <div className="hint-modal-overlay">
+          <div className="hint-modal-content">
+            <h3>Block Guide</h3>
+            <ul>
+              <li>
+                <strong>Start:</strong> This block marks the beginning of your program.
+              </li>
+              <li>
+                <strong>End:</strong> This block marks the end of your program.
+              </li>
+              <li>
+                <strong>If Then:</strong> Use this block to create decisions. It checks a condition and lets your program take different paths.
+              </li>
+              <li>
+                <strong>While:</strong> Use this block to repeat actions as long as a condition remains true.
+              </li>
+              <li>
+                <strong>Print:</strong> Displays a message or value on the screen and in the console.
+              </li>
+              <li>
+                <strong>Set Variable:</strong> Creates a new variable and assigns it an initial value.
+              </li>
+              <li>
+                <strong>Change Variable:</strong> Updates the value of an existing variable.
+              </li>
+              <li>
+                <strong>Move:</strong> Moves your character a specified distance.
+              </li>
+              <li>
+                <strong>Dummy:</strong> A temporary block. Click it to choose a replacement block that specifies an action.
+              </li>
+            </ul>
+            <button onClick={() => setShowHint(false)} className="hint-close-button">
+              Close
+            </button>
+          </div>
         </div>
-      </div>
-    )}
+      )}
     </nav>
   );
 };

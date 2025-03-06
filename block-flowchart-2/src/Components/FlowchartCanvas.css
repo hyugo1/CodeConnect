@@ -1,18 +1,18 @@
 /* src/Components/FlowchartCanvas.css */
 
-.flowchart-wrapper {
-    display: flex;
-    height: 100vh;
-  }
-  
-  .block-palette {
-    width: 220px;
-    padding: 10px;
-    overflow-y: auto;
-  }
-  
-  .reactflow-wrapper {
-    flex: 1;
-    position: relative;
-  }
-  
+
+.close-button {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: transparent;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.close-button:hover {
+  color: #f00;
+}

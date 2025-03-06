@@ -61,3 +61,23 @@
   display: flex;
   flex-direction: column;
 }
+
+.console-toggle-button {
+  cursor: pointer;
+  background-color: #9896f1;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 5px 10px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+}
+
+.console-toggle-button:hover {
+  background-color: #7a78d1;
+  transform: scale(1.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.console-toggle-button:active {
+  transform: scale(0.98);
+}
