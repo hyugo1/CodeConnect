@@ -1,4 +1,3 @@
-// src/Components/CustomBlock/blocks/PrintBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPrint } from 'react-icons/fa';
@@ -16,9 +15,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
 
   return (
     <div
-      className={`block-container print-block ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container print-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#ffeeba' }}
     >
       <FaPrint style={{ marginBottom: 5 }} />
@@ -56,7 +53,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
           padding: '5px',
           borderRadius: '3px',
           border: '1px solid #ccc',
-          fontsize: '20px',
+          fontSize: '20px',
           boxSizing: 'border-box',
         }}
       />

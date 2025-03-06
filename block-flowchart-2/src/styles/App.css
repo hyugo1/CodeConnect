@@ -27,8 +27,6 @@ body, html {
 }
 
 /* Left Section - Block Palette */
-
-
 .BlockPalette > * {
   overflow-y: auto;
 }

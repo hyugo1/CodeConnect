@@ -14,11 +14,11 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
       alert('Start blocks cannot replace dummy blocks.');
       return;
     }
-    // Instead of triggering replacement immediately,
-    // let the palette trigger it via onReplace.
-    if (onReplace) {
-      onReplace(id, blockType);
+    else if (blockType === 'end') {
+      alert('End blocks cannot replace dummy blocks.');
+      return;
     }
+    if (onReplace) onReplace(id, blockType);
   };
 
   const handleDragOver = (event) => {
@@ -26,21 +26,13 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
     event.dataTransfer.dropEffect = 'copy';
   };
 
-  const handleDragLeave = (event) => {
-    event.preventDefault();
-  };
-
-  // Note: onClick and onKeyPress can also call onReplace if desired.
   const handleClick = (event) => {
     event.stopPropagation();
     if (onReplace) onReplace(id);
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.stopPropagation();
-      if (onReplace) onReplace(id);
-    }
+    if (e.key === 'Enter' && onReplace) onReplace(id);
   };
 
   return (
@@ -49,7 +41,6 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
       data-id={id}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
       onClick={handleClick}
       role="button"
       tabIndex={0}

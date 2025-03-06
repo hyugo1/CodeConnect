@@ -1,4 +1,3 @@
-// src/Components/CustomBlock/blocks/StartBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlay } from 'react-icons/fa';
@@ -9,9 +8,7 @@ import './block.css';
 const StartBlock = ({ id, data, selected, executing }) => {
   return (
     <div
-      className={`block-container start-block ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#d3f9d8' }}
     >
       <FaPlay style={{ marginBottom: 5 }} />

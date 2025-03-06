@@ -1,4 +1,3 @@
-// src/Components/CustomBlock/blocks/MoveBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import {
@@ -55,9 +54,7 @@ const MoveBlock = ({ id, data, selected, executing }) => {
 
   return (
     <div
-      className={`block-container move-block ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container move-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#d8f9f9' }}
     >
       {icon}

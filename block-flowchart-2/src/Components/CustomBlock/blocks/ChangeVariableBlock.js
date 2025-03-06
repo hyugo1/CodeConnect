@@ -1,4 +1,3 @@
-// src/Components/CustomBlock/blocks/ChangeVariableBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlusCircle } from 'react-icons/fa';
@@ -27,12 +26,9 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
     updateNodeData({ valueType: nextType });
   };
 
-  let placeholderText = '';
-  if (valueType === 'number') {
-    placeholderText = 'Enter arithmetic expression (e.g., 2+3)';
-  } else {
-    placeholderText = 'Enter new text value';
-  }
+  let placeholderText = valueType === 'number'
+    ? 'Enter arithmetic expression (e.g., 2+3)'
+    : 'Enter new text value';
 
   return (
     <div
@@ -63,37 +59,20 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-source`} place="top" />
-
       <input
         type="text"
         placeholder="Variable Name"
         value={data.varName || ''}
         onChange={handleVarNameChange}
-        style={{
-          width: '100%',
-          marginTop: 10,
-          padding: '5px',
-          borderRadius: '3px',
-          border: '1px solid #ccc',
-          // fontsize: '20px',
-        }}
+        style={{ width: '100%', marginTop: 10, padding: '5px', borderRadius: '3px', border: '1px solid #ccc' }}
       />
-
       <input
         type="text"
         placeholder={placeholderText}
         value={data.varValue || ''}
         onChange={handleVarValueChange}
-        style={{
-          width: '100%',
-          marginTop: 10,
-          padding: '5px',
-          borderRadius: '3px',
-          border: '1px solid #ccc',
-          // fontsize: '20px',
-        }}
+        style={{ width: '100%', marginTop: 10, padding: '5px', borderRadius: '3px', border: '1px solid #ccc' }}
       />
-
       <button
         onClick={toggleValueType}
         style={{
@@ -104,7 +83,6 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
           border: '1px solid #aaa',
           borderRadius: '3px',
           padding: '2px 5px',
-          // fontSize: '10px',
           cursor: 'pointer',
         }}
         title="Toggle change value type"

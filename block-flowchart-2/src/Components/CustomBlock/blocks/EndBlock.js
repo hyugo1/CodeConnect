@@ -1,4 +1,3 @@
-// src/Components/CustomNode/blocks/EndBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaStop } from 'react-icons/fa';
@@ -9,9 +8,7 @@ import './block.css';
 const EndBlock = ({ id, data, selected, executing }) => {
   return (
     <div
-      className={`block-container end-block ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container end-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#f7d8d8' }}
     >
       <FaStop style={{ marginBottom: 5 }} />

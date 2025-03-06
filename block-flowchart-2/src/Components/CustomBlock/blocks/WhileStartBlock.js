@@ -1,4 +1,3 @@
-// src/Components/CustomNode/blocks/WhileStartBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaSync } from 'react-icons/fa';
@@ -24,9 +23,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
 
   return (
     <div
-      className={`block-container while-start-block ${selected ? 'selected' : ''} ${
-        executing ? 'executing' : ''
-      }`}
+      className={`block-container while-start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#f9f7d8' }}
     >
       <FaSync style={{ marginBottom: 5 }} />
@@ -41,7 +38,6 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="Connect from previous block"
         isConnectable={true}
       />
-      {/* Condition inputs styled like in the If block */}
       <div className="condition-container">
         <input
           type="text"
@@ -71,7 +67,6 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
           className="operand-input"
         />
       </div>
-      {/* Loop body handle (for when the condition is true) */}
       <Handle
         type="source"
         position={Position.Bottom}
@@ -82,7 +77,6 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="If condition true, enter loop body"
         isConnectable={true}
       />
-      {/* Exit loop handle (for when the condition is false) */}
       <Handle
         type="source"
         position={Position.Bottom}
@@ -93,7 +87,6 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="If condition false, exit loop"
         isConnectable={true}
       />
-      {/* Optional loopback handle for connecting back to this block */}
       <Handle
         type="target"
         position={Position.Left}

@@ -1,4 +1,3 @@
-// src/Components/CustomBlock/blocks/SetVariableBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPenFancy } from 'react-icons/fa';
@@ -10,7 +9,6 @@ import './block.css';
 const SetVariableBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   
-  // Allow only "number" and "string" types for now.
   const types = ['number', 'string'];
   const currentType = data.valueType || 'number';
   const currentTypeIndex = types.indexOf(currentType);
@@ -28,13 +26,9 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
     updateNodeData({ valueType: nextType });
   };
 
-  // Adjust placeholder text: if number, hint arithmetic is allowed.
-  let placeholderText = '';
-  if (currentType === 'number') {
-    placeholderText = 'Enter number or expression (e.g., 2+3*4)';
-  } else {
-    placeholderText = 'Enter text value';
-  }
+  let placeholderText = currentType === 'number'
+    ? 'Enter number or expression (e.g., 2+3*4)'
+    : 'Enter text value';
 
   return (
     <div
@@ -63,14 +57,12 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-source`} place="top" />
-
       <input
         type="text"
         placeholder="Variable Name"
         value={data.varName || ''}
         onChange={handleVarNameChange}
         className="block-input"
-        // style={{ fontsize: '20px' }}
       />
       <input
         type="text"
@@ -78,7 +70,6 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
         value={data.varValue || ''}
         onChange={handleVarValueChange}
         className="block-input"
-        // style={{ fontsize: '20px' }}
       />
       <button
         onClick={toggleValueType}
@@ -90,7 +81,6 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
           border: '1px solid #aaa',
           borderRadius: '3px',
           padding: '2px 5px',
-          // fontsize: '20px',
           cursor: 'pointer',
         }}
         title="Toggle variable type"

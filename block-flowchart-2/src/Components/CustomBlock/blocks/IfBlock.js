@@ -1,4 +1,3 @@
-// src/Components/CustomNode/blocks/IfBlock.js
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
@@ -28,7 +27,9 @@ const IfBlock = ({ id, data, selected, executing }) => {
       style={{ backgroundColor: '#d8d8f9' }}
     >
       <FaQuestion style={{ marginBottom: 5 }} />
-      <div>{data.label}</div>
+      <div>{data.label || 'If Then'}</div>
+
+      {/* Incoming handle on top */}
       <Handle
         type="target"
         position={Position.Top}
@@ -36,9 +37,11 @@ const IfBlock = ({ id, data, selected, executing }) => {
         className="handle-target-circle"
         style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from another block"
+        data-tooltip-content="Connect from previous block"
         isConnectable={true}
       />
+
+      {/* Outgoing handles at the bottom */}
       <Handle
         type="source"
         position={Position.Bottom}
@@ -59,6 +62,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
         data-tooltip-content="False Branch"
         isConnectable={true}
       />
+
       <Tooltip id={`tooltip-${id}-target`} place="top" />
       <Tooltip id={`tooltip-${id}-yes`} place="top" />
       <Tooltip id={`tooltip-${id}-no`} place="top" />
@@ -66,7 +70,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
       <div className="condition-container">
         <input
           type="text"
-          placeholder="Left Operand"
+          placeholder="First Variable"
           value={data.leftOperand || ''}
           onChange={handleLeftOperandChange}
           className="operand-input"
@@ -76,7 +80,6 @@ const IfBlock = ({ id, data, selected, executing }) => {
           onChange={handleOperatorChange}
           className="operator-select"
         >
-          <option value="">Op</option>
           <option value="<">&lt;</option>
           <option value=">">&gt;</option>
           <option value="==">==</option>
@@ -86,7 +89,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
         </select>
         <input
           type="text"
-          placeholder="Right Operand"
+          placeholder="Second Variable"
           value={data.rightOperand || ''}
           onChange={handleRightOperandChange}
           className="operand-input"
