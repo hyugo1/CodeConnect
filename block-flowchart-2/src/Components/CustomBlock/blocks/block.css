@@ -3,7 +3,6 @@
   --block-border: #777;
   --block-selected-bg: #e7f0ff;
   --block-selected-border: #007bff;
-  /* Increased shadow opacity and size */
   --block-shadow: rgba(0, 0, 0, 0.3);
   --transition-time: 0.3s;
   --default-block-width: 200px; 
@@ -31,6 +30,8 @@
     box-shadow var(--transition-time),
     transform var(--transition-time);
   box-shadow: 0 4px 8px var(--block-shadow);
+  z-index: 2;
+  overflow: visible;
 }
 
 .block-container:hover {
@@ -104,6 +105,7 @@
   border-radius: 50%;
   border: 2px solid #555;
   transition: background-color 0.3s, border-color 0.3s;
+  z-index: 1;
 }
 
 .handle-target-circle:hover {
@@ -121,6 +123,7 @@
   transform: translate(-50%, 0);
   border-radius: 3px;
   transition: background-color 0.3s;
+  z-index: 1;
 }
 
 .handle-source-square:hover {
@@ -144,4 +147,49 @@
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
   }
+}
+
+/* Updated CSS for edges to bring markers in front */
+.react-flow__edge-path {
+  transition: stroke 0.4s ease, stroke-width 0.4s ease;
+  stroke: #22ff77; /* default color if style.stroke not set */
+  z-index: 1000; /* Bring edge paths above nodes and handles */
+}
+
+.react-flow__edge-path.selected {
+  stroke: #22ff77 !important;
+}
+
+.react-flow__edge-path.hovered {
+  stroke: #22ff77 !important;
+  stroke-width: 5 !important;
+  cursor: pointer;
+}
+
+.react-flow__edge-path:hover {
+  cursor: pointer;
+}
+
+.react-flow__edge-path.executing {
+  animation: edgePulse 0.4s ease-in-out infinite;
+}
+
+@keyframes edgePulse {
+  0% {
+    stroke-width: 3;
+    opacity: 1;
+  }
+  50% {
+    stroke-width: 5;
+    opacity: 0.4;
+  }
+  100% {
+    stroke-width: 3;
+    opacity: 1;
+  }
+}
+
+/* Updated edges container z-index */
+.react-flow__edges {
+  z-index: 1000; /* Bring the entire edges layer above nodes and handles */
 }

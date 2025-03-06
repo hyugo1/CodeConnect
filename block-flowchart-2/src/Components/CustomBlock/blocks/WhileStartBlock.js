@@ -41,7 +41,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
       <div className="condition-container">
         <input
           type="text"
-          placeholder="Left Operand"
+          placeholder="First Variable"
           value={data.leftOperand || ''}
           onChange={handleLeftOperandChange}
           className="operand-input"
@@ -61,7 +61,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         </select>
         <input
           type="text"
-          placeholder="Right Operand"
+          placeholder="Second Variable"
           value={data.rightOperand || ''}
           onChange={handleRightOperandChange}
           className="operand-input"

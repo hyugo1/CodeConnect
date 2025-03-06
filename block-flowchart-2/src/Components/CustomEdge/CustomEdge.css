@@ -1,12 +1,16 @@
 .react-flow__edge-path {
   transition: stroke 0.4s ease, stroke-width 0.4s ease;
-  stroke: #22ff77; /* default color if style.stroke not set */
+  stroke: #22ff77; 
 }
 
-.react-flow__edge-path.selected,
+.react-flow__edge-path.selected {
+  stroke: #22ff77 !important;
+}
+
 .react-flow__edge-path.hovered {
   stroke: #22ff77 !important;
-  stroke-width: 10 !important;
+  stroke-width: 5 !important;
+  cursor: pointer;
 }
 
 .react-flow__edge-path:hover {
@@ -14,7 +18,7 @@
 }
 
 .react-flow__edge-path.executing {
-  /* animation: edgePulse 0.4s ease-in-out infinite; */
+  animation: edgePulse 0.4s ease-in-out infinite;
 }
 
 @keyframes edgePulse {

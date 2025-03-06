@@ -63,7 +63,7 @@ function FlowchartCanvas({
     }
   }, [blocks]);
 
-  // Handler for replacing a dummy block remains unchanged.
+  // Handler for replacing a dummy block.
   const handleReplaceDummyBlock = useCallback(
     (dummyId, newBlockType) => {
       // Find the dummy node to replace.
@@ -152,7 +152,7 @@ function FlowchartCanvas({
             label: 'False',
           };
           setEdges((eds) => eds.concat([newEdgeIfTrue, newEdgeIfFalse]));
-        } else if (newBlockType === 'whileStart') {
+        } else if (newBlockType === 'whileStart') { // Changed from 'while' to 'whileStart'
           const updatedWhileBlock = {
             ...blockToReplace,
             data: {
@@ -377,7 +377,8 @@ function FlowchartCanvas({
       if (!blockType) return;
       const targetElement = event.target;
       const dummyBlockElement = targetElement.closest('.dummy-block');
-      if (dummyBlockElement && blockType !== 'while' && blockType !== 'if') {
+      // When dropping on a dummy, only allow replacing with if or whileStart blocks.
+      if (dummyBlockElement && blockType !== 'whileStart' && blockType !== 'if') {
         return;
       }
       const dropPoint = {
@@ -387,7 +388,7 @@ function FlowchartCanvas({
       const position = project(dropPoint);
       const snappedX = Math.round(position.x / 15) * 15;
       const snappedY = Math.round(position.y / 15) * 15;
-      if (blockType === 'while') {
+      if (blockType === 'whileStart') { // Updated to use 'whileStart'
         const whileStartBlock = {
           id: uuidv4(),
           type: 'custom',

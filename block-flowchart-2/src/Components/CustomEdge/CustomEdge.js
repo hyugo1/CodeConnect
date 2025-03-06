@@ -15,9 +15,7 @@ const CustomEdge = ({
   selected,
   activeEdgeId,
 }) => {
-  // Generate a Bezier path. React Flow's internal geometry will handle smoothstep if
-  // you set 'smoothstep' as the type in FlowchartCanvas. Or you can import
-  // getSmoothStepPath if you want to handle that logic here explicitly.
+  // Generate a Bezier path for the edge
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
@@ -27,11 +25,10 @@ const CustomEdge = ({
     targetPosition,
   });
 
-  // If style.stroke is defined, use that color. Otherwise, default to #555.
+  // Use the provided stroke color, or default to #555
   const edgeColor = (style && style.stroke) || '#555';
 
-  // Use our custom marker. "currentColor" in the marker path
-  // ensures the arrow matches edgeColor.
+  // Use the custom marker defined below.
   const markerEnd = 'url(#customArrow)';
 
   const [isHovered, setIsHovered] = useState(false);
@@ -48,18 +45,18 @@ const CustomEdge = ({
   return (
     <>
       {/* Inline SVG definitions for custom markers */}
-      <svg style={{ height: 0, width: 0 }}>
+      <svg style={{ position: 'absolute', height: 0, width: 0 }}>
         <defs>
           <marker
             id="customArrow"
-            markerWidth="8"
-            markerHeight="8"
-            refX="2"     // Pulls the arrow tip closer to the end of the path
-            refY="4"
+            markerWidth="6"
+            markerHeight="6"
+            refX="1.5"
+            refY="3"
             orient="auto"
             markerUnits="strokeWidth"
           >
-            <path d="M0,0 L0,8 L8,4 z" fill="currentColor" />
+            <path d="M0,0 L0,6 L6,3 z" fill="currentColor" />
           </marker>
         </defs>
       </svg>
@@ -80,7 +77,6 @@ const CustomEdge = ({
       <path
         id={id}
         d={edgePath}
-        // "color" sets the arrow’s fill via currentColor
         style={{ ...style, fill: 'none', color: edgeColor }}
         className={`react-flow__edge-path 
           ${selected ? 'selected' : ''} 
