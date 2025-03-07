@@ -1,110 +1,67 @@
-import React, { useState, useEffect } from 'react';
+// src/Components/Navbar/Navbar.js
+
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  saveFlowchart,
-  loadFlowchart,
-  getSavedProjects,
-  deleteProject,
+  exportFlowchart,
+  importFlowchart,
+  // Removed getSavedProjects and deleteProject if not used.
 } from '../../utils/storage';
 import './Navbar.css';
-import { FaFolderOpen, FaTrash, FaLightbulb } from 'react-icons/fa';
+import {
+  FaFileExport,
+  FaFileImport,
+  FaLightbulb,
+} from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
+  // Default projectName is blank
   const [projectName, setProjectName] = useState('');
-  const [savedProjects, setSavedProjects] = useState(getSavedProjects());
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    const projects = getSavedProjects();
-    setSavedProjects(projects);
-  }, []);
-
-  const handleSaveFlowchart = () => {
+  // Export the current flowchart as a JSON file.
+  const handleExportFlowchart = () => {
+    // Ensure a file name is provided
+    if (!projectName.trim()) {
+      toast.error('Please enter a file name to export the project.');
+      return;
+    }
     try {
-      const sanitizedProjectName = projectName.trim().replace(/[^a-zA-Z0-9_-]/g, '_');
-      if (!sanitizedProjectName) {
-        toast.error('Please enter a valid project name (letters, numbers, underscores, or dashes).');
-        return;
-      }
-
-      // Check if a project with the same name already exists
-      const existingProjects = getSavedProjects();
-      if (existingProjects.includes(sanitizedProjectName)) {
-        if (!window.confirm(`A project named "${sanitizedProjectName}" already exists. Do you want to overwrite it?`)) {
-          return;
-        }
-      }
-
-      // Optionally log the blocks and edges being saved
-      console.log('Current blocks before saving:', JSON.stringify(blocks, null, 2));
-      console.log('Current edges before saving:', JSON.stringify(edges, null, 2));
-
-      // Serialize the nodes and edges
-      const serializedNodes = blocks.map(({ id, type, position, data }) => ({ id, type, position, data }));
-      const serializedEdges = edges.map(({ id, source, target, sourceHandle, targetHandle, type, animated, markerEnd, style, label }) => ({
-        id,
-        source,
-        target,
-        sourceHandle,
-        targetHandle,
-        type,
-        animated,
-        markerEnd,
-        style,
-        label,
-      }));
-
-      console.log('Serialized blocks:', JSON.stringify(serializedNodes, null, 2));
-      console.log('Serialized edges:', JSON.stringify(serializedEdges, null, 2));
-
-      saveFlowchart(sanitizedProjectName, blocks, edges);
-      setSavedProjects(getSavedProjects());
-      setProjectName('');
-      setIsDropdownOpen(false);
-      toast.success(`Flowchart "${sanitizedProjectName}" saved successfully.`);
+      const json = exportFlowchart(blocks, edges);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      // Use the provided project name
+      link.download = `${projectName.trim()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Flowchart exported successfully.');
     } catch (error) {
-      console.error('Error saving flowchart:', error);
-      toast.error('Failed to save the flowchart. Please try again.');
+      console.error('Export error:', error);
+      toast.error('Failed to export the flowchart.');
     }
   };
 
-  const handleLoadFlowchart = (name) => {
-    try {
-      const loadedData = loadFlowchart(name);
-      if (loadedData) {
-        setNodes(loadedData.blocks);
-        setEdges(loadedData.edges);
-        setIsDropdownOpen(false);
-        toast.success(`Flowchart "${name}" loaded successfully.`);
-      } else {
-        toast.error('Failed to load the selected project.');
-      }
-    } catch (error) {
-      console.error('Error loading flowchart:', error);
-      toast.error('An error occurred while loading the flowchart.');
-    }
-  };
-
-  const handleDeleteProject = (name) => {
-    if (window.confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+  // Import a flowchart from a JSON file.
+  const handleImportFlowchart = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
       try {
-        deleteProject(name);
-        setSavedProjects(getSavedProjects());
-        toast.success(`Flowchart "${name}" deleted successfully.`);
+        const importedData = importFlowchart(evt.target.result);
+        setNodes(importedData.blocks);
+        setEdges(importedData.edges);
+        toast.success('Flowchart imported successfully.');
       } catch (error) {
-        console.error('Error deleting project:', error);
-        toast.error('Failed to delete the project. Please try again.');
+        console.error('Import error:', error);
+        toast.error('Failed to import flowchart: ' + error.message);
       }
-    }
-  };
-
-  const handleClearFlowchart = () => {
-    if (window.confirm('Are you sure you want to start a new project? Unsaved changes will be lost.')) {
-      setNodes([]);
-      setEdges([]);
-      toast.info('Started a new project.');
-    }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -117,62 +74,35 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         </button>
       </div>
 
-      {/* Center Section: Save and New Project */}
+      {/* Center Section: Export and Import */}
       <div className="navbar-section navbar-center">
-        <div className="save-load-section">
+        <div className="export-import-section">
           <input
             type="text"
-            placeholder="Project Name"
+            placeholder="File Name"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
             className="project-name-input"
           />
-          <button onClick={handleSaveFlowchart} className="save-button">
-            Save
+          <button onClick={handleExportFlowchart} className="export-button" title="Export Flowchart">
+            <FaFileExport /> Export Project
           </button>
-          <button onClick={handleClearFlowchart} className="clear-button">
-            New Project
+          <button onClick={() => fileInputRef.current.click()} className="import-button" title="Import Flowchart">
+            <FaFileImport /> Import Project
           </button>
+          <input
+            type="file"
+            accept="application/json"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleImportFlowchart}
+          />
         </div>
       </div>
 
-      {/* Right Section: Saved Projects Dropdown */}
+      {/* Right Section: (Optional) Placeholder or other features */}
       <div className="navbar-section navbar-right">
-        <button
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="dropdown-button"
-        >
-          Saved Projects <FaFolderOpen />
-        </button>
-        {isDropdownOpen && (
-          <ul className="project-dropdown">
-            {savedProjects.length === 0 ? (
-              <li>No saved projects.</li>
-            ) : (
-              savedProjects.map((name) => (
-                <li key={name}>
-                  <span>{name}</span>
-                  <div className="project-actions">
-                    <button
-                      onClick={() => handleLoadFlowchart(name)}
-                      className="load-button"
-                      title="Load Project"
-                    >
-                      <FaFolderOpen />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProject(name)}
-                      className="delete-button"
-                      title="Delete Project"
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                </li>
-              ))
-            )}
-          </ul>
-        )}
+        {/* You can add any additional features or leave this empty */}
       </div>
 
       {/* Modal for the Guide */}
@@ -181,37 +111,17 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           <div className="hint-modal-content">
             <h3>Block Guide</h3>
             <ul>
-              <li>
-                <strong>Start:</strong> This block marks the beginning of your program.
-              </li>
-              <li>
-                <strong>End:</strong> This block marks the end of your program.
-              </li>
-              <li>
-                <strong>If Then:</strong> Use this block to create decisions. It checks a condition and lets your program take different paths.
-              </li>
-              <li>
-                <strong>While:</strong> Use this block to repeat actions as long as a condition remains true.
-              </li>
-              <li>
-                <strong>Print:</strong> Displays a message or value on the screen and in the console.
-              </li>
-              <li>
-                <strong>Set Variable:</strong> Creates a new variable and assigns it an initial value.
-              </li>
-              <li>
-                <strong>Change Variable:</strong> Updates the value of an existing variable.
-              </li>
-              <li>
-                <strong>Move:</strong> Moves your character a specified distance.
-              </li>
-              <li>
-                <strong>Dummy:</strong> A temporary block. Click it to choose a replacement block that specifies an action.
-              </li>
+              <li><strong>Start:</strong> This block marks the beginning of your program.</li>
+              <li><strong>End:</strong> This block marks the end of your program.</li>
+              <li><strong>If Then:</strong> Use this block to create decisions.</li>
+              <li><strong>While:</strong> Use this block to repeat actions as long as a condition remains true.</li>
+              <li><strong>Print:</strong> Displays a message on the screen and console.</li>
+              <li><strong>Set Variable:</strong> Creates a new variable with an initial value.</li>
+              <li><strong>Change Variable:</strong> Updates the value of an existing variable.</li>
+              <li><strong>Move:</strong> Moves your character a specified distance.</li>
+              <li><strong>Dummy:</strong> A temporary block. Click to replace it with a real block.</li>
             </ul>
-            <button onClick={() => setShowHint(false)} className="hint-close-button">
-              Close
-            </button>
+            <button onClick={() => setShowHint(false)} className="hint-close-button">Close</button>
           </div>
         </div>
       )}

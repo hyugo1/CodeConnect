@@ -1,3 +1,5 @@
+// src/Components/FlowchartCanvas.js
+
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
   addEdge,
@@ -46,14 +48,14 @@ function FlowchartCanvas({
   // Palette state for replacing dummy blocks
   const [paletteVisible, setPaletteVisible] = useState(false);
   const [currentDummyBlockId, setCurrentDummyBlockId] = useState(null);
-  // State to store the dummy block position for palette placement
+  // Dummy block palette position
   const [dummyBlockPosition, setDummyBlockPosition] = useState(null);
 
-  // ReactFlow wrapper & project() function for coordinate conversion
+  // ReactFlow wrapper & project() function
   const reactFlowWrapper = useRef(null);
   const { project } = useReactFlow();
 
-  // Track last added block (for auto-connecting, if desired)
+  // Track last added block
   const lastBlockId = useRef(null);
   useEffect(() => {
     if (blocks.length > 0) {
@@ -66,7 +68,6 @@ function FlowchartCanvas({
   // Handler for replacing a dummy block.
   const handleReplaceDummyBlock = useCallback(
     (dummyId, newBlockType) => {
-      // Find the dummy node to replace.
       const blockToReplace = blocks.find((block) => block.id === dummyId);
       if (!blockToReplace) return;
       if (blockToReplace.data.dummyAllowed === false) {
@@ -78,14 +79,12 @@ function FlowchartCanvas({
         return;
       }
   
-      // Trigger a flash animation before replacement.
       setNodes((nds) =>
         nds.map((b) =>
           b.id === dummyId ? { ...b, data: { ...b.data, flash: true } } : b
         )
       );
   
-      // Delay replacement until after the flash (500ms).
       setTimeout(() => {
         if (newBlockType === 'if') {
           const updatedIfBlock = {
@@ -152,7 +151,7 @@ function FlowchartCanvas({
             label: 'False',
           };
           setEdges((eds) => eds.concat([newEdgeIfTrue, newEdgeIfFalse]));
-        } else if (newBlockType === 'whileStart') { // Changed from 'while' to 'whileStart'
+        } else if (newBlockType === 'whileStart') {
           const updatedWhileBlock = {
             ...blockToReplace,
             data: {
@@ -258,7 +257,6 @@ function FlowchartCanvas({
           };
           setNodes((nds) => nds.map((b) => (b.id === dummyId ? newBlock : b)));
         }
-        // Hide the palette after replacement.
         setPaletteVisible(false);
         setCurrentDummyBlockId(null);
         setDummyBlockPosition(null);
@@ -277,7 +275,6 @@ function FlowchartCanvas({
     setActiveEdgeId
   );
 
-  // Modify CustomBlockWrapper so that onReplace receives the click event.
   const CustomBlockWrapper = useCallback(
     (props) => (
       <CustomBlock
@@ -286,7 +283,6 @@ function FlowchartCanvas({
         onReplace={(dummyId, e) => {
           if (e && e.currentTarget) {
             const rect = e.currentTarget.getBoundingClientRect();
-            // Position the palette 10px to the right of the dummy block.
             setDummyBlockPosition({ top: rect.top, left: rect.right + 10 });
           } else {
             setDummyBlockPosition({ top: 100, left: 100 });
@@ -377,7 +373,6 @@ function FlowchartCanvas({
       if (!blockType) return;
       const targetElement = event.target;
       const dummyBlockElement = targetElement.closest('.dummy-block');
-      // When dropping on a dummy, only allow replacing with if or whileStart blocks.
       if (dummyBlockElement && blockType !== 'whileStart' && blockType !== 'if') {
         return;
       }
@@ -388,7 +383,7 @@ function FlowchartCanvas({
       const position = project(dropPoint);
       const snappedX = Math.round(position.x / 15) * 15;
       const snappedY = Math.round(position.y / 15) * 15;
-      if (blockType === 'whileStart') { // Updated to use 'whileStart'
+      if (blockType === 'whileStart') {
         const whileStartBlock = {
           id: uuidv4(),
           type: 'custom',
@@ -634,7 +629,6 @@ function FlowchartCanvas({
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Close button for the palette */}
           <button
             onClick={() => setPaletteVisible(false)}
             className="close-button"

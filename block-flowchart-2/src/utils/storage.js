@@ -20,22 +20,35 @@ const serializeNodes = (blocks) => {
  * @returns {Array} - The serialized edges.
  */
 const serializeEdges = (edges) => {
-  return edges.map(({ id, source, target, sourceHandle, targetHandle, type, animated, markerEnd, style, label }) => ({
-    id,
-    source,
-    target,
-    sourceHandle,
-    targetHandle,
-    type,
-    animated,
-    markerEnd,
-    style,
-    label,
-  }));
+  return edges.map(
+    ({
+      id,
+      source,
+      target,
+      sourceHandle,
+      targetHandle,
+      type,
+      animated,
+      markerEnd,
+      style,
+      label,
+    }) => ({
+      id,
+      source,
+      target,
+      sourceHandle,
+      targetHandle,
+      type,
+      animated,
+      markerEnd,
+      style,
+      label,
+    })
+  );
 };
 
 /**
- * Deserializes blocks by ensuring they have the necessary properties.
+ * Deserializes blocks.
  * @param {Array} serializedNodes - The serialized blocks.
  * @returns {Array} - The deserialized blocks.
  */
@@ -46,7 +59,7 @@ const deserializeNodes = (serializedNodes) => {
 };
 
 /**
- * Deserializes edges by ensuring they have all necessary properties, including sourceHandle.
+ * Deserializes edges.
  * @param {Array} serializedEdges - The serialized edges.
  * @returns {Array} - The deserialized edges.
  */
@@ -158,4 +171,40 @@ export const deleteProject = (projectName) => {
   const sanitizedProjectName = projectName.trim().replace(/[^a-zA-Z0-9_-]/g, '_');
   console.log(`Deleting flowchart "${sanitizedProjectName}".`);
   localStorage.removeItem(`flowchart_${sanitizedProjectName}`);
+};
+
+/**
+ * Exports the flowchart data as a JSON string.
+ * @param {Array} blocks - The blocks of the flowchart.
+ * @param {Array} edges - The edges of the flowchart.
+ * @returns {string} - A pretty-printed JSON string.
+ */
+export const exportFlowchart = (blocks, edges) => {
+  const flowchartData = {
+    blocks: serializeNodes(blocks),
+    edges: serializeEdges(edges),
+    exportedAt: new Date().toISOString(),
+  };
+  return JSON.stringify(flowchartData, null, 2);
+};
+
+/**
+ * Imports flowchart data from a JSON string.
+ * @param {string} jsonData - The JSON string containing the flowchart data.
+ * @returns {Object} - An object with blocks and edges arrays.
+ * @throws {Error} - If the JSON is invalid.
+ */
+export const importFlowchart = (jsonData) => {
+  try {
+    const flowchartData = JSON.parse(jsonData);
+    if (!flowchartData.blocks || !flowchartData.edges) {
+      throw new Error('Invalid flowchart data: missing blocks or edges.');
+    }
+    return {
+      blocks: deserializeNodes(flowchartData.blocks) || [],
+      edges: deserializeEdges(flowchartData.edges) || [],
+    };
+  } catch (error) {
+    throw new Error('Invalid JSON data.');
+  }
 };

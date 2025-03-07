@@ -1,3 +1,5 @@
+// src/App.js
+
 import React, { useState, useCallback } from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import BlockPalette from './Components/BlockPalette/BlockPalette';
@@ -9,47 +11,34 @@ import './styles/App.css';
 import { ToastContainer } from 'react-toastify';
 
 function App() {
-  // State for character and console
+  // State for character and console output
   const [consoleOutput, setConsoleOutput] = useState('');
   const [characterPosition, setCharacterPosition] = useState({ x: 0, y: 0 });
   const [characterMessage, setCharacterMessage] = useState('');
 
-  // Drag State
+  // Drag state
   const [isDragging, setIsDragging] = useState(false);
   const [cancelDrag, setCancelDrag] = useState(false);
 
-  // Flowchart State
+  // Flowchart state
   const [blocks, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
 
-  // Handler for selecting a block from the palette
   const handleSelectBlock = useCallback((blockType) => {
     console.log(`Block selected from left palette: ${blockType}`);
   }, []);
 
   return (
     <div className="App">
-      {/* Navbar at the Top */}
-      <Navbar
-        blocks={blocks}
-        edges={edges}
-        setNodes={setNodes}
-        setEdges={setEdges}
-      />
-
-      {/* Toast Notifications */}
+      <Navbar blocks={blocks} edges={edges} setNodes={setNodes} setEdges={setEdges} />
       <ToastContainer />
-
-      {/* Main Content */}
       <div className="app-container">
-        {/* Left BlockPalette */}
         <BlockPalette
           onSelectBlock={handleSelectBlock}
           isDragging={isDragging}
           setIsDragging={setIsDragging}
           setCancelDrag={setCancelDrag}
         />
-        {/* Flowchart Canvas */}
         <ReactFlowProvider>
           <FlowchartCanvas
             blocks={blocks}
@@ -68,8 +57,6 @@ function App() {
             setIsDragging={setIsDragging}
           />
         </ReactFlowProvider>
-
-        {/* Right Panel */}
         <RightPanel
           characterMessage={characterMessage}
           characterPosition={characterPosition}

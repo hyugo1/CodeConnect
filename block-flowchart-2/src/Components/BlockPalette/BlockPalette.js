@@ -1,3 +1,5 @@
+// src/Components/BlockPalette/BlockPalette.js
+
 import React, { useState, useEffect } from 'react';
 import {
   FaPlay,
@@ -39,7 +41,6 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
     alignItems: 'center',
   };
 
-  // All available blocks
   const blocks = [
     { type: 'start', label: 'Start', color: '#d3f9d8', icon: <FaPlay />, category: 'Control Blocks' },
     { type: 'end', label: 'End', color: '#f9d8d8', icon: <FaStop />, category: 'Control Blocks' },
@@ -51,10 +52,8 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
     { type: 'move', label: 'Move Character', color: '#d8f9f9', icon: <FaArrowsAltH />, category: 'Character Action Blocks' },
   ];
 
-  // If excludeStart is true, remove the start block.
   const filteredBlocks = excludeStart ? blocks.filter(block => block.type !== 'start') : blocks;
 
-  // Group blocks by category
   const groupedBlocks = filteredBlocks.reduce((groups, block) => {
     const cat = block.category || 'Other';
     if (!groups[cat]) {
@@ -107,7 +106,6 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
           )}
         </div>
         {!collapsed && (
-          // Wrap the block list in a container with a bottom border.
           <div
             style={{
               overflowY: 'auto',

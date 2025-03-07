@@ -308,3 +308,46 @@ body {
     transform: translateX(-50%);
   }
 }
+
+
+/* Container for the export/import section */
+.export-import-section {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Styling for the file name input */
+.project-name-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 14px;
+}
+
+/* Base style for export and import buttons */
+.export-button,
+.import-button {
+  background-color: #4caf50; /* Green background */
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Different background color for the import button if desired */
+.import-button {
+  background-color: #2196f3; /* Blue background */
+}
+
+/* Hover states for both buttons */
+.export-button:hover,
+.import-button:hover {
+  opacity: 0.9;
+}
