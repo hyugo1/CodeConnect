@@ -18,13 +18,6 @@ export function generateJavaScriptCode(blocks, edges) {
   const codeLines = [];
 
   // Helper function: if the right operand is not a number and not quoted, wrap it in quotes.
-  // function autoQuote(operand) {
-  //   if (typeof operand !== 'string' || operand.trim() === '') return operand;
-  //   if (!isNaN(parseFloat(operand))) return operand;
-  //   const trimmed = operand.trim();
-  //   if (trimmed.startsWith('"') || trimmed.startsWith("'")) return trimmed;
-  //   return `"${trimmed}"`;
-  // }
   function autoQuote(operand) {
     if (typeof operand !== 'string' || operand.trim() === '') return operand;
     const trimmed = operand.trim();
@@ -131,12 +124,13 @@ export function generateJavaScriptCode(blocks, edges) {
           const condition = `${left} ${block.data.operator} ${right}`;
           // Generate a standard while loop.
           codeLines.push(indent + `while (${condition}) {`);
-          const trueBranch = getNextBlock(blockId, 'true');
-          if (trueBranch) traverse(trueBranch, indentLevel + 1, new Set(visited));
+          // Use "body" to represent the loop body branch.
+          const bodyBranch = getNextBlock(blockId, 'body');
+          if (bodyBranch) traverse(bodyBranch, indentLevel + 1, new Set(visited));
           codeLines.push(indent + `}`);
-          // Generate code for the false branch (i.e., what happens after the loop)
-          const falseBranch = getNextBlock(blockId, 'false');
-          if (falseBranch) traverse(falseBranch, indentLevel, new Set(visited));
+          // Use "exit" to represent what happens after the loop.
+          const exitBranch = getNextBlock(blockId, 'exit');
+          if (exitBranch) traverse(exitBranch, indentLevel, new Set(visited));
         } else {
           codeLines.push(indent + '// Incomplete while condition');
         }
@@ -158,7 +152,7 @@ export function generateJavaScriptCode(blocks, edges) {
         if (block.data.distance && block.data.direction) {
           codeLines.push(
             indent +
-              `moveCharacter(${block.data.direction}, ${block.data.distance})`
+              `moveCharacter(${block.data.direction}, ${block.data.distance});`
           );
         } else {
           codeLines.push(indent + '// Incomplete move block data');

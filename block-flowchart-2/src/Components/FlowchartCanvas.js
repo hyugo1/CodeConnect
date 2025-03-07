@@ -302,13 +302,13 @@ function FlowchartCanvas({
   );
   const edgeTypes = useMemo(() => ({ custom: CustomEdgeWrapper }), [CustomEdgeWrapper]);
 
+  // FIX 1: Lowercase the source handle type so false branch handles are detected correctly.
   const onConnect = useCallback(
     (params) => {
       const originalSourceHandle = params.sourceHandle;
-      let sourceHandleType = params.sourceHandle;
-      if (sourceHandleType) {
-        sourceHandleType = sourceHandleType.split('-')[0];
-      }
+      let sourceHandleType = originalSourceHandle
+        ? originalSourceHandle.split('-')[0].toLowerCase()
+        : '';
       let label = '';
       let edgeStyle = { stroke: '#555', strokeWidth: 3 };
       switch (sourceHandleType) {
@@ -351,16 +351,7 @@ function FlowchartCanvas({
     [setEdges]
   );
 
-  const onDragOver = useCallback((event) => {
-    event.preventDefault();
-    const targetElement = event.target;
-    if (targetElement.closest('.dummy-block')) {
-      event.dataTransfer.dropEffect = 'copy';
-    } else {
-      event.dataTransfer.dropEffect = 'move';
-    }
-  }, []);
-
+  // FIX 2: Prevent auto-connecting from an End block.
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
@@ -529,18 +520,22 @@ function FlowchartCanvas({
           },
         };
         setNodes((nds) => nds.concat(newBlock));
+        // Only auto-connect if the last block exists and is not an End block.
         if (lastBlockId.current) {
-          const newEdge = {
-            id: uuidv4(),
-            source: lastBlockId.current,
-            target: newBlock.id,
-            type: 'custom',
-            animated: false,
-            markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: '#555', strokeWidth: 3 },
-            label: '',
-          };
-          setEdges((eds) => eds.concat(newEdge));
+          const lastBlock = blocks.find((b) => b.id === lastBlockId.current);
+          if (lastBlock && lastBlock.data.blockType.toLowerCase() !== 'end') {
+            const newEdge = {
+              id: uuidv4(),
+              source: lastBlockId.current,
+              target: newBlock.id,
+              type: 'custom',
+              animated: false,
+              markerEnd: { type: MarkerType.ArrowClosed },
+              style: { stroke: '#555', strokeWidth: 3 },
+              label: '',
+            };
+            setEdges((eds) => eds.concat(newEdge));
+          }
         }
         lastBlockId.current = newBlock.id;
       } else {
@@ -558,6 +553,16 @@ function FlowchartCanvas({
     },
     [cancelDrag, project, setNodes, setEdges, setCancelDrag, blocks]
   );
+
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    const targetElement = event.target;
+    if (targetElement.closest('.dummy-block')) {
+      event.dataTransfer.dropEffect = 'copy';
+    } else {
+      event.dataTransfer.dropEffect = 'move';
+    }
+  }, []);
 
   const onSelectionChange = useCallback(({ nodes, edges }) => {
     setSelectedNodes(nodes.map((node) => node.id));
