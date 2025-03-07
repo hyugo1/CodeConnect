@@ -18,7 +18,7 @@ const inputStyle = {
   padding: '5px',
   borderRadius: '3px',
   border: '1px solid #ccc',
-  fontSize: '12px',
+  fontSize: '16px',
   boxSizing: 'border-box',
 };
 

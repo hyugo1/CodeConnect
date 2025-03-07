@@ -17,7 +17,7 @@ import ControlPanel from './ControlPanel/ControlPanel';
 import BlockPalette from './BlockPalette/BlockPalette';
 import { useFlowchartExecutor } from '../hooks/useFlowchartExecutor';
 import { v4 as uuidv4 } from 'uuid';
-import './FlowchartCanvas.css'; // Ensure this file contains your .close-button styles
+import './FlowchartCanvas.css';
 
 function FlowchartCanvas({
   blocks,
