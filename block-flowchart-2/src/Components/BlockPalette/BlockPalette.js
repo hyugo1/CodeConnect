@@ -1,5 +1,3 @@
-// src/Components/BlockPalette/BlockPalette.js
-
 import React, { useState, useEffect } from 'react';
 import {
   FaPlay,
@@ -12,6 +10,17 @@ import {
   FaArrowsAltH,
 } from 'react-icons/fa';
 import './BlockPalette.css';
+
+const blockExplanations = {
+  start: "Start: Marks the beginning of your program.",
+  end: "End: Marks the end of your program.",
+  if: "If Then: Creates a decision. It checks a condition and follows a true branch or a false branch.",
+  whileStart: "While: Creates a loop that repeats actions as long as a condition is true.",
+  print: "Print: Outputs a message to the console.",
+  setVariable: "Set Variable: Creates a new variable with an initial value.",
+  changeVariable: "Change Variable: Modifies the value of an existing variable.",
+  move: "Move Character: Moves your character in a chosen direction by a specified distance.",
+};
 
 const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag, excludeStart }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -26,19 +35,6 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
   const onDragEnd = () => {
     setIsDragging(false);
     setCancelDrag(false);
-  };
-
-  const blockStyle = {
-    margin: '5px 0',
-    padding: '8px',
-    cursor: 'grab',
-    borderRadius: '5px',
-    color: '#000',
-    fontWeight: 'bold',
-    border: '2px solid #555',
-    boxSizing: 'border-box',
-    display: 'flex',
-    alignItems: 'center',
   };
 
   const blocks = [
@@ -85,7 +81,8 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* Collapse button */}
           <button
             onClick={() => setCollapsed(!collapsed)}
             style={{
@@ -95,16 +92,17 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
               border: '2px solid #555',
               backgroundColor: '#fff',
               borderRadius: '4px',
+              marginBottom: '20px',
             }}
           >
             {collapsed ? '>' : '<'}
           </button>
-          {!collapsed && (
-            <h3 style={{ textAlign: 'center' }}>
-              {excludeStart ? 'Select a Replacement Block' : 'Blocks'}
-            </h3>
-          )}
         </div>
+        {!collapsed && (
+          <h3 style={{ textAlign: 'center' }}>
+            {excludeStart ? 'Select a Replacement Block' : 'Blocks'}
+          </h3>
+        )}
         {!collapsed && (
           <div
             style={{
@@ -128,9 +126,17 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
                   <div
                     key={block.type}
                     style={{
-                      ...blockStyle,
-                      backgroundColor: block.color,
+                      margin: '5px 0',
+                      padding: '8px',
+                      cursor: 'grab',
+                      borderRadius: '5px',
+                      color: '#000',
+                      fontWeight: 'bold',
                       border: '2px solid #555',
+                      boxSizing: 'border-box',
+                      display: 'flex',
+                      alignItems: 'center',
+                      backgroundColor: block.color,
                     }}
                     onClick={() => onSelectBlock(block.type)}
                     onDragStart={(event) => onDragStart(event, block.type)}

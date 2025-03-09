@@ -1,24 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
-import './DummyBlock.css';
+import './block.css';
 
 const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
+  const [showHelp, setShowHelp] = useState(false);
+  const helpText = `Dummy Block:
+• This is a temporary block.
+• Click or drag another block onto this block to replace it.`;
+
   const handleDrop = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    const blockType = event.dataTransfer.getData('application/reactflow');
-    if (blockType === 'start') {
-      alert('Start blocks cannot replace dummy blocks.');
-      return;
-    }
-    else if (blockType === 'end') {
-      alert('End blocks cannot replace dummy blocks.');
-      return;
-    }
-    if (onReplace) onReplace(id, blockType);
+    if (onReplace) onReplace(id);
   };
 
   const handleDragOver = (event) => {
@@ -31,13 +27,9 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
     if (onReplace) onReplace(id);
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && onReplace) onReplace(id);
-  };
-
   return (
     <div
-      className={`block-container dummy-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''} ${data.flash ? 'replacement-success' : ''}`}
+      className={`block-container dummy-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       data-id={id}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
@@ -45,16 +37,63 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
       role="button"
       tabIndex={0}
       aria-label="Dummy block – click or drop to replace"
-      onKeyPress={handleKeyPress}
     >
+      {/* Help Button */}
+      <button
+        onClick={(e) => { e.stopPropagation(); setShowHelp(!showHelp); }}
+        style={{
+          position: 'absolute',
+          top: '5px',
+          left: '5px',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '18px',
+          color: '#555',
+        }}
+        title="How to use this block"
+      >
+        <FaQuestion />
+      </button>
+      {showHelp && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '30px',
+            left: '5px',
+            background: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            padding: '10px',
+            width: '200px',
+            zIndex: 10,
+          }}
+        >
+          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowHelp(false); }}
+            style={{
+              marginTop: '5px',
+              fontSize: '12px',
+              background: '#e74c3c',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              padding: '3px 6px',
+            }}
+          >
+            Close
+          </button>
+        </div>
+      )}
       <FaQuestion style={{ marginBottom: 5 }} />
-      <div>{data.label}</div>
+      <div>{data.label || 'Dummy Block'}</div>
       <Handle
         type="target"
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{ left: '50%', top: '0px', background: '#555' }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from previous block"
         isConnectable={true}
@@ -64,9 +103,8 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '90%', background: '#555' }}
         data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to another block"
+        data-tooltip-content="Connect to next block"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />

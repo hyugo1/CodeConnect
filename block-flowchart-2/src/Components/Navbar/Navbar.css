@@ -1,205 +1,189 @@
-/* Global Font & Transition Settings */
-body {
-  font-family: 'Poppins', sans-serif;
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
 }
 
-/* Navbar Styles */
+/* Navbar Container */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #2c3e50, #34495e);
+  background: #2c3e50;
   padding: 15px 20px;
-  color: #ecf0f1;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-  position: relative;
-  z-index: 10;
+  color: white;
 }
 
-/* Navbar Sections */
-.navbar-section {
+/* Left Section */
+.navbar-left {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* Left Section - Title & Guide Button */
-.navbar-left .navbar-title {
+.navbar-title {
   font-size: 20px;
   font-weight: bold;
-  margin: 0;
 }
 
 .hint-button {
-  background: #f39c12;
-  color: #fff;
-  /* border: none; */
-  padding: 8px 15px;
-  font-size: 14px;
+  background: none;
+  border: 2px solid white;
+  color: white;
+  padding: 8px 12px;
   border-radius: 5px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
 .hint-button:hover {
-  background: #e67e22;
-  transform: scale(1.05);
+  background: white;
+  color: #2c3e50;
 }
 
-/* Center Section - Input & Buttons */
-.save-load-section {
+/* Center Section */
+.navbar-center {
   display: flex;
-  gap: 10px;
-}
-
-.project-name-input {
-  padding: 8px 12px;
-  border: 1px solid #bdc3c7;
-  border-radius: 5px;
-  font-size: 14px;
-  width: 180px;
-  outline: none;
-}
-
-.project-name-input:focus {
-  border-color: #2980b9;
-  box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+  gap: 15px;
 }
 
 .save-button,
-.clear-button {
-  background: #27ae60;
-  color: #fff;
-  /* border: none; */
-  padding: 8px 15px;
-  font-size: 14px;
+.load-button {
+  background: #16a085;
+  border: none;
+  padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  color: white;
+  transition: all 0.3s ease;
 }
 
-.clear-button {
-  background: #c0392b;
+.save-button:hover,
+.load-button:hover {
+  background: #1abc9c;
 }
 
-.save-button:hover {
-  background: #2ecc71;
-  transform: scale(1.05);
+/* Right Section */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.clear-button:hover {
-  background: #e74c3c;
-  transform: scale(1.05);
-}
-
-/* Right Section - Dropdown */
-.dropdown-button {
-  background: #2980b9;
-  color: #fff;
-  /* border: none; */
-  padding: 8px 15px;
-  font-size: 14px;
-  border-radius: 5px;
-  cursor: pointer;
+.auth-status {
   display: flex;
   align-items: center;
   gap: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-.dropdown-button:hover {
-  background: #3498db;
-  transform: scale(1.05);
+.auth-action-button {
+  background: none;
+  border: 2px solid white;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-/* Dropdown Menu with Fade-in Animation */
-.project-dropdown {
-  position: absolute;
-  top: 120%;
-  right: 0;
-  min-width: 200px;
-  background-color: #ffffff;
-  color: #333;
-  border: 1px solid #dcdcdc;
-  border-radius: 4px;
-  list-style-type: none;
-  padding: 0.5rem 0;
-  margin: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 999;
-  animation: fadeIn 0.4s ease forwards;
+.auth-action-button:hover {
+  background: white;
+  color: #2c3e50;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.project-dropdown li {
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
-  cursor: default;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.project-dropdown li:hover {
-  background-color: #f2f2f2;
+/* Modal Content */
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 350px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: #2c3e50;
 }
 
-.project-dropdown li span {
-  margin-right: 0.5rem;
-  flex-grow: 1;
-  font-weight: 500;
-  color: #333;
-}
-
-.project-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.load-button,
-.delete-button {
-  background: none;
+/* Modal Buttons */
+.modal-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #16a085;
+  color: white;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-.load-button {
-  color: #fff;
-  background-color: #2980b9;
-  padding: 4px 8px;
-  border-radius: 3px;
+.modal-content h3,
+.modal-content h4 {
+  color: #2c3e50; 
+  margin-bottom: 10px;
 }
 
-.delete-button {
-  color: #c0392b;
-  padding: 4px 8px;
-  border-radius: 3px;
+.modal-button:hover {
+  background: #1abc9c;
 }
 
-.load-button:hover {
-  transform: scale(1.1);
+.modal-button.cancel {
+  background: #e74c3c;
 }
 
-.delete-button:hover {
-  transform: scale(1.1);
+.modal-button.cancel:hover {
+  background: #c0392b;
 }
 
-/* Hint Modal with Animations */
+/* Input Fields */
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Project List */
+.project-list {
+  list-style: none;
+  padding: 0;
+  color: #34495e;
+}
+
+.project-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+/* Small Buttons inside List */
+.modal-button.small {
+  width: auto;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+/* Hint Guide Modal */
 .hint-modal-overlay {
   position: fixed;
   top: 0;
@@ -208,146 +192,62 @@ body {
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
-  animation: fadeInModal 0.5s ease forwards;
-}
-
-@keyframes fadeInModal {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .hint-modal-content {
-  background: #fff;
+  background: white;
   padding: 20px;
+  width: 400px;
   border-radius: 8px;
-  width: 700px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.5s ease forwards;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.hint-modal-content h3 {
-  margin-bottom: 15px;
-  color: #2c3e50;
-  font-size: 30px;
+  color: #2c3e50; 
 }
 
 .hint-modal-content ul {
-  list-style: none;
-  padding: 0;
   text-align: left;
-}
-
-.hint-modal-content ul li {
-  margin-bottom: 10px;
-  font-size: 20px;
-  color: #333;
-}
-
-.hint-modal-content strong {
-  color: #2980b9;
+  margin-top: 10px;
+  color: #34495e;
 }
 
 .hint-close-button {
   background: #e74c3c;
-  color: #fff;
-  padding: 8px 15px;
-  font-size: 14px;
+  border: none;
+  padding: 10px;
+  color: white;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  margin-top: 10px;
 }
 
 .hint-close-button:hover {
   background: #c0392b;
-  transform: scale(1.05);
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .navbar {
     flex-direction: column;
-    text-align: center;
+    gap: 10px;
+    padding: 10px;
   }
 
-  .navbar-section {
-    margin-bottom: 10px;
-  }
-
-  .save-load-section {
+  .navbar-left,
+  .navbar-center,
+  .navbar-right {
     flex-direction: column;
-    width: 100%;
+    align-items: center;
+    gap: 10px;
   }
 
-  .project-name-input {
-    width: 100%;
+  .modal-content {
+    width: 90%;
   }
 
-  .project-dropdown {
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
+  .hint-modal-content {
+    width: 90%;
   }
-}
-
-
-/* Container for the export/import section */
-.export-import-section {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* Styling for the file name input */
-.project-name-input {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px;
-  font-size: 14px;
-}
-
-/* Base style for export and import buttons */
-.export-button,
-.import-button {
-  background-color: #4caf50; /* Green background */
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-/* Different background color for the import button if desired */
-.import-button {
-  background-color: #2196f3; /* Blue background */
-}
-
-/* Hover states for both buttons */
-.export-button:hover,
-.import-button:hover {
-  opacity: 0.9;
 }

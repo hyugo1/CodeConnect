@@ -14,6 +14,7 @@ const RightPanel = ({ characterMessage, characterPosition, blocks, edges, consol
       <button 
         className="collapse-button"
         onClick={() => setCollapsed(!collapsed)}
+        // style={{marginBottom: '20px'}}
         title="Toggle Right Panel"
       >
         {collapsed ? <FaChevronLeft /> : <FaChevronRight />}

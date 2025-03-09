@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaPlusCircle } from 'react-icons/fa';
+import { FaPlusCircle, FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -8,11 +8,11 @@ import './block.css';
 
 const ChangeVariableBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
+  const [showHelp, setShowHelp] = useState(false);
 
-  const valueType = data.valueType || 'number';
-  const types = ['number', 'string'];
-  const currentTypeIndex = types.indexOf(valueType);
-  const nextType = types[(currentTypeIndex + 1) % types.length];
+  const helpText = `Change Variable:
+• Enter the variable name (must already exist).
+• Provide a value to add or update the variable.`;
 
   const handleVarNameChange = (e) => {
     updateNodeData({ varName: e.target.value });
@@ -22,19 +22,61 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
     updateNodeData({ varValue: e.target.value });
   };
 
-  const toggleValueType = () => {
-    updateNodeData({ valueType: nextType });
-  };
-
-  let placeholderText = valueType === 'number'
-    ? 'Enter arithmetic expression (e.g., 2+3)'
-    : 'Enter new text value';
-
   return (
     <div
       className={`block-container change-variable ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ background: '#e0ffe0', position: 'relative' }}
     >
+      {/* Help Button */}
+      <button
+        onClick={() => setShowHelp(!showHelp)}
+        style={{
+          position: 'absolute',
+          top: '5px',
+          left: '5px',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '18px',
+          color: '#555',
+        }}
+        title="How to use this block"
+      >
+        <FaQuestion />
+      </button>
+      {showHelp && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '30px',
+            left: '5px',
+            background: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            padding: '10px',
+            width: '200px',
+            zIndex: 10,
+          }}
+        >
+          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
+          <button
+            onClick={() => setShowHelp(false)}
+            style={{
+              marginTop: '5px',
+              fontSize: '12px',
+              background: '#e74c3c',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              padding: '3px 6px',
+            }}
+          >
+            Close
+          </button>
+        </div>
+      )}
+
       <FaPlusCircle style={{ marginBottom: 5 }} />
       <div>{data.label || 'Change Variable'}</div>
       <Handle
@@ -42,9 +84,8 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
-        data-tooltip-content="Connect from another block"
+        data-tooltip-content="Connect from previous block"
         isConnectable={true}
       />
       <Handle
@@ -52,9 +93,8 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
         position={Position.Bottom}
         id={`source-${id}`}
         className="handle-source-square"
-        style={{ left: '50%', top: '95%' }}
         data-tooltip-id={`tooltip-${id}-source`}
-        data-tooltip-content="Connect to another block"
+        data-tooltip-content="Connect to next block"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
@@ -64,31 +104,15 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
         placeholder="Variable Name"
         value={data.varName || ''}
         onChange={handleVarNameChange}
-        style={{ width: '100%', marginTop: 10, padding: '5px', borderRadius: '3px', border: '1px solid #ccc' }}
+        className="block-input"
       />
       <input
         type="text"
-        placeholder={placeholderText}
+        placeholder="New Value"
         value={data.varValue || ''}
         onChange={handleVarValueChange}
-        style={{ width: '100%', marginTop: 10, padding: '5px', borderRadius: '3px', border: '1px solid #ccc' }}
+        className="block-input"
       />
-      <button
-        onClick={toggleValueType}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          right: '5px',
-          background: '#ddd',
-          border: '1px solid #aaa',
-          borderRadius: '3px',
-          padding: '2px 5px',
-          cursor: 'pointer',
-        }}
-        title="Toggle change value type"
-      >
-        {valueType.charAt(0).toUpperCase() + valueType.slice(1)}
-      </button>
     </div>
   );
 };

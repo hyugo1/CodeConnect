@@ -69,9 +69,9 @@ const ControlPanel = ({
 ControlPanel.propTypes = {
   executeFlowchart: PropTypes.func.isRequired,
   resetExecution: PropTypes.func.isRequired,
-  togglePause: PropTypes.func.isRequired,
+  // togglePause: PropTypes.func.isRequired,
   setSpeedMultiplier: PropTypes.func.isRequired,
-  paused: PropTypes.bool.isRequired,
+  // paused: PropTypes.bool.isRequired,
   selectedNodes: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedEdges: PropTypes.arrayOf(PropTypes.string).isRequired,
   setNodes: PropTypes.func.isRequired,

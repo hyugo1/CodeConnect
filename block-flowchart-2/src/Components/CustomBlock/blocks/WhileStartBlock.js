@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaSync } from 'react-icons/fa';
+import { FaSync, FaQuestion } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -8,6 +8,12 @@ import './block.css';
 
 const WhileStartBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
+  const [showHelp, setShowHelp] = useState(false);
+
+  const helpText = `While Block:
+• Enter a condition using two operands and an operator.
+• The loop body will execute while the condition is true.
+• Connect the loop body and exit paths accordingly.`;
 
   const handleLeftOperandChange = (e) => {
     updateNodeData({ leftOperand: e.target.value });
@@ -24,8 +30,57 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
   return (
     <div
       className={`block-container while-start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
-      style={{ backgroundColor: '#f9f7d8' }}
+      style={{ backgroundColor: '#f9f7d8', position: 'relative' }}
     >
+      {/* Help Button */}
+      <button
+        onClick={() => setShowHelp(!showHelp)}
+        style={{
+          position: 'absolute',
+          top: '5px',
+          left: '5px',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '18px',
+          color: '#555',
+        }}
+        title="How to use this block"
+      >
+        <FaQuestion />
+      </button>
+      {showHelp && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '30px',
+            left: '5px',
+            background: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            padding: '10px',
+            width: '220px',
+            zIndex: 10,
+          }}
+        >
+          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
+          <button
+            onClick={() => setShowHelp(false)}
+            style={{
+              marginTop: '5px',
+              fontSize: '12px',
+              background: '#e74c3c',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              padding: '3px 6px',
+            }}
+          >
+            Close
+          </button>
+        </div>
+      )}
       <FaSync style={{ marginBottom: 5 }} />
       <div>{data.label || 'While'}</div>
       <Handle
@@ -33,7 +88,6 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         position={Position.Top}
         id={`target-${id}`}
         className="handle-target-circle"
-        style={{ left: '50%', top: '0px' }}
         data-tooltip-id={`tooltip-${id}-target`}
         data-tooltip-content="Connect from previous block"
         isConnectable={true}
@@ -46,11 +100,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
           onChange={handleLeftOperandChange}
           className="operand-input"
         />
-        <select
-          value={data.operator || ''}
-          onChange={handleOperatorChange}
-          className="operator-select"
-        >
+        <select value={data.operator || ''} onChange={handleOperatorChange} className="operator-select">
           <option value="">Op</option>
           <option value="<">&lt;</option>
           <option value=">">&gt;</option>
@@ -94,7 +144,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         className="handle-target-circle"
         style={{ left: '0%', top: '50%' }}
         data-tooltip-id={`tooltip-${id}-loopBack`}
-        data-tooltip-content="Connect back to While Start for looping"
+        data-tooltip-content="Connect back for looping"
         isConnectable={true}
       />
       <Tooltip id={`tooltip-${id}-target`} place="top" />
