@@ -2,7 +2,7 @@
 body, html {
   margin: 0;
   padding: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   background-color: #ecf0f1;
   color: #2c3e50;
   height: 100vh;
@@ -31,7 +31,6 @@ body, html {
   overflow-y: auto;
 }
 
-
 .flowchart-container {
   flex: 1;
   display: flex;
@@ -46,7 +45,8 @@ body, html {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
-  /* overflow: hidden; */
+  width: 100%;
+  height: 100%;
 }
 
 /* Right Section - Character, Code Preview, Console */
@@ -60,13 +60,12 @@ body, html {
   background-color: #eee;
   border: 2px solid #555;
   box-sizing: border-box;
-  overflow-x : auto;
+  overflow-x: auto;
 }
 
 .right-panel > * {
   overflow-y: auto;
 }
-
 
 /* Character Area */
 .character-area {
@@ -79,7 +78,6 @@ body, html {
 
 /* Console Area */
 .console {
-  /* background-color: #fff; */
   border-top: 1px solid #ccc;
   padding: 10px;
   max-height: 200px;
@@ -100,7 +98,6 @@ body, html {
 .reset-button,
 .delete-button {
   padding: 8px 16px;
-  /* border: none; */
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
@@ -166,13 +163,6 @@ body, html {
   border-style: solid;
   border-color: white transparent;
 }
-
-.reactflow-wrapper {
-  width: 100%;
-  height: 100%;
-}
-
-
 
 .panel {
   background-color: #3e3e3e;

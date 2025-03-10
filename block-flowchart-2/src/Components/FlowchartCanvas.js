@@ -13,6 +13,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
+import { auth } from '../config/firebase';
 import CustomBlock from './CustomBlock/CustomBlock';
 import CustomEdge from './CustomEdge/CustomEdge';
 import ControlPanel from './ControlPanel/ControlPanel';
@@ -53,7 +54,7 @@ function FlowchartCanvas({
   const [currentDummyBlockId, setCurrentDummyBlockId] = useState(null);
   // Dummy block palette position
   const [dummyBlockPosition, setDummyBlockPosition] = useState(null);
-  // State to track which block types have already shown help on first drop
+  // State to track which block types have already shown help on first drop (local state only)
   const [helpShown, setHelpShown] = useState({});
   // State for help modal (replacing alert)
   const [helpModal, setHelpModal] = useState({ visible: false, title: '', content: '' });
@@ -370,6 +371,18 @@ function FlowchartCanvas({
         title = 'Move';
         helpContent = 'Move: Move your character in a specified direction by a given distance.';
         break;
+      case 'changeVariable':
+        title = 'Change Variable';
+        helpContent = 'Change Variable: Modify the value of an existing variable.';
+        break;
+      case 'start':
+        title = 'Start';
+        helpContent = 'Start: The beginning of your flowchart.';
+        break;
+      case 'end':
+        title = 'End';
+        helpContent = 'End: The end of your flowchart.';
+        break;
       default:
         title = blockType;
         helpContent = `Help for ${blockType} block.`;
@@ -541,9 +554,15 @@ function FlowchartCanvas({
         setNodes((nds) => nds.concat(newBlock));
       }
 
-      if (!helpShown[blockType]) {
+      // Determine a storage key that depends on the current user's login state.
+      const userId = auth.currentUser ? auth.currentUser.uid : 'anonymous';
+      const storageKey = `blockExplanationShown_${userId}_${blockType}`;
+
+      // Only show the explanation modal if it has not been shown for THIS user (persisted via localStorage)
+      if (!helpShown[blockType] && !localStorage.getItem(storageKey)) {
         showHelpModalForBlock(blockType);
         setHelpShown((prev) => ({ ...prev, [blockType]: true }));
+        localStorage.setItem(storageKey, 'true');
       }
     },
     [cancelDrag, project, reactFlowWrapper, setCancelDrag, setNodes, setEdges, helpShown, blocks, lastBlockId]
@@ -626,12 +645,12 @@ function FlowchartCanvas({
       )}
 
       {helpModal.visible && (
-        <div className="modal-overlay" onClick={() => setHelpModal({ ...helpModal, visible: false })}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="help-modal-overlay" onClick={() => setHelpModal({ ...helpModal, visible: false })}>
+          <div className="help-modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>{helpModal.title}</h3>
             <p>{helpModal.content}</p>
-            <button onClick={() => setHelpModal({ ...helpModal, visible: false })} className="modal-button">
-              Close
+            <button onClick={() => setHelpModal({ ...helpModal, visible: false })} className="help-modal-close">
+              Got It!
             </button>
           </div>
         </div>
