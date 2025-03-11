@@ -1,13 +1,15 @@
+// StartBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlay, FaQuestion } from 'react-icons/fa';
+import HelpModal from '../../Modal/HelpModal.js';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './block.css';
 
 const StartBlock = ({ id, data, selected, executing }) => {
   const [showHelp, setShowHelp] = useState(false);
-  const helpText = `Start Block:
+  const helpText = `
 • This block marks the beginning of your program.
 • Drag subsequent blocks to create your flow.`;
 
@@ -18,7 +20,7 @@ const StartBlock = ({ id, data, selected, executing }) => {
     >
       {/* Help Button */}
       <button
-        onClick={() => setShowHelp(!showHelp)}
+        onClick={() => setShowHelp(true)}
         style={{
           position: 'absolute',
           top: '5px',
@@ -33,38 +35,15 @@ const StartBlock = ({ id, data, selected, executing }) => {
       >
         <FaQuestion />
       </button>
-      {showHelp && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '30px',
-            left: '5px',
-            background: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '10px',
-            width: '200px',
-            zIndex: 10,
-          }}
-        >
-          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
-          <button
-            onClick={() => setShowHelp(false)}
-            style={{
-              marginTop: '5px',
-              fontSize: '12px',
-              background: '#e74c3c',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              padding: '3px 6px',
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )}
+
+      {/* Help Modal */}
+      <HelpModal
+        visible={showHelp}
+        helpText={helpText}
+        title="Start Block Help"
+        onClose={() => setShowHelp(false)}
+      />
+
       <FaPlay style={{ marginBottom: 5 }} />
       <div>{data.label || 'Start'}</div>
       <Handle

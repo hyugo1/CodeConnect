@@ -21,6 +21,7 @@ import {
 } from 'firebase/firestore';
 import { exportFlowchart, importFlowchart } from '../../utils/storage';
 import { toast } from 'react-toastify';
+import AccessibleModal from '../Modal/AccessibleModal';
 import './Navbar.css';
 import defaultProfilePic from '../../images/profile_pic.png';
 
@@ -65,7 +66,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         }));
         setMyProjects(projects);
       } catch (error) {
-        console.error('Oops, couldn’t load your projects:', error);
+        console.error('Could not load your projects:', error);
       }
     }
   };
@@ -93,12 +94,12 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success('Hooray! Your project has been saved as a file.');
+      toast.success('Your project has been saved as a file.');
       setModal({ type: null });
       setProjectName('');
     } catch (error) {
-      console.error('Uh-oh, saving failed:', error);
-      toast.error('Oops! Could not save your project as a file.');
+      console.error('Saving failed:', error);
+      toast.error('Could not save your project as a file.');
     }
   };
 
@@ -119,13 +120,13 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         project_details: projectJson,
         savedAt: new Date().toISOString(),
       });
-      toast.success('Great! Your project is saved in your account.');
+      toast.success('Your project is saved in your account.');
       setModal({ type: null });
       setProjectName('');
       getUserProjects();
     } catch (error) {
       console.error('Saving to account failed:', error);
-      toast.error('Oops! Could not save your project to your account.');
+      toast.error('Could not save your project to your account.');
     }
   };
 
@@ -138,11 +139,11 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         const importedData = importFlowchart(evt.target.result);
         setNodes(importedData.blocks);
         setEdges(importedData.edges);
-        toast.success('Yay! Your project was loaded.');
+        toast.success('Your project was loaded.');
         setModal({ type: null });
       } catch (error) {
-        console.error('Uh-oh, loading failed:', error);
-        toast.error('Oops! Could not load the project: ' + error.message);
+        console.error('Loading failed:', error);
+        toast.error('Could not load the project: ' + error.message);
       }
     };
     reader.readAsText(file);
@@ -153,11 +154,11 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       const importedData = importFlowchart(project.project_details);
       setNodes(importedData.blocks);
       setEdges(importedData.edges);
-      toast.success(`Awesome! Project "${project.project_name}" is loaded.`);
+      toast.success(`Project "${project.project_name}" is loaded.`);
       setModal({ type: null });
     } catch (error) {
       console.error('Loading project failed:', error);
-      toast.error('Oops! Could not load your project.');
+      toast.error('Could not load your project.');
     }
   };
 
@@ -165,11 +166,11 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     try {
       const projectDoc = doc(db, 'projects', projectId);
       await deleteDoc(projectDoc);
-      toast.success('Project deleted. Bye bye!');
+      toast.success('Project deleted.');
       getUserProjects();
     } catch (error) {
       console.error('Deleting project failed:', error);
-      toast.error('Oops! Could not delete your project.');
+      toast.error('Could not delete your project.');
     }
   };
 
@@ -182,27 +183,27 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       setPassword('');
     } catch (error) {
       console.error('Account creation failed:', error);
-      toast.error('Oops! Could not create your account: ' + error.message);
+      toast.error('Could not create your account: ' + error.message);
     }
   };
 
   const handleSignInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-      toast.success('Hi there! You’re signed in with Google.');
+      toast.success('You’re signed in with Google.');
     } catch (error) {
       console.error('Google sign in failed:', error);
-      toast.error('Oops! Google sign in didn’t work.');
+      toast.error('Google sign in didn’t work.');
     }
   };
 
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      toast.success('You have signed out. See you soon!');
+      toast.success('You have signed out.');
     } catch (error) {
       console.error('Sign out failed:', error);
-      toast.error('Oops! Could not sign you out.');
+      toast.error('Could not sign you out.');
     }
   };
 
@@ -219,7 +220,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       setPassword('');
     } catch (error) {
       console.error('Sign in failed:', error);
-      toast.error('Oops! Sign in didn’t work: ' + error.message);
+      toast.error('Sign in didn’t work: ' + error.message);
     }
   };
 
@@ -234,7 +235,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       setModal({ type: null });
     } catch (error) {
       console.error('Resetting password failed:', error);
-      toast.error('Oops! Could not send the reset email: ' + error.message);
+      toast.error('Could not send the reset email: ' + error.message);
     }
   };
 
@@ -246,36 +247,13 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           <a href="/" className="navbar-brand">
             <img
               src="https://flowbite.com/docs/images/logo.svg"
-              alt="Logo"
+              alt="Flowchart Logo"
               className="navbar-logo"
             />
             <span className="navbar-title">Block Coding Fun!</span>
           </a>
-
-          {/* Mobile Menu Toggle */}
-          {/* <button
-            className="mobile-menu-button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <span className="sr-only">Open menu</span>
-            <svg
-              className="mobile-menu-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M1 1h15M1 7h15M1 13h15"
-              />
-            </svg>
-          </button> */}
-
           {/* Navigation Links */}
-          <div className={`navbar-menu ${mobileMenuOpen ? 'open' : ''}`}>
+          <div className="navbar-menu">
             <ul className="navbar-menu-list">
               <li>
                 <button
@@ -303,19 +281,18 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
               </li>
             </ul>
           </div>
-
-          {/* Authentication */}
+          {/* Authentication Section */}
           <div className="navbar-auth">
             {currentUser ? (
               <div className="user-menu-container">
                 <button
                   className="user-menu-button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  aria-label="User menu"
                 >
-                  {/* Display the user's profile image or a default image */}
                   <img
                     src={currentUser?.photoURL || defaultProfilePic}
-                    alt="User"
+                    alt="User avatar"
                     className="user-avatar"
                   />
                 </button>
@@ -369,10 +346,10 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
 
       {/* Save Modal */}
       {modal.type === 'save' && (
-        <Modal onClose={() => setModal({ type: null })} title="Save Your Project">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="Save Your Project">
           <input
             type="text"
-            placeholder="Enter a fun project name"
+            placeholder="Enter a project name"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
             className="modal-input"
@@ -385,15 +362,12 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
               Save to Your Account
             </button>
           </div>
-          <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
-            Cancel
-          </button>
-        </Modal>
+        </AccessibleModal>
       )}
 
       {/* Load Modal */}
       {modal.type === 'load' && (
-        <Modal onClose={() => setModal({ type: null })} title="Open a Project">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="Open a Project">
           <div className="modal-section">
             <button
               onClick={() => fileInputRef.current.click()}
@@ -436,25 +410,22 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
               Log in to see your projects.
             </p>
           )}
-          <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
-            Close
-          </button>
-        </Modal>
+        </AccessibleModal>
       )}
 
       {/* Sign Up Modal */}
       {modal.type === 'signup' && (
-        <Modal onClose={() => setModal({ type: null })} title="Create an Account">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="Create an Account">
           <input
             type="email"
-            placeholder="Your email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="modal-input"
           />
           <input
             type="password"
-            placeholder="Your password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="modal-input"
@@ -465,22 +436,22 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
             Cancel
           </button>
-        </Modal>
+        </AccessibleModal>
       )}
 
       {/* Sign In Modal */}
       {modal.type === 'signin' && (
-        <Modal onClose={() => setModal({ type: null })} title="Log In">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="Log In">
           <input
             type="email"
-            placeholder="Your email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="modal-input"
           />
           <input
             type="password"
-            placeholder="Your password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="modal-input"
@@ -503,15 +474,15 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
             Cancel
           </button>
-        </Modal>
+        </AccessibleModal>
       )}
 
       {/* Forgot Password Modal */}
       {modal.type === 'forgotPassword' && (
-        <Modal onClose={() => setModal({ type: null })} title="Reset Your Password">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="Reset Your Password">
           <input
             type="email"
-            placeholder="Your email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="modal-input"
@@ -522,12 +493,12 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
             Cancel
           </button>
-        </Modal>
+        </AccessibleModal>
       )}
 
       {/* Guide Modal */}
       {modal.type === 'guide' && (
-        <Modal onClose={() => setModal({ type: null })} title="How to Play with Blocks" customClass="hint-modal">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="How to Play with Blocks" customClass="hint-modal">
           <ul className="hint-list">
             <li><strong>Start:</strong> This is where your adventure begins!</li>
             <li><strong>End:</strong> This marks the end of your story.</li>
@@ -539,23 +510,9 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             <li><strong>Move:</strong> Help your character go on an adventure.</li>
             <li><strong>Dummy:</strong> Replace this block with a real one when you're ready.</li>
           </ul>
-          <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
-            Close
-          </button>
-        </Modal>
+        </AccessibleModal>
       )}
     </>
-  );
-};
-
-const Modal = ({ onClose, title, children, customClass }) => {
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className={`modal-content ${customClass || ''}`} onClick={(e) => e.stopPropagation()}>
-        <h3 className="modal-title">{title}</h3>
-        {children}
-      </div>
-    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPrint, FaQuestion } from 'react-icons/fa';
+import HelpModal from '../../Modal/HelpModal.js';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -10,7 +11,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
 
-  const helpText = `Print Block:
+  const helpText = `
 • Enter a message to print.
 • Use {variable} syntax to include variable values.`;
 
@@ -23,9 +24,8 @@ const PrintBlock = ({ id, data, selected, executing }) => {
       className={`block-container print-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#ffeeba', position: 'relative' }}
     >
-      {/* Help Button */}
       <button
-        onClick={() => setShowHelp(!showHelp)}
+        onClick={() => setShowHelp(true)}
         style={{
           position: 'absolute',
           top: '5px',
@@ -40,38 +40,12 @@ const PrintBlock = ({ id, data, selected, executing }) => {
       >
         <FaQuestion />
       </button>
-      {showHelp && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '30px',
-            left: '5px',
-            background: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '10px',
-            width: '220px',
-            zIndex: 10,
-          }}
-        >
-          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
-          <button
-            onClick={() => setShowHelp(false)}
-            style={{
-              marginTop: '5px',
-              fontSize: '12px',
-              background: '#e74c3c',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              padding: '3px 6px',
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )}
+      <HelpModal
+        visible={showHelp}
+        helpText={helpText}
+        title="Print Block Help"
+        onClose={() => setShowHelp(false)}
+      />
       <FaPrint style={{ marginBottom: 5 }} />
       <div>{data.label || 'Print'}</div>
       <Handle
@@ -96,7 +70,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
       <Tooltip id={`tooltip-${id}-source`} place="top" />
       <input
         type="text"
-        placeholder="Enter message to print (e.g., 'x is {x}')"
+        placeholder="Message to print (e.g., 'x is {x}')"
         value={data.message || ''}
         onChange={handleChange}
         style={{

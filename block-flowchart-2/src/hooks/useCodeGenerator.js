@@ -113,7 +113,7 @@ export function generateJavaScriptCode(blocks, edges) {
           if (falseBranch) traverse(falseBranch, indentLevel + 1, new Set(visited));
           codeLines.push(indent + '}');
         } else {
-          codeLines.push(indent + '// Incomplete condition in if block');
+          codeLines.push(indent + '// Incomplete condition in if then block');
         }
         break;
 

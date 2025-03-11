@@ -1,18 +1,19 @@
 :root {
+  --less-content-width: 220px;
+  --conditional-width: 320px;
   --block-bg: #f5f5f5;
   --block-border: #777;
   --block-selected-bg: #e7f0ff;
   --block-selected-border: #007bff;
   --block-shadow: rgba(0, 0, 0, 0.3);
   --transition-time: 0.3s;
-  --default-block-width: 200px; 
-  --conditional-block-width: 300px;
-  --operand-width: 108px; 
-  --operator-width: 60px; 
+  --operand-width: 108px;
+  --operator-width: 60px;
 }
 
+/* Base block container style */
 .block-container {
-  width: var(--default-block-width);
+  width: var(--less-content-width);
   padding: 12px;
   border: 2px solid var(--block-border);
   border-radius: 8px;
@@ -45,11 +46,13 @@
   box-shadow: 0 8px 16px var(--block-shadow);
 }
 
+/* Conditional blocks (with extra content) override the width */
 .if-block,
 .while-start-block {
-  width: var(--conditional-block-width);
+  width: var(--conditional-width);
 }
 
+/* Standard input styles */
 .block-input {
   width: 100%;
   margin-top: 10px;
@@ -66,6 +69,7 @@
   border-color: var(--block-selected-border);
 }
 
+/* Specific input styles for operands and operators */
 .operand-input {
   width: var(--operand-width);
   padding: 5px;
@@ -93,43 +97,61 @@
   margin-top: 10px;
 }
 
-.handle-target-circle {
+/* Base styles for connection handles */
+.handle-target-circle,
+.handle-source-square {
   width: 14px;
   height: 14px;
-  background: transparent;
   cursor: pointer;
   position: absolute;
+  z-index: 1;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Style for target handle */
+.handle-target-circle {
+  background: transparent;
   left: 50%;
   top: 0;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   border: 2px solid #555;
-  transition: background-color 0.3s, border-color 0.3s;
-  z-index: 1;
 }
 
 .handle-target-circle:hover {
   border-color: var(--block-selected-border);
 }
 
+/* Style for source handle */
 .handle-source-square {
-  width: 14px;
-  height: 14px;
   background: #555;
-  cursor: pointer;
-  position: absolute;
   left: 50%;
-  bottom: 0;
   transform: translate(-50%, 0);
   border-radius: 3px;
-  transition: background-color 0.3s;
-  z-index: 1;
 }
 
 .handle-source-square:hover {
   background-color: var(--block-selected-border);
 }
 
+/* For blocks with less content (e.g., Start, End, Print, Set Variable, Change Variable, Move, Dummy, etc.) */
+.start-block .handle-source-square,
+.end-block .handle-source-square,
+.print-block .handle-source-square,
+.set-variable-block .handle-source-square,
+.change-variable .handle-source-square,
+.move-block .handle-source-square,
+.dummy-block .handle-source-square {
+  margin-top: 20px;
+}
+
+/* For conditional/extra content blocks (e.g., If and While) */
+.if-block .handle-source-square,
+.while-start-block .handle-source-square {
+  margin-bottom: 20px;
+}
+
+/* Executing state animation */
 .block-container.executing {
   animation: blockPulse 0.5s ease-out;
 }
@@ -149,11 +171,11 @@
   }
 }
 
-/* Updated CSS for edges to bring markers in front */
+/* Additional edge styles for react-flow (if applicable) */
 .react-flow__edge-path {
   transition: stroke 0.4s ease, stroke-width 0.4s ease;
-  stroke: #22ff77; /* default color if style.stroke not set */
-  z-index: 1000; /* Bring edge paths above nodes and handles */
+  stroke: #22ff77;
+  z-index: 1000;
 }
 
 .react-flow__edge-path.selected {
@@ -189,7 +211,6 @@
   }
 }
 
-/* Updated edges container z-index */
 .react-flow__edges {
-  z-index: 1000; /* Bring the entire edges layer above nodes and handles */
+  z-index: 1000;
 }

@@ -197,27 +197,41 @@
   width: 100%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+.modal-content .cancel-btn {
+  display: block;
+  margin: 20px auto 0;
+}
 
 .modal-title {
   margin-top: 0;
   font-size: 1.5rem;
   color: #2c3e50;
+  text-align: center;
 }
 
 .modal-input {
   width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ddd;
+  max-width: 400px;
+  padding: 12px;
+  margin: 0 auto 1rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
+  box-sizing: border-box;
+  display: block;
+}
+
+.modal-section {
+  display: flex;
+  justify-content: center;
 }
 
 /* Modal Button Groups */
 .modal-button-group {
   display: flex;
+  justify-content: center;
   gap: 10px;
-  margin-bottom: 1rem;
+  /* margin-top: 20px; */
 }
 
 .modal-btn {

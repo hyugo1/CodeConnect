@@ -1,0 +1,57 @@
+/* src/styles/AccessibleStyles.css */
+
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Lato', sans-serif;
+    background-color: #ffffff;
+    color: #2c3e50;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .btn {
+    padding: 10px 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:focus {
+    outline: 3px solid #007bff;
+  }
+  
+  .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    max-width: 500px;
+    width: 90%;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .btn:hover {
+    background-color: #45a049;
+  }
+  
+  .navbar, .BlockPalette, .right-panel {
+    padding: 10px;
+  }
+  
+  input:focus, select:focus {
+    outline: 3px solid #007bff;
+  }

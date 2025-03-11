@@ -1,6 +1,8 @@
+// ChangeVariableBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlusCircle, FaQuestion } from 'react-icons/fa';
+import HelpModal from '../../Modal/HelpModal.js';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -10,7 +12,7 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
 
-  const helpText = `Change Variable:
+  const helpText = `
 • Enter the variable name (must already exist).
 • Provide a value to add or update the variable.`;
 
@@ -27,9 +29,8 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
       className={`block-container change-variable ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ background: '#e0ffe0', position: 'relative' }}
     >
-      {/* Help Button */}
       <button
-        onClick={() => setShowHelp(!showHelp)}
+        onClick={() => setShowHelp(true)}
         style={{
           position: 'absolute',
           top: '5px',
@@ -44,39 +45,12 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
       >
         <FaQuestion />
       </button>
-      {showHelp && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '30px',
-            left: '5px',
-            background: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '10px',
-            width: '200px',
-            zIndex: 10,
-          }}
-        >
-          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
-          <button
-            onClick={() => setShowHelp(false)}
-            style={{
-              marginTop: '5px',
-              fontSize: '12px',
-              background: '#e74c3c',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              padding: '3px 6px',
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )}
-
+      <HelpModal
+        visible={showHelp}
+        helpText={helpText}
+        title="Change Variable Help"
+        onClose={() => setShowHelp(false)}
+      />
       <FaPlusCircle style={{ marginBottom: 5 }} />
       <div>{data.label || 'Change Variable'}</div>
       <Handle

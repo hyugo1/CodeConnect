@@ -1,3 +1,4 @@
+// src/Components/BlockPalette/BlockPalette.js
 import React, { useState, useEffect } from 'react';
 import {
   FaPlay,
@@ -10,17 +11,6 @@ import {
   FaArrowsAltH,
 } from 'react-icons/fa';
 import './BlockPalette.css';
-
-const blockExplanations = {
-  start: "Start: Marks the beginning of your program.",
-  end: "End: Marks the end of your program.",
-  if: "If Then: Creates a decision. It checks a condition and follows a true branch or a false branch.",
-  whileStart: "While: Creates a loop that repeats actions as long as a condition is true.",
-  print: "Print: Outputs a message to the console.",
-  setVariable: "Set Variable: Creates a new variable with an initial value.",
-  changeVariable: "Change Variable: Modifies the value of an existing variable.",
-  move: "Move Character: Moves your character in a chosen direction by a specified distance.",
-};
 
 const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag, excludeStart }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -94,6 +84,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
               borderRadius: '4px',
               marginBottom: '20px',
             }}
+            aria-label={collapsed ? "Expand palette" : "Collapse palette"}
           >
             {collapsed ? '>' : '<'}
           </button>
@@ -133,7 +124,6 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
                       color: '#000',
                       fontWeight: 'bold',
                       border: '2px solid #555',
-                      boxSizing: 'border-box',
                       display: 'flex',
                       alignItems: 'center',
                       backgroundColor: block.color,
@@ -142,6 +132,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
                     onDragStart={(event) => onDragStart(event, block.type)}
                     onDragEnd={onDragEnd}
                     draggable
+                    aria-label={`Drag to add ${block.label} block`}
                   >
                     {block.icon}
                     <span style={{ marginLeft: '8px' }}>{block.label}</span>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
+import HelpModal from '../../Modal/HelpModal.js';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -9,8 +10,7 @@ import './block.css';
 const IfBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
-
-  const helpText = `If Then Block:
+  const helpText = `
 • Enter a condition using two operands and an operator.
 • The true branch (left) and false branch (right) will execute based on the condition.`;
 
@@ -31,9 +31,8 @@ const IfBlock = ({ id, data, selected, executing }) => {
       className={`block-container if-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#d8d8f9', position: 'relative' }}
     >
-      {/* Help Button */}
       <button
-        onClick={() => setShowHelp(!showHelp)}
+        onClick={() => setShowHelp(true)}
         style={{
           position: 'absolute',
           top: '5px',
@@ -48,39 +47,12 @@ const IfBlock = ({ id, data, selected, executing }) => {
       >
         <FaQuestion />
       </button>
-      {showHelp && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '30px',
-            left: '5px',
-            background: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '10px',
-            width: '220px',
-            zIndex: 10,
-          }}
-        >
-          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
-          <button
-            onClick={() => setShowHelp(false)}
-            style={{
-              marginTop: '5px',
-              fontSize: '12px',
-              background: '#e74c3c',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              padding: '3px 6px',
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )}
-      <FaQuestion style={{ marginBottom: 5 }} />
+      <HelpModal
+        visible={showHelp}
+        helpText={helpText}
+        title="If Then Block Help"
+        onClose={() => setShowHelp(false)}
+      />
       <div>{data.label || 'If Then'}</div>
       <Handle
         type="target"

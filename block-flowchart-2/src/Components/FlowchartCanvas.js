@@ -238,7 +238,7 @@ function FlowchartCanvas({
             animated: false,
             markerEnd: { type: MarkerType.ArrowClosed },
             style: { stroke: '#555', strokeWidth: 3 },
-            label: 'Loop',
+            label: 'Loop Back',
           };
           setEdges((eds) => eds.concat([newEdgeWhileTrue, newEdgeWhileFalse, newLoopBackEdge]));
         } else {
@@ -275,7 +275,7 @@ function FlowchartCanvas({
         setDummyBlockPosition(null);
       }, 500);
     },
-    [blocks, setNodes]
+    [blocks, setNodes, setEdges]
   );
 
   const { executeFlowchart, resetExecution, setSpeedMultiplier } = useFlowchartExecutor(
@@ -482,7 +482,7 @@ function FlowchartCanvas({
           type: 'custom',
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: 'green', strokeWidth: 3 },
-          label: 'Loop',
+          label: 'True',
         };
         const edgeWhileExit = {
           id: uuidv4(),
@@ -492,7 +492,7 @@ function FlowchartCanvas({
           type: 'custom',
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: 'red', strokeWidth: 3 },
-          label: 'Exit',
+          label: 'False',
         };
         const edgeLoopBack = {
           id: uuidv4(),
@@ -503,7 +503,7 @@ function FlowchartCanvas({
           type: 'custom',
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: '#555', strokeWidth: 3 },
-          label: 'LoopBack',
+          label: 'Loop Back',
         };
         setEdges((eds) => eds.concat([edgeWhileBody, edgeWhileExit, edgeLoopBack]));
       } else if (
@@ -558,6 +558,11 @@ function FlowchartCanvas({
       const userId = auth.currentUser ? auth.currentUser.uid : 'anonymous';
       const storageKey = `blockExplanationShown_${userId}_${blockType}`;
 
+      if (!localStorage.getItem(storageKey)) {
+        showHelpModalForBlock(blockType);
+        localStorage.setItem(storageKey, 'true');
+      }
+
       // Only show the explanation modal if it has not been shown for THIS user (persisted via localStorage)
       if (!helpShown[blockType] && !localStorage.getItem(storageKey)) {
         showHelpModalForBlock(blockType);
@@ -599,7 +604,18 @@ function FlowchartCanvas({
         connectionLineType={ConnectionLineType.SmoothStep}
         connectionLineStyle={{ stroke: '#999', strokeWidth: 2 }}
         onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds))}
-        onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds))}
+        onEdgesChange={(changes) =>
+          setEdges((eds) => {
+            const updatedEdges = applyEdgeChanges(changes, eds);
+            // Ensure that loopback edges always have the label "Loop Back"
+            return updatedEdges.map((edge) => {
+              if (edge.sourceHandle && edge.sourceHandle.startsWith('loopBack')) {
+                return { ...edge, label: 'Loop Back' };
+              }
+              return edge;
+            });
+          })
+        }
         onConnect={onConnect}
         onSelectionChange={({ nodes, edges }) => {
           setSelectedNodes(nodes.map((node) => node.id));

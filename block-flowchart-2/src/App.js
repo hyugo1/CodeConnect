@@ -11,7 +11,7 @@ import './styles/App.css';
 import { ToastContainer } from 'react-toastify';
 
 function App() {
-  // State for character and console output
+  // State for console, character, drag, and flowchart
   const [consoleOutput, setConsoleOutput] = useState('');
   const [characterPosition, setCharacterPosition] = useState({ x: 0, y: 0 });
   const [characterMessage, setCharacterMessage] = useState('');

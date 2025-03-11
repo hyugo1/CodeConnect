@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
+import HelpModal from '../../Modal/HelpModal.js';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './block.css';
 
 const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
   const [showHelp, setShowHelp] = useState(false);
-  const helpText = `Dummy Block:
+  const helpText = `
 • This is a temporary block.
 • Click or drag another block onto this block to replace it.`;
 
@@ -38,9 +39,8 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
       tabIndex={0}
       aria-label="Dummy block – click or drop to replace"
     >
-      {/* Help Button */}
       <button
-        onClick={(e) => { e.stopPropagation(); setShowHelp(!showHelp); }}
+        onClick={(e) => { e.stopPropagation(); setShowHelp(true); }}
         style={{
           position: 'absolute',
           top: '5px',
@@ -55,39 +55,12 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
       >
         <FaQuestion />
       </button>
-      {showHelp && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '30px',
-            left: '5px',
-            background: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '10px',
-            width: '200px',
-            zIndex: 10,
-          }}
-        >
-          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
-          <button
-            onClick={(e) => { e.stopPropagation(); setShowHelp(false); }}
-            style={{
-              marginTop: '5px',
-              fontSize: '12px',
-              background: '#e74c3c',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              padding: '3px 6px',
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )}
-      <FaQuestion style={{ marginBottom: 5 }} />
+      <HelpModal
+        visible={showHelp}
+        helpText={helpText}
+        title="Dummy Block Help"
+        onClose={() => setShowHelp(false)}
+      />
       <div>{data.label || 'Dummy Block'}</div>
       <Handle
         type="target"

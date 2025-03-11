@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaSync, FaQuestion } from 'react-icons/fa';
+import HelpModal from '../../Modal/HelpModal.js';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -9,8 +10,7 @@ import './block.css';
 const WhileStartBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
-
-  const helpText = `While Block:
+  const helpText = `
 • Enter a condition using two operands and an operator.
 • The loop body will execute while the condition is true.
 • Connect the loop body and exit paths accordingly.`;
@@ -32,9 +32,8 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
       className={`block-container while-start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#f9f7d8', position: 'relative' }}
     >
-      {/* Help Button */}
       <button
-        onClick={() => setShowHelp(!showHelp)}
+        onClick={() => setShowHelp(true)}
         style={{
           position: 'absolute',
           top: '5px',
@@ -49,38 +48,12 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
       >
         <FaQuestion />
       </button>
-      {showHelp && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '30px',
-            left: '5px',
-            background: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '10px',
-            width: '220px',
-            zIndex: 10,
-          }}
-        >
-          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
-          <button
-            onClick={() => setShowHelp(false)}
-            style={{
-              marginTop: '5px',
-              fontSize: '12px',
-              background: '#e74c3c',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              padding: '3px 6px',
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )}
+      <HelpModal
+        visible={showHelp}
+        helpText={helpText}
+        title="While Block Help"
+        onClose={() => setShowHelp(false)}
+      />
       <FaSync style={{ marginBottom: 5 }} />
       <div>{data.label || 'While'}</div>
       <Handle

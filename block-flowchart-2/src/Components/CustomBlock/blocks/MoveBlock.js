@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaQuestion } from 'react-icons/fa';
+import HelpModal from '../../Modal/HelpModal.js';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -19,8 +20,7 @@ const inputStyle = {
 const MoveBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
-
-  const helpText = `Move Block:
+  const helpText = `
 • Enter the distance to move.
 • Select a direction (up, down, left, right).`;
 
@@ -56,9 +56,8 @@ const MoveBlock = ({ id, data, selected, executing }) => {
       className={`block-container move-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
       style={{ backgroundColor: '#d8f9f9', position: 'relative' }}
     >
-      {/* Help Button */}
       <button
-        onClick={() => setShowHelp(!showHelp)}
+        onClick={() => setShowHelp(true)}
         style={{
           position: 'absolute',
           top: '5px',
@@ -73,39 +72,12 @@ const MoveBlock = ({ id, data, selected, executing }) => {
       >
         <FaQuestion />
       </button>
-      {showHelp && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '30px',
-            left: '5px',
-            background: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '10px',
-            width: '200px',
-            zIndex: 10,
-          }}
-        >
-          <p style={{ fontSize: '12px', margin: 0 }}>{helpText}</p>
-          <button
-            onClick={() => setShowHelp(false)}
-            style={{
-              marginTop: '5px',
-              fontSize: '12px',
-              background: '#e74c3c',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              padding: '3px 6px',
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )}
-
+      <HelpModal
+        visible={showHelp}
+        helpText={helpText}
+        title="Move Block Help"
+        onClose={() => setShowHelp(false)}
+      />
       {icon}
       <div>{data.label || 'Move Character'}</div>
       <Handle
@@ -130,7 +102,7 @@ const MoveBlock = ({ id, data, selected, executing }) => {
       <Tooltip id={`tooltip-${id}-source`} place="top" />
       <input
         type="number"
-        placeholder="Enter distance"
+        placeholder="Distance to move"
         value={data.distance || ''}
         onChange={handleDistanceChange}
         style={inputStyle}
