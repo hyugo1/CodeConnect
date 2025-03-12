@@ -305,6 +305,16 @@ body, html {
   color: #ecf0f1;
 }
 
+.dark-mode .settings-section {
+  /* opacity: 0.8; */
+  color: black;
+}
+
+.dark-mode .modal-content {
+  opacity: 0.8;
+  color: black;
+}
+
 
 
 /* rgb(25,26,30) */

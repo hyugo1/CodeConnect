@@ -148,7 +148,20 @@ export function useFlowchartExecutor(
               context.variables[block.data.varName] = block.data.varValue;
             } else {
               const value = evaluate(block.data.varValue, context.variables);
-              context.variables[block.data.varName] += value;
+              const operator = block.data.operator || '+';
+              switch (operator) {
+                case '-':
+                  context.variables[block.data.varName] -= value;
+                  break;
+                case '*':
+                  context.variables[block.data.varName] *= value;
+                  break;
+                case '/':
+                  context.variables[block.data.varName] /= value;
+                  break;
+                default:
+                  context.variables[block.data.varName] += value;
+              }
             }
             outputs.push(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
             console.log(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);

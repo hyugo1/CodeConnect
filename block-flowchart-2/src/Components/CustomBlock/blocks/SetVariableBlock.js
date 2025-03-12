@@ -30,9 +30,11 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
   };
 
   const helpText = `
-• Provide a variable name.
-• Enter a value (number or arithmetic expression if number; text if string).
-• Toggle the type using the button on the top right.`;
+  • Use this block to create a new variable or change an existing one.
+  • Type the variable's name and then enter a value.
+  • For numbers, you can even use an arithmetic expression like "2+3*4".
+  • Click the toggle button to switch the variable type between number and text.
+  `;
 
   return (
     <div className={`block-container set-variable-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>

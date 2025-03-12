@@ -91,7 +91,9 @@ export function generateJavaScriptCode(blocks, edges) {
           if (vt === 'string') {
             codeLines.push(indent + `${block.data.varName} = "${block.data.varValue}";`);
           } else {
-            codeLines.push(indent + `${block.data.varName} += ${block.data.varValue};`);
+            // Use the operator from the block data (defaults to '+')
+            const op = block.data.operator || '+';
+            codeLines.push(indent + `${block.data.varName} ${op}= ${block.data.varValue};`);
           }
         }
         {

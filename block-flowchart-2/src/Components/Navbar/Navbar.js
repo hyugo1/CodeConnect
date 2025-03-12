@@ -526,16 +526,27 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       {modal.type === 'guide' && (
         <AccessibleModal onClose={() => setModal({ type: null })} title="How to Play with Blocks" customClass="hint-modal">
           <ul className="hint-list">
-            <li><strong>Start:</strong> This is where your adventure begins!</li>
-            <li><strong>End:</strong> This marks the end of your story.</li>
-            <li><strong>If Then:</strong> Make choices and see what happens.</li>
-            <li><strong>While:</strong> Repeat actions until you’re done.</li>
-            <li><strong>Print:</strong> Show messages on the screen.</li>
-            <li><strong>Set Variable:</strong> Create a new item (variable).</li>
-            <li><strong>Adjust Variable:</strong> Update your item.</li>
-            <li><strong>Move:</strong> Help your character go on an adventure.</li>
-            <li><strong>Dummy:</strong> Replace this block with a real one when you're ready.</li>
+            <li>
+              <strong>Connecting Blocks:</strong> Drag blocks from the toolbox and connect them by clicking on their connection points.
+              This creates a flow, much like linking Lego pieces together.
+            </li>
+            <li>
+              <strong>Creating a Flow:</strong> Start with a <em>Start</em> block, then add actions like <em>Set Variable</em>, <em>If Then</em>, and <em>Print</em>.
+              Connect them in sequence to build your program.
+            </li>
+            <li>
+              <strong>Hints on Each Block:</strong> Click the hint (question mark) button on a block to see detailed instructions on how it works.
+            </li>
+            <li>
+              <strong>Try It Out:</strong> Experiment by connecting blocks in different orders to see how the flow changes your program’s behavior.
+            </li>
+            <li>
+              <strong>Have Fun!</strong> This is your chance to be creative and learn by doing. Don't worry if you make mistakes; each block teaches you a new concept.
+            </li>
           </ul>
+          <p className="hint-footer">
+            Press the "How to Play" button anytime to review these hints and learn more about what each block does.
+          </p>
         </AccessibleModal>
       )}
 

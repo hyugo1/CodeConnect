@@ -10,8 +10,9 @@ import './block.css';
 const StartBlock = ({ id, data, selected, executing }) => {
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• This is where your program begins.
-• Drag more blocks from the start block to build your program’s steps.`;
+  • This block is the starting point of your program.
+  • Drag more blocks from here to build the steps of your program.
+  `;
 
   return (
     <div className={`block-container start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>

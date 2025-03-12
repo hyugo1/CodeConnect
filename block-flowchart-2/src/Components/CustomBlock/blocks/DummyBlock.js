@@ -10,8 +10,9 @@ import './block.css';
 const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• This is a temporary placeholder block. 
-• It shows where you can add a new command later. To replace it, simply drag your chosen block onto it or click it to select a new block..`;
+  • This block is a placeholder that shows where you can add a new command.
+  • To replace it, simply click on the dummy block and choose the block you want to use.
+  `;
 
   const handleDrop = (event) => {
     event.preventDefault();

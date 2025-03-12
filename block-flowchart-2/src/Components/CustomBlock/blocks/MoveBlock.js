@@ -22,9 +22,10 @@ const MoveBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• This block moves your character around the screen. 
-• Enter a distance and select a direction, just like telling your character to take a few steps.`;
-
+  • This block moves your character on the screen.
+  • Enter a number to define the distance to move.
+  • Then, choose a direction from the dropdown.
+  `;
   const handleDistanceChange = (e) => {
     const newDistance = parseInt(e.target.value, 10) || 0;
     updateNodeData({ distance: newDistance });

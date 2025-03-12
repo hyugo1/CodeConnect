@@ -346,46 +346,45 @@ function FlowchartCanvas({
     lastBlockId.current = newBlockId;
   };
 
-  // Instead of alert, show help via modal
   const showHelpModalForBlock = (blockType) => {
     let title = '';
     let helpContent = '';
     switch (blockType) {
       case 'setVariable':
         title = 'Set Variable';
-        helpContent = 'Set Variable: Create a variable with a name and a value.';
+        helpContent = 'Use the Set Variable block to create a new variable or update an existing one. Type in the variable name and assign it a value that you can use later in your program.';
         break;
       case 'if':
         title = 'If Then';
-        helpContent = 'If Then: Create a decision block with two branches (true and false) that are automatically connected.';
+        helpContent = 'The If Then block lets your program make decisions. Enter a condition (for example, "x > 10") to decide which branch to follow: the true branch runs if the condition is met, and the false branch runs otherwise.';
         break;
       case 'whileStart':
         title = 'While';
-        helpContent = 'While: Create a loop with a body (for looping) and an exit branch that are automatically connected (plus a loopback edge).';
+        helpContent = 'Use the While block to create a loop that repeats a set of actions as long as a condition is true. Enter the condition, and the block will automatically add dummy branches for the loop body and exit, as well as a loopback connection.';
         break;
       case 'print':
         title = 'Print';
-        helpContent = 'Print: Output a message to the console.';
+        helpContent = 'The Print block outputs a message to the console. Type your message and, if needed, include variable values using curly braces (e.g., "Score is {score}").';
         break;
       case 'move':
         title = 'Move';
-        helpContent = 'Move: Move your character in a specified direction by a given distance.';
+        helpContent = 'Use the Move block to change your character’s position. Specify the direction and distance to move, making it easy to control your character’s movements on the screen.';
         break;
       case 'changeVariable':
         title = 'Adjust Variable';
-        helpContent = 'Adjust Variable: Modify the value of an existing variable.';
+        helpContent = 'The Adjust Variable block modifies the value of an existing variable. Type the variable name, choose an operation (like add or subtract), and enter the amount to change the value by.';
         break;
       case 'start':
         title = 'Start';
-        helpContent = 'Start: The beginning of your flowchart.';
+        helpContent = 'Every program begins with the Start block. This block marks the entry point of your flowchart, so make sure your flow always starts here.';
         break;
       case 'end':
         title = 'End';
-        helpContent = 'End: The end of your flowchart.';
+        helpContent = 'The End block marks the termination of your program. When the flow reaches this block, the program stops executing.';
         break;
       default:
         title = blockType;
-        helpContent = `Help for ${blockType} block.`;
+        helpContent = `Help for the ${blockType} block.`;
     }
     setHelpModal({ visible: true, title, content: helpContent });
   };

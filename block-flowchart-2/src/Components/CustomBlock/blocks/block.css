@@ -178,6 +178,7 @@
   font-size: 16px;
   box-sizing: border-box;
   transition: border-color 0.3s;
+  text-align: center;
 }
 
 .block-input:focus {
@@ -203,6 +204,35 @@
   text-align: center;
   margin-right: 5px;
 }
+.operator-input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* gap: 5px; */
+  margin-top: 10px;
+}
+
+.operator-input-wrapper select,
+.operator-input-wrapper input {
+  display: inline-block;
+  vertical-align: middle;
+  padding: 6px;
+  font-size: 16px;
+  line-height: 1.2;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  text-align: center;
+  margin-top: 0;
+}
+
+.operator-input-wrapper select {
+  width: var(--operator-width);
+}
+
+.operator-input-wrapper .block-input {
+  width: 100%;
+}
 .condition-container {
   display: flex;
   align-items: center;
@@ -214,7 +244,7 @@
 .help-button {
   position: absolute;
   top: 5px;
-  left: 5px;
+  left: 2px;
   background: transparent;
   border: none;
   cursor: pointer;

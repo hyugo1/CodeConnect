@@ -12,11 +12,12 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• This block creates a loop. 
-• You are likely to have to set a variable first to compare, like "x" or "y", to a value.
-• Then, in the if block type a condition, for example ‘if x > 10’ to tell the program when to keep repeating. 
-• The loop (the left branch) runs as long as the condition is true, and the right path runs when it becomes false, meaning it exits the loop.`;
-
+  • This block starts a loop that repeats a set of actions.
+  • First, choose a variable and write a condition (for example, "x > 10").
+  • The left branch is the loop body that repeats as long as the condition is true.
+  • When the condition becomes false, the program follows the right branch and exits the loop.
+  • Use this block to repeat actions until a certain condition is met.
+  `;
   const handleLeftOperandChange = (e) => {
     updateNodeData({ leftOperand: e.target.value });
   };
@@ -58,7 +59,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
       <div className="condition-container">
         <input
           type="text"
-          placeholder="First Variable"
+          placeholder="First Value"
           value={data.leftOperand || ''}
           onChange={handleLeftOperandChange}
           className="operand-input"
@@ -74,7 +75,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         </select>
         <input
           type="text"
-          placeholder="Second Variable"
+          placeholder="Second Value"
           value={data.rightOperand || ''}
           onChange={handleRightOperandChange}
           className="operand-input"

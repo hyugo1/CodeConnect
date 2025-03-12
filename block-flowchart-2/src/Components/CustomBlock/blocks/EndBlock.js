@@ -10,9 +10,10 @@ import './block.css';
 const EndBlock = ({ id, data, selected, executing }) => {
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• This block marks the finish line for your program. 
-• Place it at the very end so the program knows when to stop running.
-`;
+  • This block marks the end of your program.
+  • When the program reaches this block, it stops running.
+  • Always place it at the very end to signal that there are no more steps.
+  `;
 
   return (
     <div

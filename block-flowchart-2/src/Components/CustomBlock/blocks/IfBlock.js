@@ -1,4 +1,3 @@
-// src/Components/blocks/IfBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaCodeBranch, FaQuestion } from 'react-icons/fa';
@@ -12,10 +11,13 @@ const IfBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-  • Use this block to make decisions. 
-  • You are likely to have to set a variable first to compare, like "x" or "y", to a value.
-  • Then, in the if block type a condition, for example ‘if x > 10’ to decide which path to follow.
-  • The left side runs if the condition is true, and the right side runs if it’s false.`;
+• This block lets your program decide what to do next.
+• In the first box, type a number or a variable name (for example, "score").
+• Next, choose a comparison operator (like >, <, or ==).
+• In the second box, type another number or variable (for example, "10").
+• For instance, if you want to check whether score is greater than 10, type "score", choose ">", and then type "10".
+• The program will follow the "true" path if the condition is met; otherwise, it will follow the "false" path.
+`;
 
   const handleLeftOperandChange = (e) => {
     updateNodeData({ leftOperand: e.target.value });
@@ -44,7 +46,6 @@ const IfBlock = ({ id, data, selected, executing }) => {
         title="If Then Block Help"
         onClose={() => setShowHelp(false)}
       />
-      {/* New icon for the if block */}
       <FaCodeBranch className="block-icon" />
       <div>{data.label || 'If Then'}</div>
       <Handle
@@ -82,7 +83,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
       <div className="condition-container">
         <input
           type="text"
-          placeholder="First Variable"
+          placeholder="First Value"
           value={data.leftOperand || ''}
           onChange={handleLeftOperandChange}
           className="operand-input"
@@ -101,7 +102,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
         </select>
         <input
           type="text"
-          placeholder="Second Variable"
+          placeholder="Second Value"
           value={data.rightOperand || ''}
           onChange={handleRightOperandChange}
           className="operand-input"

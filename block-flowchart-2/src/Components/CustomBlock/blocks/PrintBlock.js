@@ -11,10 +11,12 @@ import './block.css';
 const PrintBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
-
   const helpText = `
-• This block allows you to make the character say things. Simply type in your message. 
-• To include a variable’s value, use curly braces—for example, {x}—to show what that variable holds.`;
+  • This block makes the character say a message.
+  • Type in the message you want to display.
+  • To show a variable’s value, wrap its name in curly braces.
+    For example: "{score}" will display the current value score has.
+  `;
 
   const handleChange = (e) => {
     updateNodeData({ message: e.target.value });
@@ -59,7 +61,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
       <Tooltip id={`tooltip-${id}-source`} place="top" />
       <input
         type="text"
-        placeholder="Message to print (e.g., 'x is {x}')"
+        placeholder="e.g., 'x is {x}'"
         value={data.message || ''}
         onChange={handleChange}
         className="block-input"
