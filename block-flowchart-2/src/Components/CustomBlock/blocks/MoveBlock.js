@@ -1,7 +1,8 @@
+// src/Components/blocks/MoveBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaQuestion } from 'react-icons/fa';
-import HelpModal from '../../Modal/HelpModal.js';
+import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -21,8 +22,8 @@ const MoveBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• Enter the distance to move.
-• Select a direction (up, down, left, right).`;
+• This block moves your character around the screen. 
+• Enter a distance and select a direction, just like telling your character to take a few steps.`;
 
   const handleDistanceChange = (e) => {
     const newDistance = parseInt(e.target.value, 10) || 0;
@@ -36,38 +37,26 @@ const MoveBlock = ({ id, data, selected, executing }) => {
   let icon = null;
   switch (data.direction) {
     case 'up':
-      icon = <FaArrowUp style={{ marginBottom: 5 }} />;
+      icon = <FaArrowUp className="block-icon" />;
       break;
     case 'down':
-      icon = <FaArrowDown style={{ marginBottom: 5 }} />;
+      icon = <FaArrowDown className="block-icon" />;
       break;
     case 'left':
-      icon = <FaArrowLeft style={{ marginBottom: 5 }} />;
+      icon = <FaArrowLeft className="block-icon" />;
       break;
     case 'right':
-      icon = <FaArrowRight style={{ marginBottom: 5 }} />;
+      icon = <FaArrowRight className="block-icon" />;
       break;
     default:
-      icon = <FaArrowsAltH style={{ marginBottom: 5 }} />;
+      icon = <FaArrowsAltH className="block-icon" />;
   }
 
   return (
-    <div
-      className={`block-container move-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
-      style={{ backgroundColor: '#d8f9f9', position: 'relative' }}
-    >
+    <div className={`block-container move-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
       <button
         onClick={() => setShowHelp(true)}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          left: '5px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '18px',
-          color: '#555',
-        }}
+        className="help-button"
         title="How to use this block"
       >
         <FaQuestion />
@@ -107,7 +96,11 @@ const MoveBlock = ({ id, data, selected, executing }) => {
         onChange={handleDistanceChange}
         style={inputStyle}
       />
-      <select value={data.direction || ''} onChange={handleDirectionChange} style={inputStyle}>
+      <select
+        value={data.direction || ''}
+        onChange={handleDirectionChange}
+        style={inputStyle}
+      >
         <option value="">Select Direction</option>
         <option value="up">Up</option>
         <option value="down">Down</option>

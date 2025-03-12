@@ -1,5 +1,4 @@
 // src/Components/Navbar/Navbar.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import { auth, db, googleProvider } from '../../config/firebase';
 import {
@@ -9,6 +8,8 @@ import {
   signOut,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  updateProfile,
+  deleteUser
 } from 'firebase/auth';
 import {
   collection,
@@ -23,17 +24,20 @@ import { exportFlowchart, importFlowchart } from '../../utils/storage';
 import { toast } from 'react-toastify';
 import AccessibleModal from '../Modal/AccessibleModal';
 import './Navbar.css';
+// import '../../styles/App.css';
 import defaultProfilePic from '../../images/profile_pic.png';
+import { FaUser, FaTrash, FaMoon } from 'react-icons/fa';
 
 const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [modal, setModal] = useState({ type: null }); // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide'
+  const [modal, setModal] = useState({ type: null }); // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide', 'settings'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [projectName, setProjectName] = useState('');
   const [myProjects, setMyProjects] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [newProfilePic, setNewProfilePic] = useState(null);
   const fileInputRef = useRef(null);
 
   // Listen for user sign-in/out
@@ -163,6 +167,9 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
   };
 
   const handleDeleteProject = async (projectId) => {
+    if (!window.confirm("Are you sure you want to delete this project? This action cannot be undone.")) {
+      return;
+    }
     try {
       const projectDoc = doc(db, 'projects', projectId);
       await deleteDoc(projectDoc);
@@ -239,6 +246,24 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you sure you want to delete your account? This action is irreversible.")) {
+      return;
+    }
+    try {
+      await deleteUser(auth.currentUser);
+      toast.success("Your account has been deleted.");
+    } catch (error) {
+      console.error("Account deletion failed:", error);
+      toast.error("Could not delete your account.");
+    }
+  };
+
+  const toggleDarkMode = () => {
+    document.body.classList.toggle("dark-mode");
+    toast.success("Dark mode toggled.");
+  };
+
   return (
     <>
       <nav className="navbar">
@@ -250,7 +275,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
               alt="Flowchart Logo"
               className="navbar-logo"
             />
-            <span className="navbar-title">Block Coding Fun!</span>
+            <span className="navbar-title">Code Connect!</span>
           </a>
           {/* Navigation Links */}
           <div className="navbar-menu">
@@ -302,6 +327,14 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                       <span className="dropdown-email">{currentUser.email}</span>
                     </div>
                     <ul className="dropdown-menu">
+                      <li>
+                        <button
+                          onClick={() => setModal({ type: 'settings' })}
+                          className="dropdown-item"
+                        >
+                          Settings
+                        </button>
+                      </li>
                       <li>
                         <button
                           onClick={handleSignOut}
@@ -433,9 +466,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           <button onClick={handleSignUp} className="btn modal-btn signup-btn">
             Join Now
           </button>
-          <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
-            Cancel
-          </button>
         </AccessibleModal>
       )}
 
@@ -456,24 +486,23 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             onChange={(e) => setPassword(e.target.value)}
             className="modal-input"
           />
-          <button onClick={handleSignIn} className="btn modal-btn signin-btn">
-            Log In
-          </button>
-          <button
-            onClick={() => setModal({ type: 'forgotPassword' })}
-            className="btn modal-btn forgot-btn"
-          >
-            Forgot Password?
-          </button>
-          <button
-            onClick={() => setModal({ type: 'signup' })}
-            className="btn modal-btn newuser-btn"
-          >
-            New here?
-          </button>
-          <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
-            Cancel
-          </button>
+          <div className="modal-button-group">
+            <button onClick={handleSignIn} className="btn modal-btn signin-btn">
+              Log In
+            </button>
+            <button
+              onClick={() => setModal({ type: 'forgotPassword' })}
+              className="btn modal-btn forgot-btn"
+            >
+              Forgot Password?
+            </button>
+            <button
+              onClick={() => setModal({ type: 'signup' })}
+              className="btn modal-btn newuser-btn"
+            >
+              New here?
+            </button>
+          </div>
         </AccessibleModal>
       )}
 
@@ -490,9 +519,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           <button onClick={handleForgotPassword} className="btn modal-btn forgot-btn">
             Send Reset Email
           </button>
-          <button onClick={() => setModal({ type: null })} className="btn modal-btn cancel-btn">
-            Cancel
-          </button>
         </AccessibleModal>
       )}
 
@@ -506,10 +532,35 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             <li><strong>While:</strong> Repeat actions until you’re done.</li>
             <li><strong>Print:</strong> Show messages on the screen.</li>
             <li><strong>Set Variable:</strong> Create a new item (variable).</li>
-            <li><strong>Change Variable:</strong> Update your item.</li>
+            <li><strong>Adjust Variable:</strong> Update your item.</li>
             <li><strong>Move:</strong> Help your character go on an adventure.</li>
             <li><strong>Dummy:</strong> Replace this block with a real one when you're ready.</li>
           </ul>
+        </AccessibleModal>
+      )}
+
+      {/* Settings Modal */}
+      {modal.type === 'settings' && (
+        <AccessibleModal 
+          onClose={() => setModal({ type: null })} 
+          title={
+            <>
+              <FaUser className="modal-icon" /> Account Settings
+            </>
+          }
+        >
+          <div className="settings-section">
+            <h4>Delete Account</h4>
+            <button onClick={handleDeleteAccount} className="btn modal-btn delete-btn animated-btn">
+              <FaTrash className="icon" /> Delete Account
+            </button>
+          </div>
+          <div className="settings-section">
+            <h4>Theme</h4>
+            <button onClick={toggleDarkMode} className="btn modal-btn animated-btn">
+              <FaMoon className="icon" /> Dark Mode
+            </button>
+          </div>
         </AccessibleModal>
       )}
     </>

@@ -1,7 +1,8 @@
+// src/Components/blocks/WhileStartBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaSync, FaQuestion } from 'react-icons/fa';
-import HelpModal from '../../Modal/HelpModal.js';
+import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -11,9 +12,10 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• Enter a condition using two operands and an operator.
-• The loop body will execute while the condition is true.
-• Connect the loop body and exit paths accordingly.`;
+• This block creates a loop. 
+• You are likely to have to set a variable first to compare, like "x" or "y", to a value.
+• Then, in the if block type a condition, for example ‘if x > 10’ to tell the program when to keep repeating. 
+• The loop (the left branch) runs as long as the condition is true, and the right path runs when it becomes false, meaning it exits the loop.`;
 
   const handleLeftOperandChange = (e) => {
     updateNodeData({ leftOperand: e.target.value });
@@ -28,22 +30,10 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
   };
 
   return (
-    <div
-      className={`block-container while-start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
-      style={{ backgroundColor: '#f9f7d8', position: 'relative' }}
-    >
+    <div className={`block-container while-start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
       <button
         onClick={() => setShowHelp(true)}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          left: '5px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '18px',
-          color: '#555',
-        }}
+        className="help-button"
         title="How to use this block"
       >
         <FaQuestion />
@@ -54,7 +44,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         title="While Block Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaSync style={{ marginBottom: 5 }} />
+      <FaSync className="block-icon" />
       <div>{data.label || 'While'}</div>
       <Handle
         type="target"

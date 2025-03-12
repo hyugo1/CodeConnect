@@ -34,7 +34,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
     { type: 'whileStart', label: 'While', color: '#f9f7d8', icon: <FaSync />, category: 'Control Blocks' },
     { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint />, category: 'Character Action Blocks' },
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy />, category: 'Variable Blocks' },
-    { type: 'changeVariable', label: 'Change Variable', color: '#e0ffe0', icon: <FaPlusCircle />, category: 'Variable Blocks' },
+    { type: 'changeVariable', label: 'Adjust Variable', color: '#e0ffe0', icon: <FaPlusCircle />, category: 'Variable Blocks' },
     { type: 'move', label: 'Move Character', color: '#d8f9f9', icon: <FaArrowsAltH />, category: 'Character Action Blocks' },
   ];
 
@@ -61,86 +61,45 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
   }, [isDragging, setCancelDrag, setIsDragging]);
 
   return (
-    <aside
-      style={{
-        padding: '10px',
-        backgroundColor: '#eee',
-        width: collapsed ? '40px' : '250px',
-        transition: 'width 0.3s',
-        border: '2px solid #555',
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Collapse button */}
+    <aside className={`aside-container ${collapsed ? 'collapsed' : ''}`}>
+      <div className="aside-inner">
+        <div className="collapse-container">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            style={{
-              width: '100%',
-              padding: '5px',
-              cursor: 'pointer',
-              border: '2px solid #555',
-              backgroundColor: '#fff',
-              borderRadius: '4px',
-              marginBottom: '20px',
-            }}
+            className="collapse-button"
             aria-label={collapsed ? "Expand palette" : "Collapse palette"}
           >
             {collapsed ? '>' : '<'}
           </button>
         </div>
         {!collapsed && (
-          <h3 style={{ textAlign: 'center' }}>
-            {excludeStart ? 'Select a Replacement Block' : 'Blocks'}
-          </h3>
-        )}
-        {!collapsed && (
-          <div
-            style={{
-              overflowY: 'auto',
-              paddingBottom: '20px',
-              borderBottom: '2px solid #555',
-            }}
-          >
-            {Object.keys(groupedBlocks).map((category) => (
-              <div key={category}>
-                <h4
-                  style={{
-                    marginTop: '20px',
-                    marginBottom: '5px',
-                    borderBottom: '1px solid #555',
-                  }}
-                >
-                  {category}
-                </h4>
-                {groupedBlocks[category].map((block) => (
-                  <div
-                    key={block.type}
-                    style={{
-                      margin: '5px 0',
-                      padding: '8px',
-                      cursor: 'grab',
-                      borderRadius: '5px',
-                      color: '#000',
-                      fontWeight: 'bold',
-                      border: '2px solid #555',
-                      display: 'flex',
-                      alignItems: 'center',
-                      backgroundColor: block.color,
-                    }}
-                    onClick={() => onSelectBlock(block.type)}
-                    onDragStart={(event) => onDragStart(event, block.type)}
-                    onDragEnd={onDragEnd}
-                    draggable
-                    aria-label={`Drag to add ${block.label} block`}
-                  >
-                    {block.icon}
-                    <span style={{ marginLeft: '8px' }}>{block.label}</span>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+          <>
+            <h3 className="palette-title">
+              {excludeStart ? 'Select a Replacement Block' : 'Blocks'}
+            </h3>
+            <div className="blocks-container">
+              {Object.keys(groupedBlocks).map((category) => (
+                <div key={category}>
+                  <h4 className="block-category">{category}</h4>
+                  {groupedBlocks[category].map((block) => (
+                    <div
+                      key={block.type}
+                      className="dndblock"
+                      onClick={() => onSelectBlock(block.type)}
+                      onDragStart={(event) => onDragStart(event, block.type)}
+                      onDragEnd={onDragEnd}
+                      draggable
+                      aria-label={`Drag to add ${block.label} block`}
+                      style={{ backgroundColor: block.color }} 
+                    >
+                      {block.icon}
+                      <span>{block.label}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </aside>

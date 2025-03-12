@@ -5,10 +5,9 @@ const AccessibleModal = ({ onClose, title, children, customClass }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
-    // Automatically focus the modal when it opens.
-    if (modalRef.current) {
-      modalRef.current.focus();
-    }
+    // if (modalRef.current) {
+    //   modalRef.current.focus();
+    // }
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         onClose();
@@ -21,7 +20,6 @@ const AccessibleModal = ({ onClose, title, children, customClass }) => {
   return (
     <div
       className="modal-backdrop"
-      onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"

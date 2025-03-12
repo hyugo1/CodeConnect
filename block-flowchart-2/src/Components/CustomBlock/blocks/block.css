@@ -1,3 +1,6 @@
+/* src/Components/blocks/block.css */
+
+/* CSS Variables (you can also define these in a global file) */
 :root {
   --less-content-width: 220px;
   --conditional-width: 320px;
@@ -19,7 +22,6 @@
   border-radius: 8px;
   position: relative;
   text-align: center;
-  font-weight: 600;
   background-color: var(--block-bg);
   display: flex;
   flex-direction: column;
@@ -33,8 +35,11 @@
   box-shadow: 0 4px 8px var(--block-shadow);
   z-index: 2;
   overflow: visible;
+  font-family: 'kumbh-sans', sans-serif;
+  font-weight: bold;
 }
 
+/* Hover and Selected States */
 .block-container:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px var(--block-shadow);
@@ -46,13 +51,124 @@
   box-shadow: 0 8px 16px var(--block-shadow);
 }
 
-/* Conditional blocks (with extra content) override the width */
-.if-block,
-.while-start-block {
+/* Specific block classes for light mode */
+.start-block {
+  background-color: #d3f9d8;
+}
+.end-block {
+  background-color: #f9d8d8;
+}
+.if-block {
+  background-color: #d8d8f9;
   width: var(--conditional-width);
 }
+.while-start-block {
+  background-color: #f9f7d8;
+  width: var(--conditional-width);
+}
+.print-block {
+  background-color: #ffeeba;
+}
+.set-variable-block {
+  background-color: #e0e0e0;
+}
 
-/* Standard input styles */
+.change-variable-block {
+  background-color: #e0ffe0;
+}
+.move-block {
+  background-color: #d8f9f9;
+}
+
+.dummy-block {
+  min-height: 30px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Dark mode overrides for blocks */
+.dark-mode .block-container {
+  color: rgb(25,26,30);
+}
+/* .dark-mode .start-block {
+  background-color: #d3f9d8;
+}
+.dark-mode .end-block {
+  background-color: #443;
+}
+.dark-mode .if-block {
+  background-color: #3a3a55;
+}
+.dark-mode .while-start-block {
+  background-color: #3a3a55;
+}
+.dark-mode .print-block {
+  background-color: #555;
+}
+.dark-mode .set-variable-block,
+.dark-mode .change-variable-block {
+  background-color: #444;
+}
+.dark-mode .move-block {
+  background-color: #555;
+}
+.dark-mode .dummy-block {
+  background-color: #444;
+} */
+
+.dark-mode .help-button {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  /* color: #ecf0f1; */
+}
+
+.dark-mode .operand-input {
+  color: #ecf0f1;
+  background-color: #353549;
+}
+
+.dark-mode .operator-select {
+  color: #ecf0f1;
+  background-color: #353549;
+}
+
+/* Handle Styles */
+.handle-target-circle,
+.handle-source-square {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  position: absolute;
+  z-index: 1;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+.handle-target-circle {
+  background: transparent;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid #555;
+}
+.handle-target-circle:hover {
+  border-color: var(--block-selected-border);
+}
+.handle-source-square {
+  background: #555;
+  left: 50%;
+  transform: translate(-50%, 0);
+  border-radius: 3px;
+}
+.handle-source-square:hover {
+  background-color: var(--block-selected-border);
+}
+
+/* Input and Select Styles */
 .block-input {
   width: 100%;
   margin-top: 10px;
@@ -69,7 +185,6 @@
   border-color: var(--block-selected-border);
 }
 
-/* Specific input styles for operands and operators */
 .operand-input {
   width: var(--operand-width);
   padding: 5px;
@@ -79,7 +194,6 @@
   text-align: center;
   margin-right: 5px;
 }
-
 .operator-select {
   width: var(--operator-width);
   padding: 5px;
@@ -89,7 +203,6 @@
   text-align: center;
   margin-right: 5px;
 }
-
 .condition-container {
   display: flex;
   align-items: center;
@@ -97,58 +210,33 @@
   margin-top: 10px;
 }
 
-/* Base styles for connection handles */
-.handle-target-circle,
-.handle-source-square {
-  width: 14px;
-  height: 14px;
-  cursor: pointer;
+/* Help Button */
+.help-button {
   position: absolute;
-  z-index: 1;
-  transition: background-color 0.3s, border-color 0.3s;
-}
-
-/* Style for target handle */
-.handle-target-circle {
+  top: 5px;
+  left: 5px;
   background: transparent;
-  left: 50%;
-  top: 0;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 2px solid #555;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #555;
 }
 
-.handle-target-circle:hover {
-  border-color: var(--block-selected-border);
+/* Block Icon */
+.block-icon {
+  margin-bottom: 5px;
 }
 
-/* Style for source handle */
-.handle-source-square {
-  background: #555;
-  left: 50%;
-  transform: translate(-50%, 0);
+/* Toggle Type Button */
+.toggle-type-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #ddd;
+  border: 1px solid #aaa;
   border-radius: 3px;
-}
-
-.handle-source-square:hover {
-  background-color: var(--block-selected-border);
-}
-
-/* For blocks with less content (e.g., Start, End, Print, Set Variable, Change Variable, Move, Dummy, etc.) */
-.start-block .handle-source-square,
-.end-block .handle-source-square,
-.print-block .handle-source-square,
-.set-variable-block .handle-source-square,
-.change-variable .handle-source-square,
-.move-block .handle-source-square,
-.dummy-block .handle-source-square {
-  margin-top: 20px;
-}
-
-/* For conditional/extra content blocks (e.g., If and While) */
-.if-block .handle-source-square,
-.while-start-block .handle-source-square {
-  margin-bottom: 20px;
+  padding: 2px 5px;
+  cursor: pointer;
 }
 
 /* Executing state animation */
@@ -194,6 +282,14 @@
 
 .react-flow__edge-path.executing {
   animation: edgePulse 0.4s ease-in-out infinite;
+}
+
+.react-flow__edge-label {
+  color: #555;
+}
+
+.dark-mode .react-flow__edge-label {
+  color: #fff;
 }
 
 @keyframes edgePulse {

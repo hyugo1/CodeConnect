@@ -1,7 +1,8 @@
+// src/Components/blocks/PrintBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPrint, FaQuestion } from 'react-icons/fa';
-import HelpModal from '../../Modal/HelpModal.js';
+import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -12,30 +13,18 @@ const PrintBlock = ({ id, data, selected, executing }) => {
   const [showHelp, setShowHelp] = useState(false);
 
   const helpText = `
-• Enter a message to print.
-• Use {variable} syntax to include variable values.`;
+• This block allows you to make the character say things. Simply type in your message. 
+• To include a variable’s value, use curly braces—for example, {x}—to show what that variable holds.`;
 
   const handleChange = (e) => {
     updateNodeData({ message: e.target.value });
   };
 
   return (
-    <div
-      className={`block-container print-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
-      style={{ backgroundColor: '#ffeeba', position: 'relative' }}
-    >
+    <div className={`block-container print-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
       <button
         onClick={() => setShowHelp(true)}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          left: '5px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '18px',
-          color: '#555',
-        }}
+        className="help-button"
         title="How to use this block"
       >
         <FaQuestion />
@@ -46,7 +35,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
         title="Print Block Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaPrint style={{ marginBottom: 5 }} />
+      <FaPrint className="block-icon" />
       <div>{data.label || 'Print'}</div>
       <Handle
         type="target"
@@ -73,15 +62,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
         placeholder="Message to print (e.g., 'x is {x}')"
         value={data.message || ''}
         onChange={handleChange}
-        style={{
-          width: '100%',
-          marginTop: 10,
-          padding: '5px',
-          borderRadius: '3px',
-          border: '1px solid #ccc',
-          fontSize: '18px',
-          boxSizing: 'border-box',
-        }}
+        className="block-input"
       />
     </div>
   );

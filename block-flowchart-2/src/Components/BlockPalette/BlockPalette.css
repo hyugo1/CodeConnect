@@ -1,27 +1,65 @@
 /* src/Components/BlockPalette/BlockPalette.css */
 
 .aside-container {
-  position: relative;
   padding: 10px;
-  width: 220px;
-  box-sizing: border-box;
-  height: 100vh; 
+  /* background-color: #eee; */
+  width: 250px;
+  overflow-y: auto;
+  height: 100vh;
   transition: width 0.3s;
   border: 2px solid #555;
-  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-.collapsed {
-  width: 40px;
+.aside-container.collapsed {
+  width: 60px;
+}
+
+.aside-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+.collapse-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapse-button {
+  width: 100%;
+  padding: 5px;
+  cursor: pointer;
+  border: 2px solid #555;
+  background-color: #fff;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.palette-title {
+  text-align: center;
+}
+
+.blocks-container {
+  overflow-y: auto;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #555;
+}
+
+.block-category {
+  margin-top: 20px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #555;
 }
 
 .dndblock {
-  margin: 10px 0;
+  margin: 8px 0;
   padding: 10px;
   cursor: grab;
   border-radius: 5px;
   color: #000;
   font-weight: bold;
+  font-family: 'kumbh-sans', sans-serif;
   border: 2px solid #555;
   box-sizing: border-box;
   display: flex;

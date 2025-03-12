@@ -1,7 +1,8 @@
+// src/Components/blocks/SetVariableBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPenFancy, FaQuestion } from 'react-icons/fa';
-import HelpModal from '../../Modal/HelpModal.js';
+import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -34,22 +35,10 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
 • Toggle the type using the button on the top right.`;
 
   return (
-    <div
-      className={`block-container ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
-      style={{ position: 'relative' }}
-    >
+    <div className={`block-container set-variable-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
       <button
         onClick={() => setShowHelp(true)}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          left: '5px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '18px',
-          color: '#555',
-        }}
+        className="help-button"
         title="How to use this block"
       >
         <FaQuestion />
@@ -60,7 +49,7 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
         title="Set Variable Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaPenFancy style={{ marginBottom: 5 }} />
+      <FaPenFancy className="block-icon" />
       <div>{data.label || 'Set Variable'}</div>
       <Handle
         type="target"
@@ -102,16 +91,7 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
       />
       <button
         onClick={toggleValueType}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          right: '5px',
-          background: '#ddd',
-          border: '1px solid #aaa',
-          borderRadius: '3px',
-          padding: '2px 5px',
-          cursor: 'pointer',
-        }}
+        className="toggle-type-button"
         title="Toggle variable type"
       >
         {(data.valueType || 'number').charAt(0).toUpperCase() +

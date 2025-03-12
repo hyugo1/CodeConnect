@@ -1,7 +1,8 @@
+// src/Components/blocks/EndBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaStop, FaQuestion } from 'react-icons/fa';
-import HelpModal from '../../Modal/HelpModal.js';
+import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './block.css';
@@ -9,27 +10,17 @@ import './block.css';
 const EndBlock = ({ id, data, selected, executing }) => {
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• This block marks the end of your program.
-• Putting this at the end of your program will allow you to run the program.
+• This block marks the finish line for your program. 
+• Place it at the very end so the program knows when to stop running.
 `;
 
   return (
     <div
       className={`block-container end-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
-      style={{ backgroundColor: '#f7d8d8', position: 'relative' }}
     >
       <button
         onClick={() => setShowHelp(true)}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          left: '5px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '18px',
-          color: '#555',
-        }}
+        className="help-button"
         title="How to use this block"
       >
         <FaQuestion />
@@ -40,7 +31,7 @@ const EndBlock = ({ id, data, selected, executing }) => {
         title="End Block Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaStop style={{ marginBottom: 5 }} />
+      <FaStop className="block-icon" />
       <div>{data.label || 'End'}</div>
       <Handle
         type="target"

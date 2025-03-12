@@ -1,19 +1,52 @@
-/* Navbar.css */
+/* ========================================
+   Base & Global Styles
+======================================== */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'kumbh-sans', sans-serif;
+}
 
-/* Navbar Container */
-.navbar {
-  background-color: #2c3e50;
+/* Shared transitions and button shape */
+.btn,
+.navbar-menu-item,
+.dropdown-item,
+.modal-btn {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border-radius: 8px;
+}
+
+/* Icon Styling */
+.icon,
+.modal-icon {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.modal-icon {
+  font-size: 1.2rem;
+}
+
+/* ========================================
+   Navbar Section
+======================================== */
+/* Grouped Navbar font & color */
+.navbar,
+.navbar-brand,
+.navbar-title {
+  font-family: 'kumbh-sans', sans-serif;
   color: white;
+}
+
+.navbar {
+  background-color: #1F2129;
   padding: 1rem;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
 
 .navbar-container {
   display: flex;
   justify-content: space-between;
-  /* align-items: center; */
-  /* max-width: 1200px; */
-  /* margin: 0 auto; */
+  align-items: center;
+  position: relative;
 }
 
 .navbar-brand {
@@ -21,6 +54,9 @@
   align-items: center;
   text-decoration: none;
   color: white;
+  font-family: "Fontdiner Swanky", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .navbar-logo {
@@ -33,25 +69,11 @@
   font-weight: bold;
 }
 
-/* Mobile Menu Toggle */
-/* .mobile-menu-button {
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-.mobile-menu-icon {
-  width: 24px;
-  height: 24px;
-  stroke: white;
-} */
-
 /* Navigation Links */
 .navbar-menu {
-  display: flex;
-  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .navbar-menu-list {
@@ -64,19 +86,18 @@
 .navbar-menu-item {
   background: none;
   border: none;
-  color: white;
   font-size: 1rem;
   margin: 0 1rem;
   cursor: pointer;
-  transition: color 0.3s ease;
+  color: white;
 }
 
 .navbar-menu-item:hover {
   color: #1abc9c;
   border: 1px solid #1abc9c;
-  cursor: pointer;
 }
 
+/* Authentication Section */
 .navbar-auth {
   display: flex;
   align-items: center;
@@ -84,28 +105,10 @@
 
 .auth-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 10px;
 }
 
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.login-btn {
-  /* background-color: #1abc9c; */
-  background: none;
-  color: white;
-}
-
-.login-btn:hover {
-  background-color: #1abc9c;
-}
-
+/* User Menu */
 .user-menu-container {
   position: relative;
 }
@@ -115,7 +118,7 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  margin-right: 10px; /* Added spacing */
+  margin-right: 10px;
 }
 
 .user-avatar {
@@ -125,13 +128,9 @@
   object-fit: cover;
 }
 
-/* Added spacing for auth buttons */
-.auth-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-/* Dropdown Styles */
+/* ========================================
+   Dropdown Styles
+======================================== */
 .user-dropdown {
   position: absolute;
   top: 100%;
@@ -168,14 +167,15 @@
   border: none;
   cursor: pointer;
   color: #333;
-  transition: background-color 0.3s ease;
 }
 
 .dropdown-item:hover {
   background-color: #f1f1f1;
 }
 
-/* Modal Styles */
+/* ========================================
+   Modal Styles
+======================================== */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -197,6 +197,7 @@
   width: 100%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
 .modal-content .cancel-btn {
   display: block;
   margin: 20px auto 0;
@@ -205,10 +206,11 @@
 .modal-title {
   margin-top: 0;
   font-size: 1.5rem;
-  color: #2c3e50;
+  color: #1F2129;
   text-align: center;
 }
 
+/* Input Field */
 .modal-input {
   width: 100%;
   max-width: 400px;
@@ -221,34 +223,49 @@
   display: block;
 }
 
+/* Modal Sections & Button Groups */
 .modal-section {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Modal Button Groups */
+.modal-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
 .modal-button-group {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  /* margin-top: 20px; */
+  gap: 0.5rem;
 }
 
+.modal-button-group .modal-btn {
+  margin: 0;
+}
+
+/* Specific Modal Button Sizing */
 .modal-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  padding: 0.5rem 0.5rem;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
-  margin: 5px 0; /* Vertical spacing between buttons */
+  cursor: pointer;
+  margin: 0 auto;
+  /* align-items: center; */
+  /* justify-content: center; */
 }
 
+/* ========================================
+   Specific Modal Button Colors
+======================================== */
 .file-btn {
   background-color: #3498db;
   color: white;
 }
-
 .file-btn:hover {
   background-color: #2980b9;
 }
@@ -257,7 +274,6 @@
   background-color: #2ecc71;
   color: white;
 }
-
 .account-btn:hover {
   background-color: #27ae60;
 }
@@ -266,21 +282,14 @@
   background-color: #e74c3c;
   color: white;
 }
-
 .cancel-btn:hover {
   background-color: #c0392b;
 }
 
-/* Custom Modal Authentication Button Styles */
 .signin-btn {
   background-color: #3498db;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  border: none;
-  transition: background-color 0.3s ease;
 }
-
 .signin-btn:hover {
   background-color: #2980b9;
 }
@@ -288,12 +297,7 @@
 .forgot-btn {
   background-color: #f39c12;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  border: none;
-  transition: background-color 0.3s ease;
 }
-
 .forgot-btn:hover {
   background-color: #e67e22;
 }
@@ -301,18 +305,47 @@
 .newuser-btn {
   background-color: #9b59b6;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  border: none;
-  transition: background-color 0.3s ease;
 }
-
 .newuser-btn:hover {
   background-color: #8e44ad;
 }
 
-/* Project List */
-.project-list {
+.project-load-btn {
+  background-color: #3498db;
+  color: white;
+}
+.project-load-btn:hover {
+  background-color: #2980b9;
+}
+
+.project-delete-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+.project-delete-btn:hover {
+  background-color: #c0392b;
+}
+.login-btn {
+  background-color: #1abc9c;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #16a085;
+}
+
+/* ========================================
+   Project List & Hint Modal
+======================================== */
+.project-list,
+.modal-subtitle {
+  font-size: 1rem;
+  color: black;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -328,25 +361,7 @@
 
 .project-actions {
   display: flex;
-  gap: 10px; /* Increased gap for better spacing */
-}
-
-.project-load-btn {
-  background-color: #3498db;
-  color: white;
-}
-
-.project-load-btn:hover {
-  background-color: #2980b9;
-}
-
-.project-delete-btn {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.project-delete-btn:hover {
-  background-color: #c0392b;
+  gap: 10px;
 }
 
 .no-projects {
@@ -354,7 +369,6 @@
   text-align: center;
 }
 
-/* Hint Modal */
 .hint-modal .modal-content {
   max-width: 600px;
 }
@@ -369,11 +383,28 @@
   color: #333;
 }
 
-/* Responsive Styles */
+/* ========================================
+   Settings Section & Button Animation
+======================================== */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Animation for buttons on hover */
+.animated-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ========================================
+   Responsive Styles
+======================================== */
 @media (max-width: 768px) {
   .mobile-menu-button {
     display: block;
-    margin-right: 10px; /* Added spacing */
+    margin-right: 10px;
   }
 
   .navbar-menu {
@@ -382,7 +413,7 @@
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: #2c3e50;
+    background-color: #1F2129;
     flex-direction: column;
     align-items: center;
     padding: 1rem 0;

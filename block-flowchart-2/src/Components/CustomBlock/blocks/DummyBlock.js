@@ -1,7 +1,8 @@
+// src/Components/blocks/DummyBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaQuestion } from 'react-icons/fa';
-import HelpModal from '../../Modal/HelpModal.js';
+import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import './block.css';
@@ -9,8 +10,8 @@ import './block.css';
 const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• This is a temporary block.
-• Click or drag another block onto this block to replace it.`;
+• This is a temporary placeholder block. 
+• It shows where you can add a new command later. To replace it, simply drag your chosen block onto it or click it to select a new block..`;
 
   const handleDrop = (event) => {
     event.preventDefault();
@@ -40,17 +41,11 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
       aria-label="Dummy block – click or drop to replace"
     >
       <button
-        onClick={(e) => { e.stopPropagation(); setShowHelp(true); }}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          left: '5px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '18px',
-          color: '#555',
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowHelp(true);
         }}
+        className="help-button"
         title="How to use this block"
       >
         <FaQuestion />

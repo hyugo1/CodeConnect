@@ -1,7 +1,8 @@
+// src/Components/blocks/IfBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaQuestion } from 'react-icons/fa';
-import HelpModal from '../../Modal/HelpModal.js';
+import { FaCodeBranch, FaQuestion } from 'react-icons/fa';
+import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
@@ -11,8 +12,10 @@ const IfBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
-• Enter a condition using two operands and an operator.
-• The true branch (left) and false branch (right) will execute based on the condition.`;
+  • Use this block to make decisions. 
+  • You are likely to have to set a variable first to compare, like "x" or "y", to a value.
+  • Then, in the if block type a condition, for example ‘if x > 10’ to decide which path to follow.
+  • The left side runs if the condition is true, and the right side runs if it’s false.`;
 
   const handleLeftOperandChange = (e) => {
     updateNodeData({ leftOperand: e.target.value });
@@ -27,22 +30,10 @@ const IfBlock = ({ id, data, selected, executing }) => {
   };
 
   return (
-    <div
-      className={`block-container if-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
-      style={{ backgroundColor: '#d8d8f9', position: 'relative' }}
-    >
+    <div className={`block-container if-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
       <button
         onClick={() => setShowHelp(true)}
-        style={{
-          position: 'absolute',
-          top: '5px',
-          left: '5px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '18px',
-          color: '#555',
-        }}
+        className="help-button"
         title="How to use this block"
       >
         <FaQuestion />
@@ -53,6 +44,8 @@ const IfBlock = ({ id, data, selected, executing }) => {
         title="If Then Block Help"
         onClose={() => setShowHelp(false)}
       />
+      {/* New icon for the if block */}
+      <FaCodeBranch className="block-icon" />
       <div>{data.label || 'If Then'}</div>
       <Handle
         type="target"
@@ -94,7 +87,11 @@ const IfBlock = ({ id, data, selected, executing }) => {
           onChange={handleLeftOperandChange}
           className="operand-input"
         />
-        <select value={data.operator || ''} onChange={handleOperatorChange} className="operator-select">
+        <select
+          value={data.operator || ''}
+          onChange={handleOperatorChange}
+          className="operator-select"
+        >
           <option value="<">&lt;</option>
           <option value=">">&gt;</option>
           <option value="==">==</option>

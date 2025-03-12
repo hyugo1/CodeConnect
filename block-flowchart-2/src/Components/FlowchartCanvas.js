@@ -245,7 +245,7 @@ function FlowchartCanvas({
           let newBlockData;
           if (newBlockType === 'changeVariable') {
             newBlockData = {
-              label: 'Change Variable',
+              label: 'Adjust Variable',
               blockType: 'changeVariable',
               varName: '',
               varValue: '',
@@ -372,8 +372,8 @@ function FlowchartCanvas({
         helpContent = 'Move: Move your character in a specified direction by a given distance.';
         break;
       case 'changeVariable':
-        title = 'Change Variable';
-        helpContent = 'Change Variable: Modify the value of an existing variable.';
+        title = 'Adjust Variable';
+        helpContent = 'Adjust Variable: Modify the value of an existing variable.';
         break;
       case 'start':
         title = 'Start';
@@ -600,6 +600,10 @@ function FlowchartCanvas({
           type: 'custom',
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: '#555', strokeWidth: 3 },
+          labelStyle: {
+            fill: document.body.classList.contains('dark-mode') ? '#fff' : '#555',
+            fontSize: 12,
+          },
         }}
         connectionLineType={ConnectionLineType.SmoothStep}
         connectionLineStyle={{ stroke: '#999', strokeWidth: 2 }}

@@ -1,10 +1,12 @@
+/* src/styles/App.css */
+
 /* Global Styles */
 body, html {
   margin: 0;
   padding: 0;
-  font-family: 'Lato', sans-serif;
+  font-family: 'kumbh-sans', sans-serif;
   background-color: #ecf0f1;
-  color: #2c3e50;
+  color: #1F2129;
   height: 100vh;
   overflow: hidden;
 }
@@ -226,3 +228,87 @@ body, html {
     height: 400px;
   }
 }
+
+
+/* Dark mode styles */
+/* canvas */
+.dark-mode {
+  background-color:  rgb(23,25,30);
+  color: #ecf0f1;
+}
+
+.dark-mode .navbar {
+  /* background-color: rgb(23,25,30); */
+  background-color: rgb(25,26,30) ;
+  border-bottom: 1px solid white;
+}
+
+.dark-mode .btn {
+  background-color: #555;
+  color: #fff;
+}
+
+.dark-mode .aside-container {
+  background-color:  #1F2129;;
+  color: #ecf0f1;
+  border-color: #aaa;
+}
+
+.dark-mode .BlockPalette {
+  background-color: rgb(31,34,38);
+  border-color: #aaa;
+}
+
+.dark-mode .aside-container .dndblock {
+  background-color: rgb(31,34,38);
+  border-color: #1F2129;
+  color: #000;
+  opacity: 0.8;
+}
+
+.dark-mode .right-panel {
+  background-color: rgb(25,26,30);
+  color: #ecf0f1;
+  border-color: #aaa;
+}
+
+.dark-mode .block-container {
+  /* background-color: #2c2c2c; */
+  border: 2px solid #444;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .console {
+  background-color: rgb(31, 32, 36);
+  color: #ecf0f1;
+  border-color: #aaa;
+}
+
+.dark-mode .console-header h3 {
+  color: #ecf0f1;
+}
+
+.dark-mode .console-pre {
+  color: #00FF00;
+  background-color: rgb(31, 32, 36);
+}
+
+/* Dark mode for CodePreview component */
+.dark-mode .code-preview {
+  background-color: rgb(31,34,38);
+  color: #ecf0f1;
+  border-color: #aaa;
+}
+
+.dark-mode .collapse-button {
+  background-color: #555;
+  color: #ecf0f1;
+}
+
+
+
+/* rgb(25,26,30) */
+/* rgb(31,34,38) */
+/* rgb(23,25,30) */
+
+/* #2c2c2c */
