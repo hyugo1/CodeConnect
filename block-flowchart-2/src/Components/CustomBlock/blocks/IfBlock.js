@@ -93,10 +93,10 @@ const IfBlock = ({ id, data, selected, executing }) => {
           onChange={handleOperatorChange}
           className="operator-select"
         >
-          <option value="<">&lt;</option>
-          <option value=">">&gt;</option>
           <option value="==">==</option>
           <option value="!=">!=</option>
+          <option value="<">&lt;</option>
+          <option value=">">&gt;</option>
           <option value="<=">&lt;=</option>
           <option value=">=">&gt;=</option>
         </select>

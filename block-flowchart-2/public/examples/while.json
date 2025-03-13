@@ -1,0 +1,181 @@
+{
+  "blocks": [
+    {
+      "id": "29cfef9a-0fb8-4c65-b1d5-fcd2203666f3",
+      "type": "custom",
+      "position": {
+        "x": 375,
+        "y": 60
+      },
+      "data": {
+        "label": "Start",
+        "blockType": "start"
+      }
+    },
+    {
+      "id": "cd78e589-99a3-4998-aca4-32080e70deb6",
+      "type": "custom",
+      "position": {
+        "x": 375,
+        "y": 195
+      },
+      "data": {
+        "label": "SetVariable",
+        "blockType": "setVariable",
+        "varName": "x",
+        "varValue": "1"
+      }
+    },
+    {
+      "id": "b635f8cb-0a52-4cdf-95de-bd42338d5a96",
+      "type": "custom",
+      "position": {
+        "x": 330,
+        "y": 435
+      },
+      "data": {
+        "label": "While",
+        "blockType": "whileStart",
+        "leftOperand": "x",
+        "operator": "<",
+        "rightOperand": "5"
+      }
+    },
+    {
+      "id": "ae5ca103-686d-48f5-8b78-0631a1e01686",
+      "type": "custom",
+      "position": {
+        "x": 285,
+        "y": 630
+      },
+      "data": {
+        "label": "ChangeVariable",
+        "blockType": "changeVariable",
+        "varName": "x",
+        "varValue": "1"
+      }
+    },
+    {
+      "id": "14129ee6-5252-4bb2-9e5c-ca0a02fe7277",
+      "type": "custom",
+      "position": {
+        "x": 285,
+        "y": 840
+      },
+      "data": {
+        "label": "Print",
+        "blockType": "print",
+        "message": "x is {x}"
+      }
+    },
+    {
+      "id": "cd89739e-3c59-4243-adbc-54f308ef16bf",
+      "type": "custom",
+      "position": {
+        "x": 615,
+        "y": 660
+      },
+      "data": {
+        "label": "End",
+        "blockType": "end"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "cad6613e-0497-4a1d-87a9-ef0ec973fcc8",
+      "source": "29cfef9a-0fb8-4c65-b1d5-fcd2203666f3",
+      "target": "cd78e589-99a3-4998-aca4-32080e70deb6",
+      "type": "custom",
+      "animated": false,
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "style": {
+        "stroke": "#555",
+        "strokeWidth": 3
+      },
+      "label": ""
+    },
+    {
+      "id": "1f6a73d6-3b27-49ef-9e6b-1bf0246c4759",
+      "source": "cd78e589-99a3-4998-aca4-32080e70deb6",
+      "target": "b635f8cb-0a52-4cdf-95de-bd42338d5a96",
+      "type": "custom",
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "style": {
+        "stroke": "#555",
+        "strokeWidth": 3
+      }
+    },
+    {
+      "id": "b8aeafd7-ee1c-4e38-a7e3-4b1d39da974d",
+      "source": "b635f8cb-0a52-4cdf-95de-bd42338d5a96",
+      "target": "ae5ca103-686d-48f5-8b78-0631a1e01686",
+      "sourceHandle": "body-b635f8cb-0a52-4cdf-95de-bd42338d5a96",
+      "targetHandle": "target-ae5ca103-686d-48f5-8b78-0631a1e01686",
+      "type": "custom",
+      "animated": false,
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "style": {
+        "stroke": "green",
+        "strokeWidth": 3
+      },
+      "label": "True"
+    },
+    {
+      "id": "ed5f0516-4a97-49fc-87c3-85a82d8909c5",
+      "source": "ae5ca103-686d-48f5-8b78-0631a1e01686",
+      "target": "14129ee6-5252-4bb2-9e5c-ca0a02fe7277",
+      "type": "custom",
+      "animated": false,
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "style": {
+        "stroke": "#555",
+        "strokeWidth": 3
+      },
+      "label": ""
+    },
+    {
+      "id": "6b0597d2-15b4-474a-9d0e-8526cf130d42",
+      "source": "14129ee6-5252-4bb2-9e5c-ca0a02fe7277",
+      "target": "b635f8cb-0a52-4cdf-95de-bd42338d5a96",
+      "sourceHandle": "source-14129ee6-5252-4bb2-9e5c-ca0a02fe7277",
+      "targetHandle": "loopBack-b635f8cb-0a52-4cdf-95de-bd42338d5a96",
+      "type": "custom",
+      "animated": false,
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "style": {
+        "stroke": "#555",
+        "strokeWidth": 3
+      },
+      "label": ""
+    },
+    {
+      "id": "c6e01e60-c364-4091-9d19-5d0bd331f5ee",
+      "source": "b635f8cb-0a52-4cdf-95de-bd42338d5a96",
+      "target": "cd89739e-3c59-4243-adbc-54f308ef16bf",
+      "sourceHandle": "exit-b635f8cb-0a52-4cdf-95de-bd42338d5a96",
+      "targetHandle": "target-cd89739e-3c59-4243-adbc-54f308ef16bf",
+      "type": "custom",
+      "animated": false,
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "style": {
+        "stroke": "red",
+        "strokeWidth": 3
+      },
+      "label": "False"
+    }
+  ],
+  "exportedAt": "2025-03-13T12:31:30.240Z"
+}

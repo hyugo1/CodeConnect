@@ -127,16 +127,6 @@
   /* color: #ecf0f1; */
 }
 
-.dark-mode .operand-input {
-  color: #ecf0f1;
-  background-color: #353549;
-}
-
-.dark-mode .operator-select {
-  color: #ecf0f1;
-  background-color: #353549;
-}
-
 /* Handle Styles */
 .handle-target-circle,
 .handle-source-square {

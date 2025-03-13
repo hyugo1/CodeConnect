@@ -2,10 +2,10 @@
 
 .aside-container {
   padding: 10px;
-  /* background-color: #eee; */
   width: 250px;
+  height: calc(100vh - 60px);
+  max-height: 100vh;
   overflow-y: auto;
-  height: 100vh;
   transition: width 0.3s;
   border: 2px solid #555;
   box-sizing: border-box;
@@ -33,11 +33,12 @@
   border: 2px solid #555;
   background-color: #fff;
   border-radius: 4px;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 .palette-title {
   text-align: center;
+  margin: 0;
 }
 
 .blocks-container {

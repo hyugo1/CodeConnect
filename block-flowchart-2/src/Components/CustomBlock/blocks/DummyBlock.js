@@ -54,7 +54,7 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
       <HelpModal
         visible={showHelp}
         helpText={helpText}
-        title="Dummy Block Help"
+        title="Placeholder Block Help"
         onClose={() => setShowHelp(false)}
       />
       <div>{data.label || 'Dummy Block'}</div>

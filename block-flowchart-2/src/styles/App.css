@@ -315,6 +315,10 @@ body, html {
   color: black;
 }
 
+.dark-mode .react-flow__edge-path {
+  transition: stroke 0.4s ease, stroke-width 0.4s ease;
+  stroke: #fff;
+}
 
 
 /* rgb(25,26,30) */

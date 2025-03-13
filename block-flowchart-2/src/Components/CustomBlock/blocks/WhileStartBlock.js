@@ -68,10 +68,10 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
           <option value="">Op</option>
           <option value="<">&lt;</option>
           <option value=">">&gt;</option>
-          <option value="==">==</option>
-          <option value="!=">!=</option>
+          {/* <option value="==">==</option> */}
           <option value="<=">&lt;=</option>
           <option value=">=">&gt;=</option>
+          <option value="!=">!=</option>
         </select>
         <input
           type="text"

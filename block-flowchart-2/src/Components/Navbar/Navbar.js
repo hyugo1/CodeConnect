@@ -24,21 +24,41 @@ import { exportFlowchart, importFlowchart } from '../../utils/storage';
 import { toast } from 'react-toastify';
 import AccessibleModal from '../Modal/AccessibleModal';
 import './Navbar.css';
-// import '../../styles/App.css';
 import defaultProfilePic from '../../images/profile_pic.png';
 import { FaUser, FaTrash, FaMoon } from 'react-icons/fa';
 
 const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [modal, setModal] = useState({ type: null }); // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide', 'settings'
+  const [modal, setModal] = useState({ type: null }); // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide', 'settings', 'examples'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [projectName, setProjectName] = useState('');
   const [myProjects, setMyProjects] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [newProfilePic, setNewProfilePic] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Default examples available to all users.
+  const defaultExamples = [
+    {
+      id: 'hello-world',
+      name: 'Hello World',
+      description: 'A simple flowchart that outputs "Hello World".',
+      url: '/examples/hello_world.json'
+    },
+    {
+      id: 'if-then-example',
+      name: 'If Then Condition',
+      description: 'A simple flowchart that has the usage of if then blocks.',
+      url: '/examples/if_condition.json'
+    },
+    {
+      id: 'whileloop-example',
+      name: 'While Example',
+      description: 'An example showing a while loop with conditional execution.',
+      url: '/examples/while.json'
+    },
+    // Add more examples as needed.
+  ];
 
   // Listen for user sign-in/out
   useEffect(() => {
@@ -264,6 +284,25 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     toast.success("Dark mode toggled.");
   };
 
+  // Function to load a default example from a JSON file in your repo
+  const handleLoadExample = async (example) => {
+    try {
+      const response = await fetch(example.url);
+      if (!response.ok) {
+        throw new Error('Failed to load example.');
+      }
+      const json = await response.text();
+      const importedData = importFlowchart(json);
+      setNodes(importedData.blocks);
+      setEdges(importedData.edges);
+      toast.success(`Example "${example.name}" loaded.`);
+      setModal({ type: null });
+    } catch (error) {
+      console.error('Error loading example:', error);
+      toast.error('Could not load the example: ' + error.message);
+    }
+  };
+
   return (
     <>
       <nav className="navbar">
@@ -271,7 +310,8 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           {/* Brand */}
           <a href="/" className="navbar-brand">
             <img
-              src="https://flowbite.com/docs/images/logo.svg"
+              // src="https://flowbite.com/docs/images/logo.svg"
+              src="logo.png"
               alt="Flowchart Logo"
               className="navbar-logo"
             />
@@ -302,6 +342,14 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                   className="navbar-menu-item"
                 >
                   Open a Project
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setModal({ type: 'examples' })}
+                  className="navbar-menu-item"
+                >
+                  Examples
                 </button>
               </li>
             </ul>
@@ -446,6 +494,23 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         </AccessibleModal>
       )}
 
+      {/* Examples Modal */}
+      {modal.type === 'examples' && (
+        <AccessibleModal onClose={() => setModal({ type: null })} title="Examples">
+          <ul className="example-list">
+            {defaultExamples.map((example) => (
+              <li key={example.id} className="example-list-item">
+                <h4>{example.name}</h4>
+                <p>{example.description}</p>
+                <button onClick={() => handleLoadExample(example)} className="btn modal-btn">
+                  Load Example
+                </button>
+              </li>
+            ))}
+          </ul>
+        </AccessibleModal>
+      )}
+
       {/* Sign Up Modal */}
       {modal.type === 'signup' && (
         <AccessibleModal onClose={() => setModal({ type: null })} title="Create an Account">
@@ -526,12 +591,12 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       {modal.type === 'guide' && (
         <AccessibleModal onClose={() => setModal({ type: null })} title="How to Play with Blocks" customClass="hint-modal">
           <ul className="hint-list">
+            <li>Code Connect is a visual programming language website.</li>
             <li>
-              <strong>Connecting Blocks:</strong> Drag blocks from the toolbox and connect them by clicking on their connection points.
-              This creates a flow, much like linking Lego pieces together.
+              <strong>Connecting Blocks:</strong> Drag blocks from the block palette and connect them by clicking on their connection points.
             </li>
             <li>
-              <strong>Creating a Flow:</strong> Start with a <em>Start</em> block, then add actions like <em>Set Variable</em>, <em>If Then</em>, and <em>Print</em>.
+              <strong>Creating a Flow:</strong> Start with a <em>Start</em> block, then add other blocks like <em>Set Variable</em>, <em>If Then</em>, and <em>Print</em>.
               Connect them in sequence to build your program.
             </li>
             <li>

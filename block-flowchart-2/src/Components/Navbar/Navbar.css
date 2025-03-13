@@ -37,7 +37,7 @@ body {
 }
 .navbar-title {
   font-family: 'Fontdiner Swanky', serif;
-  text-decoration: line-through;
+  /* text-decoration: line-through; */
 }
 
 .navbar {
@@ -64,7 +64,9 @@ body {
 
 .navbar-logo {
   height: 40px;
-  margin-right: 10px;
+  margin-top: 5px;
+  /* width: 40px; */
+  /* margin-right: 10px; */
 }
 
 .navbar-title {
@@ -99,6 +101,27 @@ body {
   color: #1abc9c;
   /* border: 1px solid #1abc9c; */
 }
+
+.example-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  text-align: center;
+  max-width: 600px;
+}
+
+.example-list-item {
+  margin: 1rem auto;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.example-list-item button {
+  display: block;
+  /* margin: 0.5rem auto; */
+}
+
 
 /* Authentication Section */
 .navbar-auth {
