@@ -103,10 +103,11 @@ export function generateJavaScriptCode(blocks, edges) {
         break;
 
       case 'if':
-        if (block.data.leftOperand && block.data.operator && block.data.rightOperand) {
+        if (block.data.leftOperand && block.data.rightOperand) {
+          const operator = block.data.operator || '==';
           const left = block.data.leftOperand;
           const right = autoQuote(block.data.rightOperand);
-          const condition = `${left} ${block.data.operator} ${right}`;
+          const condition = `${left} ${operator} ${right}`;
           codeLines.push(indent + `if (${condition}) {`);
           const trueBranch = getNextBlock(blockId, 'yes');
           if (trueBranch) traverse(trueBranch, indentLevel + 1, new Set(visited));
@@ -116,6 +117,12 @@ export function generateJavaScriptCode(blocks, edges) {
           codeLines.push(indent + '}');
         } else {
           codeLines.push(indent + '// Incomplete condition in if then block');
+        }
+        break;
+      case 'join':
+        {
+          const next = getNextBlock(blockId);
+          if (next) traverse(next, indentLevel, new Set(visited));
         }
         break;
 

@@ -14,7 +14,7 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
 
   const helpText = `
   • This block changes the value of a number variable.
-  • Type the name of the variable you want to change (i.e., "score").
+  • Type the name of the variable you want to change (e.g., "score").
   • Choose an operation from the dropdown.
   • Enter the number that will be used in the operation.
   • Note: This block only works with numbers.

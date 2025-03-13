@@ -84,7 +84,7 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
         type="text"
         placeholder={
           currentType === 'number'
-            ? 'value or math expression'
+            ? 'Value or Math Expression'
             : 'text value'
         }
         value={data.varValue || ''}

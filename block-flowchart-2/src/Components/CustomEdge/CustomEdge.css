@@ -4,11 +4,11 @@
 }
 
 .react-flow__edge-path.selected {
-  stroke: #22ff77 !important;
+  stroke: #507bf2 !important;
 }
 
 .react-flow__edge-path.hovered {
-  stroke: #22ff77 !important;
+  stroke: #507bf2 !important;
   stroke-width: 5 !important;
   cursor: pointer;
 }

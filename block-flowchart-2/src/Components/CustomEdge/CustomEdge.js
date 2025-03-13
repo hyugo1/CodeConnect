@@ -34,10 +34,9 @@ const CustomEdge = ({
   const [isHovered, setIsHovered] = useState(false);
   const executing = id === activeEdgeId;
 
-  // Increase the clickable area with an invisible path.
   const invisiblePathStyle = {
     stroke: 'transparent',
-    strokeWidth: 30,
+    strokeWidth: 50,
     cursor: 'pointer',
     fill: 'none',
   };
@@ -68,11 +67,9 @@ const CustomEdge = ({
         style={invisiblePathStyle}
         pointerEvents="stroke"
         fill="none"
-        onClick={(event) => event.stopPropagation()}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       />
-
       {/* Visible edge with the custom arrow marker and dynamic color */}
       <path
         id={id}

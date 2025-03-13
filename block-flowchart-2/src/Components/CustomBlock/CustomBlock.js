@@ -10,6 +10,7 @@ import DummyBlock from './blocks/DummyBlock';
 // import ResizeBlock from './blocks/ResizeBlock';
 // import RotateBlock from './blocks/RotateBlock';
 import MoveBlock from './blocks/MoveBlock';
+import JoinBlock from './blocks/JoinBlock';
 
 const blockMapping = {
   start: StartBlock,
@@ -23,6 +24,7 @@ const blockMapping = {
   // resize: ResizeBlock,
   // rotate: RotateBlock,
   move: MoveBlock,
+  join: JoinBlock,
 };
 
 const CustomBlock = ({ id, data, selected, activeBlockId, onReplace }) => {

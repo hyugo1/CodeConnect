@@ -181,16 +181,16 @@ export function useFlowchartExecutor(
       case 'if': {
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
-        if (leftOperand && operator && rightOperand) {
-          if ((operator === '==' || operator === '!=') &&
-              typeof context.variables[leftOperand] === 'string') {
+        if (leftOperand && rightOperand) {
+          const op = operator || '==';  // Default to "=="
+          if ((op === '==' || op === '!=') && typeof context.variables[leftOperand] === 'string') {
             const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            conditionMet = operator === '==' 
+            conditionMet = op === '==' 
               ? context.variables[leftOperand] === rightValue 
               : context.variables[leftOperand] !== rightValue;
-            outputs.push(`Condition ${leftOperand} ${operator} ${rightValue} evaluated to ${conditionMet}`);
+            outputs.push(`Condition ${leftOperand} ${op} ${rightValue} evaluated to ${conditionMet}`);
           } else {
-            const condition = `${leftOperand} ${operator} ${autoQuote(rightOperand)}`;
+            const condition = `${leftOperand} ${op} ${autoQuote(rightOperand)}`;
             outputs.push(`Evaluating condition: ${condition}`);
             conditionMet = evaluate(condition, context.variables);
           }
@@ -203,6 +203,9 @@ export function useFlowchartExecutor(
         block.conditionMet = conditionMet;
         break;
       }
+      case 'join':
+        await executeNextNode(block.id, visitCounts);
+        return;
       case 'whileStart': {
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
@@ -381,15 +384,24 @@ export function useFlowchartExecutor(
   }
 
   async function runFlowchart() {
+    const endBlockExists = blocks.some(
+      (block) => (block.data.blockType || "").toLowerCase() === "end"
+    );
+    if (!endBlockExists) {
+      outputs.push("Error: No End block connected.");
+      setConsoleOutput(outputs.join("\n"));
+      return;
+    }
+  
     const startBlock = currentNodes.find(
-      (block) => block.type === 'custom' && block.data.blockType === 'start'
+      (block) => block.type === "custom" && (block.data.blockType || "").toLowerCase() === "start"
     );
     if (startBlock) {
       await traverse(startBlock.id, new Map());
-      setConsoleOutput(outputs.join('\n'));
+      setConsoleOutput(outputs.join("\n"));
     } else {
-      outputs.push('Error: No start block found.');
-      setConsoleOutput(outputs.join('\n'));
+      outputs.push("Error: No start block found.");
+      setConsoleOutput(outputs.join("\n"));
     }
   }
 

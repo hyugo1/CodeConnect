@@ -8,7 +8,6 @@ import {
   signOut,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
-  updateProfile,
   deleteUser
 } from 'firebase/auth';
 import {
@@ -24,7 +23,6 @@ import { exportFlowchart, importFlowchart } from '../../utils/storage';
 import { toast } from 'react-toastify';
 import AccessibleModal from '../Modal/AccessibleModal';
 import './Navbar.css';
-import defaultProfilePic from '../../images/profile_pic.png';
 import { FaUser, FaTrash, FaMoon } from 'react-icons/fa';
 
 const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
@@ -49,7 +47,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       id: 'if-then-example',
       name: 'If Then Condition',
       description: 'A simple flowchart that has the usage of if then blocks.',
-      url: '/examples/if_condition.json'
+      url: '/examples/if_then.json'
     },
     {
       id: 'whileloop-example',
@@ -57,7 +55,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       description: 'An example showing a while loop with conditional execution.',
       url: '/examples/while.json'
     },
-    // Add more examples as needed.
   ];
 
   // Listen for user sign-in/out
@@ -312,7 +309,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             <img
               // src="https://flowbite.com/docs/images/logo.svg"
               src="logo.png"
-              alt="Flowchart Logo"
+              alt="Code Connect Logo"
               className="navbar-logo"
             />
             <span className="navbar-title">Code Connect!</span>
@@ -364,7 +361,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                   aria-label="User menu"
                 >
                   <img
-                    src={currentUser?.photoURL || defaultProfilePic}
+                    src={currentUser?.photoURL ? currentUser.photoURL : 'profile_pic.png'}
                     alt="User avatar"
                     className="user-avatar"
                   />

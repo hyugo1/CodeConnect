@@ -18,7 +18,7 @@
           </div>
         )}
         <img
-          src={`${process.env.PUBLIC_URL}/orange.jpg`}
+          src={`${process.env.PUBLIC_URL}/orange_blob.png`}
           alt="Character"
           className="character-image"
         />
