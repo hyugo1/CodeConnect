@@ -1,7 +1,7 @@
-.react-flow__edge-path {
+/* .react-flow__edge-path {
   transition: stroke 0.4s ease, stroke-width 0.4s ease;
   stroke: #22ff77; 
-}
+} */
 
 .react-flow__edge-path.selected {
   stroke: #507bf2 !important;
@@ -19,6 +19,7 @@
 
 .react-flow__edge-path.executing {
   animation: edgePulse 0.4s ease-in-out infinite;
+  /* animation: edgePulse 1.5s ease-in-out infinite; */
 }
 
 @keyframes edgePulse {

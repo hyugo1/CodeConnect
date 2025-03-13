@@ -17,6 +17,12 @@ export function useFlowchartExecutor(
   const BASE_EDGE_DELAY = 800;
   const PRINT_DELAY = 3000;
 
+
+  // const MAX_VISITS_PER_NODE = 50;
+  // const BASE_BLOCK_DELAY = 1500;
+  // const BASE_EDGE_DELAY = 1500;
+  // const PRINT_DELAY = 3000;  
+
   const speedRef = useRef(2);
   const [paused, setPaused] = useState(false);
 

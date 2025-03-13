@@ -4,6 +4,7 @@ import ReactFlow, {
   addEdge,
   Controls,
   Background,
+  MiniMap,
   MarkerType,
   applyNodeChanges,
   applyEdgeChanges,
@@ -11,7 +12,6 @@ import ReactFlow, {
   ConnectionLineType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { auth } from '../config/firebase';
 import CustomBlock from './CustomBlock/CustomBlock';
 import CustomEdge from './CustomEdge/CustomEdge';
 import ControlPanel from './ControlPanel/ControlPanel';
@@ -650,6 +650,20 @@ function FlowchartCanvas({
         onDragOver={onDragOverHandler}
         // ... other event handlers ...
       >
+        <MiniMap
+          style={{
+            backgroundColor: document.body.classList.contains('dark-mode') ? '#2c2c2c' : '#fff'
+          }}
+          nodeStrokeColor={(node) => {
+            if (node.style?.background) return node.style.background;
+            return document.body.classList.contains('dark-mode') ? '#f0f0f0' : '#333';
+          }}
+          nodeColor={(node) => {
+            if (node.style?.background) return node.style.background;
+            return document.body.classList.contains('dark-mode') ? '#333' : '#aaa';
+          }}
+          nodeBorderRadius={2}
+        />
         <Controls />
         <Background color="#aaa" gap={16} />
       </ReactFlow>

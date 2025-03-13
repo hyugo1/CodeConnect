@@ -363,6 +363,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                   <img
                     src={currentUser?.photoURL ? currentUser.photoURL : 'profile_pic.png'}
                     alt="User avatar"
+                    referrerPolicy={currentUser?.photoURL ? "no-referrer" : undefined}
                     className="user-avatar"
                   />
                 </button>

@@ -15,7 +15,6 @@ const CustomEdge = ({
   selected,
   activeEdgeId,
 }) => {
-  // Generate a Bezier path for the edge
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
@@ -25,12 +24,8 @@ const CustomEdge = ({
     targetPosition,
   });
 
-  // Use the provided stroke color, or default to #555
   const edgeColor = (style && style.stroke) || '#555';
-
-  // Use the custom marker defined below.
   const markerEnd = 'url(#customArrow)';
-
   const [isHovered, setIsHovered] = useState(false);
   const executing = id === activeEdgeId;
 
@@ -60,17 +55,17 @@ const CustomEdge = ({
         </defs>
       </svg>
 
-      {/* Invisible path for easier edge selection */}
       <path
         id={`${id}-invisible`}
+        data-id={id}
         d={edgePath}
         style={invisiblePathStyle}
         pointerEvents="stroke"
         fill="none"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        className="react-flow__edge-interaction"
       />
-      {/* Visible edge with the custom arrow marker and dynamic color */}
       <path
         id={id}
         d={edgePath}
@@ -82,7 +77,6 @@ const CustomEdge = ({
         markerEnd={markerEnd}
       />
 
-      {/* Optional label displayed along the edge path */}
       {label && (
         <text dy="-5">
           <textPath href={`#${id}`} style={{ fontSize: 18 }} startOffset="50%" textAnchor="middle">
@@ -95,3 +89,19 @@ const CustomEdge = ({
 };
 
 export default CustomEdge;
+
+  {/* Animated circle: rendered only when executing */}
+  {/* {executing && (
+    <circle r="10" fill="#ff0073">
+      <animateMotion 
+        begin="0s"
+        dur="1.5s"
+        repeatCount="indefinite"
+        rotate="auto"
+        calcMode="linear"
+        keyTimes="0;1"
+        keyPoints="0;1"
+        path={edgePath}
+      />
+    </circle>
+  )} */}
