@@ -82,8 +82,8 @@ const CustomEdge = ({
           <text dy="-5">
             <textPath
               href={`#${id}`}
-              style={{ fontSize: 18, fill: 'rgba(239, 98, 175)' }}
-              // style={{ fontSize: 18, fill: '#777' }}
+              // style={{ fontSize: 18, fill: 'rgba(239, 98, 175)' }}
+              style={{ fontSize: 18, fill: '#777' }}
               startOffset="50%"
               textAnchor="middle"
             >
