@@ -1,4 +1,5 @@
 // src/Components/blocks/ChangeVariableBlock.js
+
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlusCircle, FaQuestion } from 'react-icons/fa';
@@ -74,7 +75,6 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
         onChange={handleVarNameChange}
         className="block-input"
       />
-      {/* Group the operator dropdown with the variable value input */}
       <div className="operator-input-wrapper">
         <select
           value={data.operator || '+'}

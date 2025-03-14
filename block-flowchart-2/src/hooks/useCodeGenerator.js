@@ -1,5 +1,4 @@
 // src/hooks/useCodeGenerator.js
-// import { evaluate } from 'mathjs';
 
 /**
  * Generates JavaScript code from the flowchart's blocks and edges.
@@ -91,7 +90,6 @@ export function generateJavaScriptCode(blocks, edges) {
           if (vt === 'string') {
             codeLines.push(indent + `${block.data.varName} = "${block.data.varValue}";`);
           } else {
-            // Use the operator from the block data (defaults to '+')
             const op = block.data.operator || '+';
             codeLines.push(indent + `${block.data.varName} ${op}= ${block.data.varValue};`);
           }
@@ -131,13 +129,10 @@ export function generateJavaScriptCode(blocks, edges) {
           const left = block.data.leftOperand;
           const right = autoQuote(block.data.rightOperand);
           const condition = `${left} ${block.data.operator} ${right}`;
-          // Generate a standard while loop.
           codeLines.push(indent + `while (${condition}) {`);
-          // Use "body" to represent the loop body branch.
           const bodyBranch = getNextBlock(blockId, 'body');
           if (bodyBranch) traverse(bodyBranch, indentLevel + 1, new Set(visited));
           codeLines.push(indent + `}`);
-          // Use "exit" to represent what happens after the loop.
           const exitBranch = getNextBlock(blockId, 'exit');
           if (exitBranch) traverse(exitBranch, indentLevel, new Set(visited));
         } else {
@@ -156,7 +151,6 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
       }
-      // New case: move
       case 'move':
         if (block.data.distance && block.data.direction) {
           codeLines.push(

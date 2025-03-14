@@ -1,4 +1,5 @@
-// src/Components/blocks/StartBlock.js
+// src/Components/CustomBlock/blocks/StartBlock.js
+
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPlay, FaQuestion } from 'react-icons/fa';

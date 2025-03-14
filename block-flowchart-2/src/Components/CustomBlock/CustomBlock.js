@@ -1,3 +1,5 @@
+// src/Components/CustomBlock/CustomBlock.js
+
 import React from 'react';
 import StartBlock from './blocks/StartBlock';
 import EndBlock from './blocks/EndBlock';
@@ -7,8 +9,6 @@ import PrintBlock from './blocks/PrintBlock';
 import SetVariableBlock from './blocks/SetVariableBlock';
 import ChangeVariableBlock from './blocks/ChangeVariableBlock';
 import DummyBlock from './blocks/DummyBlock';
-// import ResizeBlock from './blocks/ResizeBlock';
-// import RotateBlock from './blocks/RotateBlock';
 import MoveBlock from './blocks/MoveBlock';
 import JoinBlock from './blocks/JoinBlock';
 
@@ -21,8 +21,6 @@ const blockMapping = {
   setVariable: SetVariableBlock,
   changeVariable: ChangeVariableBlock,
   dummy: DummyBlock,
-  // resize: ResizeBlock,
-  // rotate: RotateBlock,
   move: MoveBlock,
   join: JoinBlock,
 };
@@ -40,7 +38,6 @@ const CustomBlock = ({ id, data, selected, activeBlockId, onReplace }) => {
       data={data}
       selected={selected}
       executing={executing}
-      // Only pass onReplace to dummy blocks
       onReplace={data.blockType === 'dummy' ? onReplace : undefined}
     />
   );

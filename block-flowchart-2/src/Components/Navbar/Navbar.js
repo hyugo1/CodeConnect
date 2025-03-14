@@ -1,4 +1,5 @@
 // src/Components/Navbar/Navbar.js
+
 import React, { useState, useEffect, useRef } from 'react';
 import { auth, db, googleProvider } from '../../config/firebase';
 import {
@@ -27,7 +28,8 @@ import { FaUser, FaTrash, FaMoon } from 'react-icons/fa';
 
 const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [modal, setModal] = useState({ type: null }); // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide', 'settings', 'examples'
+   // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide', 'settings', 'examples'
+  const [modal, setModal] = useState({ type: null });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [projectName, setProjectName] = useState('');
@@ -35,7 +37,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Default examples available to all users.
   const defaultExamples = [
     {
       id: 'hello-world',
@@ -57,7 +58,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     },
   ];
 
-  // Listen for user sign-in/out
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -65,7 +65,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     return () => unsubscribe();
   }, []);
 
-  // Auto-show the guide modal once for new users.
   useEffect(() => {
     if (!localStorage.getItem('guideModalShown')) {
       setModal({ type: 'guide' });
@@ -281,7 +280,6 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     toast.success("Dark mode toggled.");
   };
 
-  // Function to load a default example from a JSON file in your repo
   const handleLoadExample = async (example) => {
     try {
       const response = await fetch(example.url);
@@ -304,17 +302,14 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     <>
       <nav className="navbar">
         <div className="navbar-container">
-          {/* Brand */}
           <a href="/" className="navbar-brand">
             <img
-              // src="https://flowbite.com/docs/images/logo.svg"
               src="logo.png"
               alt="Code Connect Logo"
               className="navbar-logo"
             />
             <span className="navbar-title">Code Connect!</span>
           </a>
-          {/* Navigation Links */}
           <div className="navbar-menu">
             <ul className="navbar-menu-list">
               <li>

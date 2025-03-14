@@ -9,6 +9,7 @@ import {
   FaPenFancy,
   FaPlusCircle,
   FaArrowsAltH,
+  FaCodeBranch
 } from 'react-icons/fa';
 import './BlockPalette.css';
 
@@ -30,7 +31,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
   const blocks = [
     { type: 'start', label: 'Start', color: '#d3f9d8', icon: <FaPlay />, category: 'Control Blocks' },
     { type: 'end', label: 'End', color: '#f9d8d8', icon: <FaStop />, category: 'Control Blocks' },
-    { type: 'if', label: 'If Then', color: '#d8d8f9', icon: <FaQuestion />, category: 'Control Blocks' },
+    { type: 'if', label: 'If Then', color: '#d8d8f9', icon: <FaCodeBranch />, category: 'Control Blocks' },
     { type: 'whileStart', label: 'While', color: '#f9f7d8', icon: <FaSync />, category: 'Control Blocks' },
     { type: 'print', label: 'Print', color: '#ffeeba', icon: <FaPrint />, category: 'Character Action Blocks' },
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy />, category: 'Variable Blocks' },

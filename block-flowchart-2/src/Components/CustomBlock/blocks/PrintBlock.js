@@ -1,4 +1,5 @@
-// src/Components/blocks/PrintBlock.js
+// src/Components/CustomBlock/blocks/Printblock.js
+
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPrint, FaQuestion } from 'react-icons/fa';

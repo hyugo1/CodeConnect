@@ -1,7 +1,7 @@
 // src/Components/FlowchartCanvas.js
+
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
-  addEdge,
   Controls,
   Background,
   MiniMap,
@@ -9,7 +9,7 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges,
   useReactFlow,
-  ConnectionLineType,
+  // ConnectionLineType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomBlock from './CustomBlock/CustomBlock';
@@ -26,34 +26,28 @@ function FlowchartCanvas({
   setNodes,
   edges,
   setEdges,
-  consoleOutput,
   setConsoleOutput,
-  characterPosition,
   setCharacterPosition,
-  characterMessage,
   setCharacterMessage,
   isDragging,
   cancelDrag,
   setCancelDrag,
   setIsDragging,
 }) {
-  // State for currently executing block/edge and selection.
   const [activeBlockId, setActiveBlockId] = useState(null);
   const [activeEdgeId, setActiveEdgeId] = useState(null);
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [selectedEdges, setSelectedEdges] = useState([]);
-  // Palette state for replacing dummy blocks.
   const [paletteVisible, setPaletteVisible] = useState(false);
   const [currentDummyBlockId, setCurrentDummyBlockId] = useState(null);
   const [dummyBlockPosition, setDummyBlockPosition] = useState(null);
   const [helpShown, setHelpShown] = useState({});
   const [helpModal, setHelpModal] = useState({ visible: false, title: '', content: '' });
 
-  // ReactFlow wrapper & project() function.
   const reactFlowWrapper = useRef(null);
   const { project } = useReactFlow();
 
-  // Track last added block for auto-connection.
+  // Track last added block
   const lastBlockId = useRef(null);
   useEffect(() => {
     if (blocks.length > 0) {
@@ -63,7 +57,6 @@ function FlowchartCanvas({
     }
   }, [blocks]);
 
-  // This function replaces dummy blocks with a new block type.
   const handleReplaceDummyBlock = useCallback(
     (dummyId, newBlockType) => {
       const blockToReplace = blocks.find((block) => block.id === dummyId);
@@ -76,7 +69,6 @@ function FlowchartCanvas({
         alert("Cannot replace a dummy block with a start block.");
         return;
       }
-      // NEW CHECK: Prevent replacing a while loop body dummy with an End block.
       if (newBlockType === 'end' && blockToReplace.data.dummyFor === 'whileBody') {
         alert("Cannot replace the dummy block for the while loop body with an End block.");
         return;
@@ -87,7 +79,6 @@ function FlowchartCanvas({
       } else if (newBlockType === 'whileStart') {
         additionalData = { leftOperand: '', operator: '', rightOperand: '' };
       }
-      // Flash the dummy block to indicate replacement is starting.
       setNodes((nds) =>
         nds.map((b) =>
           b.id === dummyId ? { ...b, data: { ...b.data, flash: true } } : b
@@ -96,7 +87,6 @@ function FlowchartCanvas({
   
       setTimeout(() => {
         if (newBlockType === 'if') {
-          // Update the dummy block into an if block (keeping its ID)
           const updatedIfBlock = {
             ...blockToReplace,
             data: {
@@ -109,7 +99,6 @@ function FlowchartCanvas({
               flash: false,
             },
           };
-          // Create two new dummy nodes for the branches
           const dummyTrue = {
             id: uuidv4(),
             type: 'custom',
@@ -136,7 +125,6 @@ function FlowchartCanvas({
               dummyAllowed: true,
             },
           };
-          // Create the join block positioned below the dummies
           const joinBlock = {
             id: uuidv4(),
             type: 'custom',
@@ -148,18 +136,14 @@ function FlowchartCanvas({
               label: 'Join',
               blockType: 'join',
             },
-          };
-  
-          // Replace the dummy with the updated if block and add new nodes
+          };  
           setNodes((nds) =>
             nds.map((b) => (b.id === dummyId ? updatedIfBlock : b)).concat([
               dummyTrue,
               dummyFalse,
               joinBlock,
             ])
-          );
-  
-          // Create new edges from the if block to the two dummy branches.
+          );  
           const newEdgeIfTrue = {
             id: uuidv4(),
             source: updatedIfBlock.id,
@@ -181,9 +165,7 @@ function FlowchartCanvas({
             markerEnd: { type: MarkerType.ArrowClosed },
             style: { stroke: 'red', strokeWidth: 3 },
             label: 'False',
-          };
-  
-          // Create edges from the dummy branches to the join block.
+          }; 
           const edgeTrueToJoin = {
             id: uuidv4(),
             source: dummyTrue.id,
@@ -200,8 +182,6 @@ function FlowchartCanvas({
             markerEnd: { type: MarkerType.ArrowClosed },
             style: { stroke: '#555', strokeWidth: 3 },
           };
-  
-          // Re-route any existing outgoing edge from the replaced dummy so it now starts from the join block.
           setEdges((eds) => {
             const reRoutedEdges = eds.map((e) =>
               e.source === dummyId ? { ...e, source: joinBlock.id } : e
@@ -214,7 +194,6 @@ function FlowchartCanvas({
             ]);
           });
         } else if (newBlockType === 'whileStart') {
-          // Update the dummy block into a while block.
           const updatedWhileBlock = {
             ...blockToReplace,
             data: {
@@ -227,7 +206,6 @@ function FlowchartCanvas({
               flash: false,
             },
           };
-          // Create a dummy for the while loop body and one for exit.
           const dummyBody = {
             id: uuidv4(),
             type: 'custom',
@@ -255,16 +233,12 @@ function FlowchartCanvas({
               dummyAllowed: true,
             },
           };
-  
-          // Replace the dummy with the updated while block and add new nodes.
           setNodes((nds) =>
             nds.map((b) => (b.id === dummyId ? updatedWhileBlock : b)).concat([
               dummyBody,
               dummyExit,
             ])
           );
-  
-          // Create new edges from the while block to the dummy nodes.
           const newEdgeWhileBody = {
             id: uuidv4(),
             source: updatedWhileBlock.id,
@@ -299,8 +273,6 @@ function FlowchartCanvas({
             style: { stroke: '#555', strokeWidth: 3 },
             label: 'Loop Back',
           };
-  
-          // Re-route any existing outgoing edge from the replaced dummy so it now originates from the dummy exit.
           setEdges((eds) => {
             const reRoutedEdges = eds.map((e) =>
               e.source === dummyId ? { ...e, source: dummyExit.id } : e
@@ -340,31 +312,11 @@ function FlowchartCanvas({
         setPaletteVisible(false);
         setCurrentDummyBlockId(null);
         setDummyBlockPosition(null);
-      }, 500);
+      }, 1000);
     },
     [blocks, setNodes, setEdges]
   );
 
-  // Example: auto-connect new block from the last block (if not End).
-  const autoConnectFromLast = (newBlockId) => {
-    if (lastBlockId.current) {
-      const lastBlock = blocks.find((b) => b.id === lastBlockId.current);
-      if (lastBlock && lastBlock.data.blockType.toLowerCase() !== 'end') {
-        const edge = {
-          id: uuidv4(),
-          source: lastBlockId.current,
-          target: newBlockId,
-          type: 'custom',
-          markerEnd: { type: MarkerType.ArrowClosed },
-          style: { stroke: '#555', strokeWidth: 3 },
-        };
-        setEdges((eds) => eds.concat(edge));
-      }
-    }
-    lastBlockId.current = newBlockId;
-  };
-
-  // Wrap CustomBlock to pass additional props for dummy replacement.
   const CustomBlockWrapper = useCallback(
     (props) => (
       <CustomBlock
@@ -402,7 +354,6 @@ function FlowchartCanvas({
     lastBlockId,
   });
 
-  // Full onDrop handler with dummy branch creation (including while loop changes).
   const handleDrop = useCallback(
     (event) => {
       event.preventDefault();
@@ -441,7 +392,6 @@ function FlowchartCanvas({
           data: { label: 'Placeholder (False Action)', blockType: 'dummy', dummyAllowed: true },
         };
 
-        // Create the join block (positioned below the dummies)
         const joinBlock = {
           id: uuidv4(),
           type: 'custom',
@@ -449,7 +399,6 @@ function FlowchartCanvas({
           data: { label: 'Join', blockType: 'join' },
         };
 
-        // Add the nodes to the canvas
         setNodes((nds) => nds.concat([ifBlock, dummyTrue, dummyFalse, joinBlock]));
 
         // Create edges from the if block to the dummy blocks
@@ -474,7 +423,6 @@ function FlowchartCanvas({
           label: 'False',
         };
 
-        // Create edges from both dummy blocks to the join block
         const edgeTrueToJoin = {
           id: uuidv4(),
           source: dummyTrue.id,
@@ -492,17 +440,14 @@ function FlowchartCanvas({
           style: { stroke: '#555', strokeWidth: 3 },
         };
 
-        // Add all the new edges
         setEdges((eds) => eds.concat([edgeIfTrue, edgeIfFalse, edgeTrueToJoin, edgeFalseToJoin]));
       } else if (blockType === 'whileStart') {
-        // Create a While block with two dummy branches.
         const whileBlock = {
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX, y: snappedY },
           data: { label: 'While', blockType: 'whileStart', leftOperand: '', operator: '', rightOperand: '' },
         };
-        // Create the dummy for the loop body and add dummyFor: 'whileBody'.
         const dummyBody = {
           id: uuidv4(),
           type: 'custom',
@@ -516,7 +461,6 @@ function FlowchartCanvas({
           data: { label: 'Placeholder (Exit While)', blockType: 'dummy', dummyAllowed: true },
         };
         setNodes((nds) => nds.concat([whileBlock, dummyBody, dummyExit]));
-        // autoConnectFromLast(whileBlock.id);
         const edgeWhileBody = {
           id: uuidv4(),
           source: whileBlock.id,
@@ -567,24 +511,6 @@ function FlowchartCanvas({
           },
         };
         setNodes((nds) => nds.concat(newBlock));
-        //auto connect
-        // if (lastBlockId.current) {
-        //   const lastBlock = blocks.find((b) => b.id === lastBlockId.current);
-        //   if (lastBlock && lastBlock.data.blockType.toLowerCase() !== 'end') {
-        //     const newEdge = {
-        //       id: uuidv4(),
-        //       source: lastBlockId.current,
-        //       target: newBlock.id,
-        //       type: 'custom',
-        //       animated: false,
-        //       markerEnd: { type: MarkerType.ArrowClosed },
-        //       style: { stroke: '#555', strokeWidth: 3 },
-        //       label: '',
-        //     };
-        //     setEdges((eds) => eds.concat(newEdge));
-        //   }
-        // }
-        // lastBlockId.current = newBlock.id;
       } else {
         const newBlock = {
           id: uuidv4(),
@@ -597,8 +523,6 @@ function FlowchartCanvas({
         };
         setNodes((nds) => nds.concat(newBlock));
       }
-  
-      // Help modal logic (omitted for brevity)
     },
     [cancelDrag, project, reactFlowWrapper, setCancelDrag, setNodes, setEdges, helpShown, blocks, lastBlockId]
   );
@@ -613,7 +537,6 @@ function FlowchartCanvas({
     }
   }, []);
 
-  // Render the ReactFlow canvas, control panel, palette overlay, and help modal.
   return (
     <div
       ref={reactFlowWrapper}
@@ -627,12 +550,10 @@ function FlowchartCanvas({
         edgeTypes={edgeTypes}
         snapToGrid={true}
         snapGrid={[15, 15]}
-        // ... additional ReactFlow props and event handlers ...
         onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds))}
         onEdgesChange={(changes) =>
           setEdges((eds) => {
             const updatedEdges = applyEdgeChanges(changes, eds);
-            // Ensure that loopback edges always have the label "Loop Back"
             return updatedEdges.map((edge) => {
               if (edge.sourceHandle && edge.sourceHandle.startsWith('loopBack')) {
                 return { ...edge, label: 'Loop Back' };
@@ -648,7 +569,6 @@ function FlowchartCanvas({
         }}
         onDrop={handleDrop}
         onDragOver={onDragOverHandler}
-        // ... other event handlers ...
       >
         <MiniMap
           style={{

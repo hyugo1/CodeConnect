@@ -1,13 +1,11 @@
 // src/Components/Modal/AccessibleModal.js
+
 import React, { useEffect, useRef } from 'react';
 
 const AccessibleModal = ({ onClose, title, children, customClass }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
-    // if (modalRef.current) {
-    //   modalRef.current.focus();
-    // }
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         onClose();

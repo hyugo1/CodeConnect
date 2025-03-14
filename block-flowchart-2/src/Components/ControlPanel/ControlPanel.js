@@ -2,17 +2,12 @@
 
 import React from 'react';
 import './ControlPanel.css';
-import { FaPlay, FaRedo, FaTrash  
-  // , FaStop, FaRocket, FaTachometerAlt, FaPause, FaPlayCircle 
-} from 'react-icons/fa';
+import { FaPlay, FaRedo, FaTrash } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
 const ControlPanel = ({
   executeFlowchart,
   resetExecution,
-  // togglePause,
-  // paused,
-  setSpeedMultiplier,
   selectedNodes, 
   selectedEdges,
   setNodes,
@@ -31,13 +26,6 @@ const ControlPanel = ({
     }
   };
 
-  // const handleSpeedUp = () => {
-  //   setSpeedMultiplier(2);
-  // };
-
-  // const handleNormalSpeed = () => {
-  //   setSpeedMultiplier(1);
-  // };
 
   return (
     <div className="control-panel">
@@ -65,13 +53,10 @@ const ControlPanel = ({
   );
 };
 
-// Define prop types for better type checking
 ControlPanel.propTypes = {
   executeFlowchart: PropTypes.func.isRequired,
   resetExecution: PropTypes.func.isRequired,
-  // togglePause: PropTypes.func.isRequired,
   setSpeedMultiplier: PropTypes.func.isRequired,
-  // paused: PropTypes.bool.isRequired,
   selectedNodes: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedEdges: PropTypes.arrayOf(PropTypes.string).isRequired,
   setNodes: PropTypes.func.isRequired,

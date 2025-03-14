@@ -23,22 +23,18 @@
   margin-bottom: 20px;
 }
 
-
-/* Dark mode for Block Palette */
 .dark-mode .aside-container {
   background-color: #34495e;
   color: #ecf0f1;
   border-color: #aaa;
 }
 
-/* Optionally, override inner elements of block palette */
 .dark-mode .aside-container .dndblock {
   background-color: #1F2129;
   color: #ecf0f1;
   border-color: #bbb;
 }
 
-/* Dark mode for Right Panel */
 .dark-mode .right-panel {
   background-color: #34495e;
   color: #ecf0f1;

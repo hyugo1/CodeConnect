@@ -1,4 +1,4 @@
-/* HelpModal.css */
+/* src/Components/Modal/HelpModal.css */
 .help-modal-overlay {
     position: fixed;
     top: 0;
@@ -22,7 +22,6 @@
     text-align: left;
   }
   
-  /* Ensure that newline characters in your help text are respected */
   .help-modal-content p {
     white-space: pre-wrap;
   }

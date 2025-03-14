@@ -1,5 +1,7 @@
+/* src/Components/Navbar/Navbar.css */
+
 /* ========================================
-   Base & Global Styles
+   General Styles
 ======================================== */
 body {
   margin: 0;
@@ -7,7 +9,6 @@ body {
   font-family: 'kumbh-sans', sans-serif;
 }
 
-/* Shared transitions and button shape */
 .btn,
 .navbar-menu-item,
 .dropdown-item,
@@ -16,7 +17,7 @@ body {
   border-radius: 8px;
 }
 
-/* Icon Styling */
+
 .icon,
 .modal-icon {
   margin-right: 0.5rem;
@@ -29,7 +30,6 @@ body {
 /* ========================================
    Navbar Section
 ======================================== */
-/* Grouped Navbar font & color */
 .navbar,
 .navbar-brand {
   font-family: 'kumbh-sans', sans-serif;
@@ -65,8 +65,6 @@ body {
 .navbar-logo {
   height: 40px;
   margin-top: 5px;
-  /* width: 40px; */
-  /* margin-right: 10px; */
 }
 
 .navbar-title {
@@ -74,7 +72,6 @@ body {
   font-weight: bold;
 }
 
-/* Navigation Links */
 .navbar-menu {
   position: absolute;
   left: 50%;
@@ -99,7 +96,6 @@ body {
 
 .navbar-menu-item:hover {
   color: #1abc9c;
-  /* border: 1px solid #1abc9c; */
 }
 
 .example-list {
@@ -119,11 +115,8 @@ body {
 
 .example-list-item button {
   display: block;
-  /* margin: 0.5rem auto; */
 }
 
-
-/* Authentication Section */
 .navbar-auth {
   display: flex;
   align-items: center;
@@ -134,7 +127,6 @@ body {
   gap: 10px;
 }
 
-/* User Menu */
 .user-menu-container {
   position: relative;
 }
@@ -199,9 +191,6 @@ body {
   background-color: #f1f1f1;
 }
 
-/* ========================================
-   Modal Styles
-======================================== */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -236,7 +225,6 @@ body {
   text-align: center;
 }
 
-/* Input Field */
 .modal-input {
   width: 100%;
   max-width: 400px;
@@ -249,7 +237,6 @@ body {
   display: block;
 }
 
-/* Modal Sections & Button Groups */
 .modal-section {
   display: flex;
   justify-content: center;
@@ -275,19 +262,13 @@ body {
   margin: 0;
 }
 
-/* Specific Modal Button Sizing */
 .modal-btn {
   padding: 0.5rem 0.5rem;
   font-size: 1rem;
   cursor: pointer;
   margin: 0 auto;
-  /* align-items: center; */
-  /* justify-content: center; */
 }
 
-/* ========================================
-   Specific Modal Button Colors
-======================================== */
 .file-btn {
   background-color: #3498db;
   color: white;
@@ -352,7 +333,6 @@ body {
   background-color: #c0392b;
 }
 .login-btn {
-  /* background-color: #34495e; */
   background: none;
   color: white;
   font-size: 1rem;
@@ -364,14 +344,10 @@ body {
 }
 
 .login-btn:hover {
-  /* background-color: #16a085; */
   color: #1abc9c;
   background: none;
 }
 
-/* ========================================
-   Project List & Hint Modal
-======================================== */
 .project-list,
 .modal-subtitle {
   font-size: 1rem;
@@ -413,9 +389,6 @@ body {
   color: #333;
 }
 
-/* ========================================
-   Settings Section & Button Animation
-======================================== */
 .settings-section {
   display: flex;
   flex-direction: column;
@@ -423,14 +396,10 @@ body {
   margin-bottom: 1rem;
 }
 
-/* Animation for buttons on hover */
 .animated-btn:hover {
   transform: scale(1.05);
 }
 
-/* ========================================
-   Responsive Styles
-======================================== */
 @media (max-width: 768px) {
   .mobile-menu-button {
     display: block;

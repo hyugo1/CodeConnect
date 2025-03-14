@@ -1,20 +1,18 @@
 /* src/Components/blocks/block.css */
 
-/* CSS Variables (you can also define these in a global file) */
 :root {
   --less-content-width: 220px;
   --conditional-width: 320px;
   --block-bg: #f5f5f5;
   --block-border: #777;
-  --block-selected-bg: #e7f0ff;
-  --block-selected-border: #007bff;
+  --block-selected-bg: #c8dbfb;
+  --block-selected-border: rgba(239, 98, 175);
   --block-shadow: rgba(0, 0, 0, 0.3);
   --transition-time: 0.3s;
   --operand-width: 108px;
   --operator-width: 60px;
 }
 
-/* Base block container style */
 .block-container {
   width: var(--less-content-width);
   padding: 12px;
@@ -39,7 +37,6 @@
   font-weight: bold;
 }
 
-/* Hover and Selected States */
 .block-container:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px var(--block-shadow);
@@ -51,7 +48,6 @@
   box-shadow: 0 8px 16px var(--block-shadow);
 }
 
-/* Specific block classes for light mode */
 .start-block {
   background-color: #d3f9d8;
 }
@@ -72,50 +68,20 @@
 .set-variable-block {
   background-color: #e0e0e0;
 }
-
 .change-variable-block {
   background-color: #e0ffe0;
 }
 .move-block {
   background-color: #d8f9f9;
 }
-
 .dummy-block {
   min-height: 30px;
   justify-content: center;
   align-items: center;
 }
-
-/* Dark mode overrides for blocks */
 .dark-mode .block-container {
   color: rgb(25,26,30);
 }
-/* .dark-mode .start-block {
-  background-color: #d3f9d8;
-}
-.dark-mode .end-block {
-  background-color: #443;
-}
-.dark-mode .if-block {
-  background-color: #3a3a55;
-}
-.dark-mode .while-start-block {
-  background-color: #3a3a55;
-}
-.dark-mode .print-block {
-  background-color: #555;
-}
-.dark-mode .set-variable-block,
-.dark-mode .change-variable-block {
-  background-color: #444;
-}
-.dark-mode .move-block {
-  background-color: #555;
-}
-.dark-mode .dummy-block {
-  background-color: #444;
-} */
-
 .dark-mode .help-button {
   position: absolute;
   top: 4px;
@@ -124,10 +90,8 @@
   border: none;
   cursor: pointer;
   font-size: 18px;
-  /* color: #ecf0f1; */
 }
 
-/* Handle Styles */
 .handle-target-circle,
 .handle-source-square {
   width: 14px;
@@ -158,7 +122,6 @@
   background-color: var(--block-selected-border);
 }
 
-/* Input and Select Styles */
 .block-input {
   width: 100%;
   margin-top: 10px;
@@ -198,7 +161,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* gap: 5px; */
   margin-top: 10px;
 }
 
@@ -230,7 +192,6 @@
   margin-top: 10px;
 }
 
-/* Help Button */
 .help-button {
   position: absolute;
   top: 5px;
@@ -242,12 +203,10 @@
   color: #555;
 }
 
-/* Block Icon */
 .block-icon {
   margin-bottom: 5px;
 }
 
-/* Toggle Type Button */
 .toggle-type-button {
   position: absolute;
   top: 5px;
@@ -259,7 +218,6 @@
   cursor: pointer;
 }
 
-/* Executing state animation */
 .block-container.executing {
   animation: blockPulse 0.5s ease-out;
 }
@@ -267,33 +225,21 @@
 @keyframes blockPulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    box-shadow: 0 0 0 0 rgba(239, 98, 175, 0.7);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.5);
+    box-shadow: 0 0 10px 5px rgba(239, 98, 175, 0.5);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    box-shadow: 0 0 0 0 rgba(239, 98, 175, 0.7);
   }
 }
 
-/* Additional edge styles for react-flow (if applicable) */
 .react-flow__edge-path {
   transition: stroke 0.4s ease, stroke-width 0.4s ease;
-  stroke: #22ff77;
   z-index: 1000;
-}
-
-.react-flow__edge-path.selected {
-  stroke: #22ff77 !important;
-}
-
-.react-flow__edge-path.hovered {
-  stroke: #22ff77 !important;
-  stroke-width: 5 !important;
-  cursor: pointer;
 }
 
 .react-flow__edge-path:hover {

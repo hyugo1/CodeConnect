@@ -1,10 +1,11 @@
-/* dummyBlock.css */
+/* src/Components/CustomBlock/blocks/DummyBlock.css */
+
 @keyframes pulse {
     0% {
       box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
     }
     70% {
-      box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
+      box-shadow: 0 0 0 10px rgba(44, 188, 44, 0);
     }
     100% {
       box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
@@ -12,25 +13,25 @@
   }
   
   .dummy-replaceable {
-    /* Replaceable dummy blocks get a pulsing green border effect */
     animation: pulse 2s infinite;
   }
   
   .dummy-fixed {
-    /* Non-replaceable dummy blocks get a fixed red border */
-    border: 2px solid red;
+    border: 2px solid rgba(239, 98, 175);
   }
+  
   @keyframes flash {
-    from {
-      background-color: yellow;
+    0% {
+      background-color: transparent;
     }
-    to {
+    50% {
+      background-color: rgb(57, 244, 91);
+    }
+    100% {
       background-color: transparent;
     }
   }
-  
-  .replacement-success {
-    animation: flash 0.5s ease-out forwards;
-  }
 
-  
+  .replacement-success {
+    animation: flash 1s ease-out forwards;
+  }

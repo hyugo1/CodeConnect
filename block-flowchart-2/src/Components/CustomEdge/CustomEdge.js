@@ -1,3 +1,5 @@
+//src/Components/CustomEdge/CustomEdge.js
+
 import React, { useState } from 'react';
 import { getBezierPath } from 'reactflow';
 import './CustomEdge.css';
@@ -38,7 +40,6 @@ const CustomEdge = ({
 
   return (
     <>
-      {/* Inline SVG definitions for custom markers */}
       <svg style={{ position: 'absolute', height: 0, width: 0 }}>
         <defs>
           <marker
@@ -77,31 +78,37 @@ const CustomEdge = ({
         markerEnd={markerEnd}
       />
 
-      {label && (
-        <text dy="-5">
-          <textPath href={`#${id}`} style={{ fontSize: 18 }} startOffset="50%" textAnchor="middle">
-            {label}
-          </textPath>
-        </text>
-      )}
+        {label && (
+          <text dy="-5">
+            <textPath
+              href={`#${id}`}
+              style={{ fontSize: 18, fill: 'rgba(239, 98, 175)' }}
+              // style={{ fontSize: 18, fill: '#777' }}
+              startOffset="50%"
+              textAnchor="middle"
+            >
+              {label}
+            </textPath>
+          </text>
+        )}
     </>
   );
 };
 
 export default CustomEdge;
 
-  {/* Animated circle: rendered only when executing */}
-  {/* {executing && (
-    <circle r="10" fill="#ff0073">
-      <animateMotion 
-        begin="0s"
-        dur="1.5s"
-        repeatCount="indefinite"
-        rotate="auto"
-        calcMode="linear"
-        keyTimes="0;1"
-        keyPoints="0;1"
-        path={edgePath}
-      />
-    </circle>
-  )} */}
+{/* Animated circle: rendered only when executing */}
+{/* {executing && (
+  <circle r="10" fill="#ff0073">
+    <animateMotion 
+      begin="0s"
+      dur="1.5s"
+      repeatCount="indefinite"
+      rotate="auto"
+      calcMode="linear"
+      keyTimes="0;1"
+      keyPoints="0;1"
+      path={edgePath}
+    />
+  </circle>
+)} */}

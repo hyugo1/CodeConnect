@@ -1,4 +1,6 @@
-// src/Components/blocks/MoveBlock.js
+// src/Components/CustomBlock/blocks/MoveBlock.js
+
+
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaQuestion } from 'react-icons/fa';

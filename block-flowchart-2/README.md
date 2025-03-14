@@ -1,70 +1,35 @@
-# Getting Started with Create React App
+# Code Connect!
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Code Connect** is a visual programming tool designed to help novices – even young children – learn the basics of coding by connecting Lego-like software components. With an intuitive drag‑and‑drop flowchart canvas, a palette of building blocks, and real‑time code generation, Code Connect offers a fun, interactive way to learn programming concepts while building simple apps.
 
-## Available Scripts
+## Key Features
 
-In the project directory, you can run:
+- **Visual Flowchart Editor:**  
+  Drag and drop blocks (such as Start, End, If Then, While, Print, Set/Change Variable, and Move Character) onto the canvas and connect them with intuitive edges.
+  
+- **Real‑Time Code Generation:**  
+  Automatically generate JavaScript code from your flowchart. Preview, copy, and run the generated code to see how your program works.
 
-### `npm start`
+- **Interactive Execution:**  
+  Execute your flowchart step by step with built‑in delays and visual feedback. Watch the active block and edge animate during execution.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Project Persistence:**  
+  Save your flowchart locally as JSON or in your account using Firebase authentication and Firestore. Import/export projects easily.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **User Accounts and Authentication:**  
+  Sign up, log in (or use Google sign‑in), and manage your saved projects directly from the application.
 
-### `npm test`
+- **Built-In Examples and Guides:**  
+  Explore examples (e.g. Hello World, If Then conditions, while loops) and access a “How to Play” guide for hints and instructions.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Responsive and Customizable UI:**  
+  Toggle a right panel for a character display, console output, and generated code preview. Switch between light and dark modes to suit your environment.
 
-### `npm run build`
+## Getting Started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and leverages libraries such as [React Flow](https://reactflow.dev/) for the flowchart editor and [Firebase](https://firebase.google.com/) for user authentication and project storage.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Prerequisites
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Node.js (v12 or later)
+- npm or yarn

@@ -32,7 +32,7 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
 
   return (
     <div
-      className={`block-container dummy-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
+      className={`block-container dummy-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''} ${data.flash ? 'replacement-success' : ''}`}
       data-id={id}
       onDrop={handleDrop}
       onDragOver={handleDragOver}

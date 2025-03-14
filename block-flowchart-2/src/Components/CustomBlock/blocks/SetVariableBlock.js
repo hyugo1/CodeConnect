@@ -1,4 +1,5 @@
-// src/Components/blocks/SetVariableBlock.js
+// src/Components/CustomBlock/blocks/SetVariable.js
+
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { FaPenFancy, FaQuestion } from 'react-icons/fa';

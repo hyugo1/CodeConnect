@@ -1,15 +1,13 @@
-/* .react-flow__edge-path {
-  transition: stroke 0.4s ease, stroke-width 0.4s ease;
-  stroke: #22ff77; 
-} */
+/* src/Components/CustomEdge/CustomEdge.css */
 
 .react-flow__edge-path.selected {
-  stroke: #507bf2 !important;
+  stroke: #3267f8 !important;
+  stroke-width: 4 !important;
 }
 
 .react-flow__edge-path.hovered {
   stroke: #507bf2 !important;
-  stroke-width: 5 !important;
+  stroke-width: 4 !important;
   cursor: pointer;
 }
 
@@ -19,7 +17,6 @@
 
 .react-flow__edge-path.executing {
   animation: edgePulse 0.4s ease-in-out infinite;
-  /* animation: edgePulse 1.5s ease-in-out infinite; */
 }
 
 @keyframes edgePulse {

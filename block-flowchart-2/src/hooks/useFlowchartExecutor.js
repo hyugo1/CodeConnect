@@ -1,4 +1,5 @@
 // src/hooks/useFlowchartExecutor.js
+
 import { evaluate } from 'mathjs';
 import { useRef, useState, useCallback } from 'react';
 
@@ -11,17 +12,10 @@ export function useFlowchartExecutor(
   setActiveBlockId,
   setActiveEdgeId
 ) {
-  // Constants for execution timing and loop detection
   const MAX_VISITS_PER_NODE = 50;
   const BASE_BLOCK_DELAY = 800;
   const BASE_EDGE_DELAY = 800;
   const PRINT_DELAY = 3000;
-
-
-  // const MAX_VISITS_PER_NODE = 50;
-  // const BASE_BLOCK_DELAY = 1500;
-  // const BASE_EDGE_DELAY = 1500;
-  // const PRINT_DELAY = 3000;  
 
   const speedRef = useRef(2);
   const [paused, setPaused] = useState(false);
@@ -117,7 +111,7 @@ export function useFlowchartExecutor(
     switch (block.data.blockType) {
       case 'start':
         await executeNextNode(block.id, visitCounts);
-        return; // FIX: Return immediately to avoid processing outgoing edges twice.
+        return;  //Return immediately to avoid processing outgoing edges twice.
       case 'end':
         outputs.push('Execution ended.');
         console.log('Execution ended.');

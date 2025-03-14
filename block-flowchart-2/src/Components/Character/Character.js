@@ -1,4 +1,6 @@
-  import React from 'react';
+// src/Components/Character/Character.js
+
+import React from 'react';
   import './Character.css';
 
   const Character = ({ message, position }) => {

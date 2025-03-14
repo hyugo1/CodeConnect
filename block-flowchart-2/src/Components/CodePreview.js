@@ -1,4 +1,5 @@
 // src/Components/CodePreview.js
+
 import React, { useState } from 'react';
 import { generateJavaScriptCode } from '../hooks/useCodeGenerator';
 import './Console/Console.css';

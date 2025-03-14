@@ -1,4 +1,5 @@
-/* GENERAL MODAL STYLES */
+/* src/Components/Modal/AccessibleModal.css */
+
 .modal-backdrop,
 .help-modal-overlay {
   position: fixed;
@@ -25,14 +26,12 @@
   position: relative;
 }
 
-/* Modal Titles */
 .modal-title,
 .help-modal-content h3 {
   text-align: center;
   margin-bottom: 1rem;
 }
 
-/* Modal Inputs */
 .modal-input {
   display: block;
   width: 100%;
@@ -44,7 +43,6 @@
   box-sizing: border-box;
 }
 
-/* BUTTON STYLES (applies to buttons inside modals) */
 .modal-btn,
 .help-modal-close {
   padding: 0.5rem 1rem;
@@ -57,7 +55,6 @@
   margin: 0.5rem auto;
 }
 
-/* Specific Button Colors */
 .file-btn {
   background-color: #3498db;
   color: white;
@@ -65,7 +62,6 @@
 .file-btn:hover {
   background-color: #2980b9;
 }
-
 .account-btn {
   background-color: #2ecc71;
   color: white;
@@ -73,7 +69,6 @@
 .account-btn:hover {
   background-color: #27ae60;
 }
-
 .signup-btn {
   background-color: #9b59b6;
   color: white;
@@ -81,7 +76,6 @@
 .signup-btn:hover {
   background-color: #8e44ad;
 }
-
 .signin-btn {
   background-color: #3498db;
   color: white;
@@ -89,7 +83,6 @@
 .signin-btn:hover {
   background-color: #2980b9;
 }
-
 .forgot-btn {
   background-color: #f39c12;
   color: white;
@@ -105,8 +98,6 @@
 .delete-btn:hover {
   background-color: #c0392b;
 }
-
-/* Cancel / Close Buttons */
 .cancel-btn,
 .help-modal-close {
   background-color: #e74c3c;
@@ -117,7 +108,6 @@
   background-color: #c0392b;
 }
 
-/* Modal Button Group (for rows of buttons) */
 .modal-button-group {
   display: flex;
   flex-direction: row;
@@ -127,7 +117,6 @@
   margin-top: 1rem;
 }
 
-/* DARK MODE OVERRIDES */
 .dark-mode .modal-content,
 .dark-mode .help-modal-content {
   background-color: #2c2c2c;

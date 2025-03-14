@@ -1,4 +1,5 @@
-// HelpModal.js
+// src/Components/Modal/HelpModal.js
+
 import React from 'react';
 import './HelpModal.css';
 

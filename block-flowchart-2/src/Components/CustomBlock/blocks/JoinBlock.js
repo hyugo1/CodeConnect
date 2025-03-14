@@ -1,4 +1,5 @@
-// src/Components/blocks/JoinBlock.js
+// src/Components/CustomBlock/blocks/JoinBlock.js
+
 import React from 'react';
 import { Handle, Position } from 'reactflow';
 import './block.css';
