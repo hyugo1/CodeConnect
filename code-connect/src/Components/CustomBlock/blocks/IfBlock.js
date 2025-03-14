@@ -14,11 +14,12 @@ const IfBlock = ({ id, data, selected, executing }) => {
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
 • This block lets your program decide what to do next.
-• In the first box, type a number or a variable name (for example, "score").
+• In the first box, type a number or a variable name (i.e., "score").
 • Next, choose a comparison operator (like >, <, or ==).
-• In the second box, type another number or variable (for example, "10").
+• In the second box, type another number or variable(i.e., "10").
 • For instance, if you want to check whether score is greater than 10, type "score", choose ">", and then type "10".
 • The program will follow the "true" path if the condition is met; otherwise, it will follow the "false" path.
+• A Join block is automatically generated to combine the True and False branches—ensure you connect both paths to it to complete the flow.
 `;
 
   const handleLeftOperandChange = (e) => {

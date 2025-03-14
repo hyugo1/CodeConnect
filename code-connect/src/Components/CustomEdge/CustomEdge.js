@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { getBezierPath } from 'reactflow';
+import { useActiveFlow } from '../../contexts/ActiveFlowContext';
 import './CustomEdge.css';
 
 const CustomEdge = ({
@@ -15,7 +16,6 @@ const CustomEdge = ({
   style,
   label,
   selected,
-  activeEdgeId,
 }) => {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -26,6 +26,7 @@ const CustomEdge = ({
     targetPosition,
   });
 
+  const { activeEdgeId } = useActiveFlow();
   const edgeColor = (style && style.stroke) || '#555';
   const markerEnd = 'url(#customArrow)';
   const [isHovered, setIsHovered] = useState(false);
@@ -82,7 +83,6 @@ const CustomEdge = ({
           <text dy="-5">
             <textPath
               href={`#${id}`}
-              // style={{ fontSize: 18, fill: 'rgba(239, 98, 175)' }}
               style={{ fontSize: 18, fill: '#777' }}
               startOffset="50%"
               textAnchor="middle"
@@ -96,19 +96,3 @@ const CustomEdge = ({
 };
 
 export default CustomEdge;
-
-{/* Animated circle: rendered only when executing */}
-{/* {executing && (
-  <circle r="10" fill="#ff0073">
-    <animateMotion 
-      begin="0s"
-      dur="1.5s"
-      repeatCount="indefinite"
-      rotate="auto"
-      calcMode="linear"
-      keyTimes="0;1"
-      keyPoints="0;1"
-      path={edgePath}
-    />
-  </circle>
-)} */}

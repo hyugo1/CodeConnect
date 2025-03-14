@@ -9,7 +9,6 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges,
   useReactFlow,
-  // ConnectionLineType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomBlock from './CustomBlock/CustomBlock';
@@ -19,6 +18,7 @@ import { useFlowchartExecutor } from '../hooks/useFlowchartExecutor';
 import { v4 as uuidv4 } from 'uuid';
 import useFlowchartHandlers from './useFlowchartHandlers';
 import PaletteOverlay from './PaletteOverlay';
+import { ActiveFlowContext } from '../contexts/ActiveFlowContext';
 import './FlowchartCanvas.css';
 
 function FlowchartCanvas({
@@ -41,7 +41,6 @@ function FlowchartCanvas({
   const [paletteVisible, setPaletteVisible] = useState(false);
   const [currentDummyBlockId, setCurrentDummyBlockId] = useState(null);
   const [dummyBlockPosition, setDummyBlockPosition] = useState(null);
-  const [helpShown, setHelpShown] = useState({});
   const [helpModal, setHelpModal] = useState({ visible: false, title: '', content: '' });
 
   const reactFlowWrapper = useRef(null);
@@ -72,12 +71,6 @@ function FlowchartCanvas({
       if (newBlockType === 'end' && blockToReplace.data.dummyFor === 'whileBody') {
         alert("Cannot replace the dummy block for the while loop body with an End block.");
         return;
-      }
-      let additionalData = {};
-      if (newBlockType === 'if') {
-        additionalData = { leftOperand: '', operator: '', rightOperand: '' };
-      } else if (newBlockType === 'whileStart') {
-        additionalData = { leftOperand: '', operator: '', rightOperand: '' };
       }
       setNodes((nds) =>
         nds.map((b) =>
@@ -314,36 +307,16 @@ function FlowchartCanvas({
         setDummyBlockPosition(null);
       }, 1000);
     },
-    [blocks, setNodes, setEdges]
+    [blocks, setNodes, setEdges] 
   );
 
-  const CustomBlockWrapper = useCallback(
-    (props) => (
-      <CustomBlock
-        {...props}
-        activeBlockId={activeBlockId}
-        onReplace={(dummyId, e) => {
-          if (e && e.currentTarget) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            setDummyBlockPosition({ top: rect.top, left: rect.right + 10 });
-          } else {
-            setDummyBlockPosition({ top: 100, left: 100 });
-          }
-          setCurrentDummyBlockId(dummyId);
-          setPaletteVisible(true);
-        }}
-      />
-    ),
-    [activeBlockId]
-  );
-  const nodeTypes = useMemo(() => ({ custom: CustomBlockWrapper }), [CustomBlockWrapper]);
-  const CustomEdgeWrapper = useCallback(
-    (props) => <CustomEdge {...props} activeEdgeId={activeEdgeId} />,
-    [activeEdgeId]
-  );
-  const edgeTypes = useMemo(() => ({ custom: CustomEdgeWrapper }), [CustomEdgeWrapper]);
+  const CustomBlockWrapper = (props) => <CustomBlock {...props} />;
+  const nodeTypes = useMemo(() => ({ custom: CustomBlockWrapper }), []);
 
-  const { onConnect, onDragOver } = useFlowchartHandlers({
+  const CustomEdgeWrapper = (props) => <CustomEdge {...props} />;
+  const edgeTypes = useMemo(() => ({ custom: CustomEdgeWrapper }), []);
+
+  const { onConnect } = useFlowchartHandlers({
     project,
     reactFlowWrapper,
     setNodes,
@@ -524,7 +497,7 @@ function FlowchartCanvas({
         setNodes((nds) => nds.concat(newBlock));
       }
     },
-    [cancelDrag, project, reactFlowWrapper, setCancelDrag, setNodes, setEdges, helpShown, blocks, lastBlockId]
+    [cancelDrag, project, reactFlowWrapper, setCancelDrag, setNodes, setEdges]
   );
 
   const onDragOverHandler = useCallback((event) => {
@@ -542,6 +515,22 @@ function FlowchartCanvas({
       ref={reactFlowWrapper}
       className="flowchart-container"
       style={{ width: '100%', height: '100%', position: 'relative' }}
+    >
+    <ActiveFlowContext.Provider
+      value={{
+        activeBlockId,
+        activeEdgeId,
+        onReplace: (dummyId, e) => {
+          if (e && e.currentTarget) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            setDummyBlockPosition({ top: rect.top, left: rect.right + 10 });
+          } else {
+            setDummyBlockPosition({ top: 100, left: 100 });
+          }
+          setCurrentDummyBlockId(dummyId);
+          setPaletteVisible(true);
+        },
+      }}
     >
       <ReactFlow
         nodes={blocks}
@@ -645,6 +634,7 @@ function FlowchartCanvas({
           </div>
         </div>
       )}
+    </ActiveFlowContext.Provider>
     </div>
   );
 }

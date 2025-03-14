@@ -1,6 +1,7 @@
 // src/Components/CustomBlock/CustomBlock.js
 
 import React from 'react';
+import { useActiveFlow } from '../../contexts/ActiveFlowContext';
 import StartBlock from './blocks/StartBlock';
 import EndBlock from './blocks/EndBlock';
 import IfBlock from './blocks/IfBlock';
@@ -25,7 +26,8 @@ const blockMapping = {
   join: JoinBlock,
 };
 
-const CustomBlock = ({ id, data, selected, activeBlockId, onReplace }) => {
+const CustomBlock = ({ id, data, selected }) => {
+  const { activeBlockId, onReplace } = useActiveFlow();
   const executing = id === activeBlockId;
   const SpecificBlock = blockMapping[data.blockType];
   if (!SpecificBlock) {
