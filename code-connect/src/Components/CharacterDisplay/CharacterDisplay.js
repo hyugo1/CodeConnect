@@ -3,10 +3,14 @@
 import React from 'react';
 import Character from '../Character/Character';
 
-function CharacterDisplay({ characterMessage, characterPosition }) {
+function CharacterDisplay({ characterMessage, characterPosition, rotation }) {
   return (
     <div className="character-area">
-      <Character message={characterMessage} position={characterPosition} />
+      <Character 
+        message={characterMessage} 
+        position={characterPosition} 
+        rotation={rotation}
+      />
     </div>
   );
 }

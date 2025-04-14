@@ -117,6 +117,7 @@ export function generateJavaScriptCode(blocks, edges) {
           codeLines.push(indent + '// Incomplete condition in if then block');
         }
         break;
+
       case 'join':
         {
           const next = getNextBlock(blockId);
@@ -147,6 +148,7 @@ export function generateJavaScriptCode(blocks, edges) {
         if (next) traverse(next, indentLevel, new Set(visited));
         break;
       }
+      
       case 'move':
         if (block.data.distance && block.data.direction) {
           codeLines.push(
@@ -161,6 +163,21 @@ export function generateJavaScriptCode(blocks, edges) {
           if (next) traverse(next, indentLevel, new Set(visited));
         }
         break;
+      
+      case 'rotate': {
+        // Get degrees and rotation direction from block data.
+        let degrees = parseInt(block.data.degrees, 10);
+        const direction = block.data.rotateDirection;
+        // Calculate the effective rotation value.
+        const rotationValue = (direction === 'left') ? -degrees : degrees;
+        codeLines.push(indent + `rotateCharacter(${rotationValue});`);
+        {
+          const next = getNextBlock(blockId);
+          if (next) traverse(next, indentLevel, new Set(visited));
+        }
+        break;
+      }
+
       default:
         codeLines.push(indent + `// Unknown block type: ${block.data.blockType}`);
         {

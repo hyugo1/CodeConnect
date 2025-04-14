@@ -9,7 +9,8 @@ import {
   FaPenFancy,
   FaPlusCircle,
   FaArrowsAltH,
-  FaCodeBranch
+  FaCodeBranch,
+  FaSyncAlt
 } from 'react-icons/fa';
 import './BlockPalette.css';
 
@@ -37,6 +38,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
     { type: 'setVariable', label: 'Set Variable', color: '#e0e0e0', icon: <FaPenFancy />, category: 'Variable Blocks' },
     { type: 'changeVariable', label: 'Adjust Variable', color: '#e0ffe0', icon: <FaPlusCircle />, category: 'Variable Blocks' },
     { type: 'move', label: 'Move Character', color: '#d8f9f9', icon: <FaArrowsAltH />, category: 'Character Action Blocks' },
+    { type: 'rotate', label: 'Rotate', color: '#e8e8ff', icon: <FaSyncAlt />, category: 'Character Action Blocks' },
   ];
 
   const filteredBlocks = excludeStart ? blocks.filter(block => block.type !== 'start') : blocks;

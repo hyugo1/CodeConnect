@@ -15,6 +15,7 @@ function App() {
   const [consoleOutput, setConsoleOutput] = useState('');
   const [characterPosition, setCharacterPosition] = useState({ x: 0, y: 0 });
   const [characterMessage, setCharacterMessage] = useState('');
+  const [characterRotation, setCharacterRotation] = useState(0);
 
   const [isDragging, setIsDragging] = useState(false);
   const [cancelDrag, setCancelDrag] = useState(false);
@@ -51,6 +52,8 @@ function App() {
             setCharacterPosition={setCharacterPosition}
             characterMessage={characterMessage}
             setCharacterMessage={setCharacterMessage}
+            characterRotation={characterRotation}
+            setCharacterRotation={setCharacterRotation}
             isDragging={isDragging}
             cancelDrag={cancelDrag}
             setCancelDrag={setCancelDrag}
@@ -60,6 +63,7 @@ function App() {
         <RightPanel
           characterMessage={characterMessage}
           characterPosition={characterPosition}
+          rotation={characterRotation}
           blocks={blocks}
           edges={edges}
           consoleOutput={consoleOutput}

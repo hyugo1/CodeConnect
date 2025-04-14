@@ -105,6 +105,9 @@
 .move-block {
   background-color: #d8f9f9;
 }
+.rotate-block {
+  background-color: #e8e8ff;
+}
 .dummy-block {
   min-height: 30px;
   justify-content: center;

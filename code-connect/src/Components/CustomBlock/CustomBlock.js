@@ -12,6 +12,7 @@ import ChangeVariableBlock from './blocks/ChangeVariableBlock';
 import DummyBlock from './blocks/DummyBlock';
 import MoveBlock from './blocks/MoveBlock';
 import JoinBlock from './blocks/JoinBlock';
+import RotateBlock from './blocks/RotateBlock';
 import './CustomBlock.css';
 
 const blockMapping = {
@@ -24,6 +25,7 @@ const blockMapping = {
   changeVariable: ChangeVariableBlock,
   dummy: DummyBlock,
   move: MoveBlock,
+  rotate : RotateBlock,
   join: JoinBlock,
 };
 

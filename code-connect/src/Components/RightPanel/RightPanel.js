@@ -5,7 +5,7 @@ import Console from '../Console/Console';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import './RightPanel.css';
 
-const RightPanel = ({ characterMessage, characterPosition, blocks, edges, consoleOutput }) => {
+const RightPanel = ({ characterMessage, characterPosition, rotation, blocks, edges, consoleOutput }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -24,6 +24,7 @@ const RightPanel = ({ characterMessage, characterPosition, blocks, edges, consol
           <CharacterDisplay
             characterMessage={characterMessage}
             characterPosition={characterPosition}
+            rotation={rotation}
           />
           <CodePreview blocks={blocks} edges={edges} />
           <Console consoleOutput={consoleOutput} />

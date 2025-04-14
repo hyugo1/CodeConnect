@@ -28,6 +28,7 @@ function FlowchartCanvas({
   setEdges,
   setConsoleOutput,
   setCharacterPosition,
+  setCharacterRotation,
   setCharacterMessage,
   isDragging,
   cancelDrag,
@@ -473,6 +474,7 @@ function FlowchartCanvas({
         blockType === 'changeVariable' ||
         blockType === 'setVariable' ||
         blockType === 'move' ||
+        blockType === 'rotate' ||
         blockType === 'print'
       ) {
         const newBlock = {
@@ -587,6 +589,7 @@ function FlowchartCanvas({
           setConsoleOutput,
           setCharacterPosition,
           setCharacterMessage,
+          setCharacterRotation,
           setActiveBlockId,
           setActiveEdgeId,
           setErrorBlockId
@@ -596,6 +599,7 @@ function FlowchartCanvas({
           edges,
           setConsoleOutput,
           setCharacterPosition,
+          setCharacterRotation,
           setCharacterMessage,
           setActiveBlockId,
           setActiveEdgeId,
@@ -606,6 +610,7 @@ function FlowchartCanvas({
           edges,
           setConsoleOutput,
           setCharacterPosition,
+          setCharacterRotation,
           setCharacterMessage,
           setActiveBlockId,
           setActiveEdgeId,

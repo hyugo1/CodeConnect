@@ -9,7 +9,8 @@ export function useFlowchartExecutor(
   edges,
   setConsoleOutput,
   setCharacterPosition,
-  setCharacterMessage,
+  setCharacterMessage, 
+  setCharacterRotation,
   setActiveBlockId,
   setActiveEdgeId,
   setErrorBlockId
@@ -54,17 +55,19 @@ export function useFlowchartExecutor(
     setConsoleOutput('');
     setCharacterPosition({ x: 0, y: 0 });
     setCharacterMessage('');
+    setCharacterRotation(0);
     setActiveBlockId(null);
     setActiveEdgeId(null);
     setPaused(false);
     console.log('Execution has been reset.');
-  }, [setConsoleOutput, setCharacterPosition, setCharacterMessage, setActiveBlockId, setActiveEdgeId]);
+  }, [setConsoleOutput, setCharacterPosition, setCharacterRotation, setCharacterMessage, setActiveBlockId, setActiveEdgeId]);
 
   // Context to hold variables and character state during execution
   const context = {
     variables: {},
     characterPos: { x: 0, y: 0 },
     characterMsg: '',
+    characterRotation: 0,
   };
 
   const outputs = [];
@@ -128,6 +131,7 @@ export function useFlowchartExecutor(
         setConsoleOutput(outputs.join('\n'));
         setCharacterPosition(context.characterPos);
         setCharacterMessage(context.characterMsg);
+        setCharacterRotation(context.characterRotation)
         return;
 
       case 'setVariable':
@@ -385,6 +389,34 @@ export function useFlowchartExecutor(
         }
         break;
       }
+      case 'rotate': {
+        const { degrees, rotateDirection } = block.data;
+        if (degrees && rotateDirection) {
+          let newRotation = context.characterRotation || 0;
+          switch (rotateDirection) {
+            case 'left':
+              newRotation -= degrees;
+              break;
+            case 'right':
+              newRotation += degrees;
+              break;
+            default:
+              outputs.push(`Unknown rotation direction "${rotateDirection}" in Rotate block "${blockDisplayName}".`);
+              console.error(`Unknown rotation direction "${rotateDirection}" in Rotate block "${blockDisplayName}".`);
+              setConsoleOutput(outputs.join('\n'));
+              return;
+          }
+          // Save the new rotation to the context and update state.
+          context.characterRotation = newRotation;
+          outputs.push(`Rotated ${rotateDirection} by ${degrees} degrees to (${newRotation}°)`);
+          console.log(`Rotated ${rotateDirection} by ${degrees} degrees to (${newRotation}°)`);
+          setCharacterRotation(newRotation);
+        } else {
+          outputs.push(`Incomplete rotate data in block "${blockDisplayName}".`);
+          console.error(`Incomplete rotate data in block "${blockDisplayName}".`);
+        }
+        break;
+      }
       default:
         outputs.push(
           `Unknown block type "${block.data.blockType}" in block "${blockDisplayName}".`
@@ -513,6 +545,7 @@ export function useFlowchartExecutor(
     setConsoleOutput,
     setCharacterPosition,
     setCharacterMessage,
+    setCharacterRotation,
     setActiveBlockId,
     setActiveEdgeId,
   ]);

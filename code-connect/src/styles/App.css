@@ -130,11 +130,6 @@ body, html {
   position: relative;
 }
 
-.character-image {
-  width: 100px;
-  height: auto;
-}
-
 .message-bubble {
   position: absolute;
   top: -60px;
