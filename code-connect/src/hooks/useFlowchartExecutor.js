@@ -105,8 +105,11 @@ export function useFlowchartExecutor(
     setActiveBlockId(block.id);
     await delay(BASE_BLOCK_DELAY);
 
-    console.log(`\n--- Executing Node: ${block.id} (${block.data.blockType}) ---`);
-    outputs.push(`Executing block ${block.data.blockType}`);
+    const blockDisplayName =
+    block && block.data && block.data.label ? block.data.label : blockId;
+
+    console.log(`\n--- Executing Node: ${block.id} (${blockDisplayName}) ---`);
+    outputs.push(`Executing block "${blockDisplayName}"`);
 
     switch (block.data.blockType) {
       case 'start':
@@ -360,8 +363,19 @@ export function useFlowchartExecutor(
 
     console.log(`--- Finished Node: ${block.id} ---\n`);
   } catch (traverseError) {
-    console.error(`Unexpected error in traverse at block ${blockId}:`, traverseError);
-    outputs.push(`Unexpected error in block ${blockId}: ${traverseError.message}`);
+    const block = currentNodes.find(n => n.id === blockId);
+    const blockDisplayName =
+      block && block.data && block.data.label ? block.data.label : blockId;
+  
+    let customMessage = traverseError.message;
+    const match = customMessage.match(/Undefined symbol (\w+)/);
+    if (match) {
+      const missingVar = match[1];
+      customMessage = `Variable "${missingVar}" is not defined. Please initialise it before using this condition.`;
+    }
+  
+    console.error(`Unexpected error in block "${blockDisplayName}":`, traverseError);
+    outputs.push(`Unexpected error in block "${blockDisplayName}": ${customMessage}`);
     setConsoleOutput(outputs.join('\n'));
   }
   }

@@ -142,13 +142,9 @@ export function generateJavaScriptCode(blocks, edges) {
 
       case 'print': {
         let msg = block.data.message || '';
-        // Replace {var} with template literal placeholders.
-        msg = msg.replace(/{(\w+)}/g, '${$1}');
         codeLines.push(indent + `console.log(\`${msg}\`);`);
-        {
-          const next = getNextBlock(blockId);
-          if (next) traverse(next, indentLevel, new Set(visited));
-        }
+        const next = getNextBlock(blockId);
+        if (next) traverse(next, indentLevel, new Set(visited));
         break;
       }
       case 'move':

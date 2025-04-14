@@ -98,11 +98,12 @@
   height: 14px;
   cursor: pointer;
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   transition: background-color 0.3s, border-color 0.3s;
 }
 .handle-target-circle {
-  background: transparent;
+  /* background: transparent; */
+  background: #555;
   left: 50%;
   top: 0;
   transform: translate(-50%, -50%);
