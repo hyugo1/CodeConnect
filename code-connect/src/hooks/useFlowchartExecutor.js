@@ -4,6 +4,108 @@ import { evaluate } from 'mathjs';
 import { useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
+/**
+ * Validates the flowchart structure and the integrity of block data.
+ * Returns an array of error messages. If the array is empty, the flowchart is valid.
+ *
+ * @param {Array} blocks - The nodes of the flowchart.
+ * @param {Array} edges - The edges of the flowchart.
+ * @returns {Array} errors - An array of error messages.
+ */
+function validateFlowchart(blocks, edges) {
+  const errors = [];
+  const nodeIds = blocks.map((b) => b.id);
+
+  // Check for existence of a Start block (blockType "start", custom node)
+  const startBlock = blocks.find(
+    (b) =>
+      (b.data.blockType || "").toLowerCase() === "start" &&
+      b.type === "custom"
+  );
+  if (!startBlock) {
+    errors.push("Error: No Start block found.");
+  }
+
+  // Check for existence of an End block
+  const endBlock = blocks.find(
+    (b) => (b.data.blockType || "").toLowerCase() === "end"
+  );
+  if (!endBlock) {
+    errors.push("Error: No End block found.");
+  }
+
+  // Check that all edges point to existing blocks
+  edges.forEach((edge) => {
+    if (!nodeIds.includes(edge.source)) {
+      errors.push(
+        `Error: Edge ${edge.id} refers to a non-existent source node (${edge.source}).`
+      );
+    }
+    if (!nodeIds.includes(edge.target)) {
+      errors.push(
+        `Error: Edge ${edge.id} refers to a non-existent target node (${edge.target}).`
+      );
+    }
+  });
+
+  // Check for connectivity from Start to End
+  if (startBlock && endBlock) {
+    const visited = new Set();
+    function dfs(nodeId) {
+      if (visited.has(nodeId)) return;
+      visited.add(nodeId);
+      edges.forEach((edge) => {
+        if (edge.source === nodeId) {
+          dfs(edge.target);
+        }
+      });
+    }
+    dfs(startBlock.id);
+    if (!visited.has(endBlock.id)) {
+      errors.push("Error: The End block is not reachable from the Start block.");
+    }
+  }
+
+  // Validate each block's internal data
+  blocks.forEach((block) => {
+    const type = block.data.blockType;
+    const displayName = block.data.label || block.id;
+
+    // For setVariable, ensure variable name is provided and the value is non-empty.
+    if (type === "setVariable") {
+      if (!block.data.varName || block.data.varName.trim() === "") {
+        errors.push(
+          `Error: Set Variable block "${displayName}" must have a valid variable name.`
+        );
+      }
+      if (
+        block.data.varValue === null ||
+        block.data.varValue === undefined ||
+        block.data.varValue === ""
+      ) {
+        errors.push(
+          `Error: Set Variable block "${displayName}" must have a non-empty value.`
+        );
+      }
+    }
+
+    // For conditional blocks (if and whileStart), ensure all parts of the condition are provided.
+    if (type === "if" || type === "whileStart") {
+      if (
+        !block.data.leftOperand ||
+        !block.data.operator ||
+        !block.data.rightOperand
+      ) {
+        errors.push(
+          `Error: Block "${displayName}" must have a complete condition (left operand, operator, and right operand).`
+        );
+      }
+    }
+  });
+
+  return errors;
+}
+
 export function useFlowchartExecutor(
   blocks,
   edges,
@@ -53,7 +155,7 @@ export function useFlowchartExecutor(
     });
   }, [setPaused]);
 
-  // Context to hold variables and character state during execution
+  // Context to hold execution variables and character state
   const context = {
     variables: {},
     characterPos: { x: 0, y: 0 },
@@ -167,21 +269,11 @@ export function useFlowchartExecutor(
                   context.variables[block.data.varName] += value;
               }
             }
-            outputs.push(
-              `Changed variable ${block.data.varName} to ${JSON.stringify(
-                context.variables[block.data.varName]
-              )}`
-            );
-            console.log(
-              `Changed variable ${block.data.varName} to ${JSON.stringify(
-                context.variables[block.data.varName]
-              )}`
-            );
+            outputs.push(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
+            console.log(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
           } catch (error) {
             console.error(`Error changing variable in block ${blockDisplayName}:`, error);
-            outputs.push(
-              `Error changing variable in block ${blockDisplayName}: ${error.message}`
-            );
+            outputs.push(`Error changing variable in block ${blockDisplayName}: ${error.message}`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
@@ -197,16 +289,10 @@ export function useFlowchartExecutor(
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
         if (leftOperand && rightOperand) {
-          const op = operator || '=='; // Default to "=="
-          if (
-            (op === '==' || op === '!=') &&
-            typeof context.variables[leftOperand] === 'string'
-          ) {
+          const op = operator || '==';
+          if ((op === '==' || op === '!=') && typeof context.variables[leftOperand] === 'string') {
             const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            conditionMet =
-              op === '=='
-                ? context.variables[leftOperand] === rightValue
-                : context.variables[leftOperand] !== rightValue;
+            conditionMet = op === '==' ? context.variables[leftOperand] === rightValue : context.variables[leftOperand] !== rightValue;
             outputs.push(`Condition ${leftOperand} ${op} ${rightValue} evaluated to ${conditionMet}`);
           } else {
             const condition = `${leftOperand} ${op} ${autoQuote(rightOperand)}`;
@@ -224,9 +310,7 @@ export function useFlowchartExecutor(
         //check that the corresponding branch edge exists.
         const branchEdges = currentEdges.filter((e) => e.source === block.id);
         if (conditionMet) {
-          const trueEdge = branchEdges.find(
-            (e) => e.sourceHandle && e.sourceHandle.startsWith('yes')
-          );
+          const trueEdge = branchEdges.find((e) => e.sourceHandle && e.sourceHandle.startsWith('yes'));
           if (!trueEdge) {
             const errorMsg = `Missing edge for true branch in "${blockDisplayName}".`;
             toast.error(errorMsg);
@@ -239,9 +323,7 @@ export function useFlowchartExecutor(
             return;
           }
         } else {
-          const falseEdge = branchEdges.find(
-            (e) => e.sourceHandle && e.sourceHandle.startsWith('no')
-          );
+          const falseEdge = branchEdges.find((e) => e.sourceHandle && e.sourceHandle.startsWith('no'));
           if (!falseEdge) {
             const errorMsg = `Missing edge for false branch in "${blockDisplayName}".`;
             toast.error(errorMsg);
@@ -265,15 +347,9 @@ export function useFlowchartExecutor(
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
         if (leftOperand && operator && rightOperand) {
-          if (
-            (operator === '==' || operator === '!=') &&
-            typeof context.variables[leftOperand] === 'string'
-          ) {
+          if ((operator === '==' || operator === '!=') && typeof context.variables[leftOperand] === 'string') {
             const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            conditionMet =
-              operator === '=='
-                ? context.variables[leftOperand] === rightValue
-                : context.variables[leftOperand] !== rightValue;
+            conditionMet = operator === '==' ? context.variables[leftOperand] === rightValue : context.variables[leftOperand] !== rightValue;
             outputs.push(`While condition ${leftOperand} ${operator} ${rightValue} evaluated to ${conditionMet}`);
           } else {
             const condition = `${leftOperand} ${operator} ${autoQuote(rightOperand)}`;
@@ -288,9 +364,7 @@ export function useFlowchartExecutor(
         }
 
         if (conditionMet) {
-          const loopBodyEdge = currentEdges.find(
-            (e) => e.source === block.id && e.sourceHandle === `body-${block.id}`
-          );
+          const loopBodyEdge = currentEdges.find((e) => e.source === block.id && e.sourceHandle === `body-${block.id}`);
           if (loopBodyEdge) {
             console.log(`Condition met. Traversing to loop body: ${loopBodyEdge.target}`);
             setActiveEdgeId(loopBodyEdge.id);
@@ -304,9 +378,7 @@ export function useFlowchartExecutor(
             return;
           }
         } else {
-          const exitEdge = currentEdges.find(
-            (e) => e.source === block.id && e.sourceHandle === `exit-${block.id}`
-          );
+          const exitEdge = currentEdges.find((e) => e.source === block.id && e.sourceHandle === `exit-${block.id}`);
           if (exitEdge) {
             console.log(`Condition not met. Exiting loop to block: ${exitEdge.target}`);
             setActiveEdgeId(exitEdge.id);
@@ -331,9 +403,7 @@ export function useFlowchartExecutor(
           return;
         }
         let evaluatedMessage = message.replace(/{(\w+)}/g, (match, varName) =>
-          context.variables.hasOwnProperty(varName)
-            ? context.variables[varName]
-            : match
+          context.variables.hasOwnProperty(varName) ? context.variables[varName] : match
         );
         if (evaluatedMessage === message && context.variables.hasOwnProperty(message)) {
           evaluatedMessage = context.variables[message].toString();
@@ -345,6 +415,7 @@ export function useFlowchartExecutor(
         setCharacterMessage('');
         break;
       }
+
       case 'move': {
         const { distance, direction } = block.data;
         if (distance && direction) {
@@ -396,7 +467,6 @@ export function useFlowchartExecutor(
               setConsoleOutput(outputs.join('\n'));
               return;
           }
-          // Save the new rotation to the context and update state.
           context.characterRotation = newRotation;
           outputs.push(`Rotated ${rotateDirection} by ${degrees} degrees to (${newRotation}°)`);
           console.log(`Rotated ${rotateDirection} by ${degrees} degrees to (${newRotation}°)`);
@@ -408,12 +478,8 @@ export function useFlowchartExecutor(
         break;
       }
       default:
-        outputs.push(
-          `Unknown block type "${block.data.blockType}" in block "${blockDisplayName}".`
-        );
-        console.error(
-          `Unknown block type: ${block.data.blockType} in block ${blockDisplayName}`
-        );
+        outputs.push(`Unknown block type "${block.data.blockType}" in block "${blockDisplayName}".`);
+        console.error(`Unknown block type: ${block.data.blockType} in block ${blockDisplayName}`);
         break;
     }
 
@@ -450,10 +516,8 @@ export function useFlowchartExecutor(
 
     console.log(`--- Finished Node: ${block.id} ---\n`);
   } catch (traverseError) {
-    // We only know the blockDisplayName if we've found the block.
     const block = currentNodes.find((n) => n.id === blockId);
-    const blockDisplayName =
-      block && block.data && block.data.label ? block.data.label : blockId;
+    const blockDisplayName = (block && block.data && block.data.label) || blockId;
 
     let customMessage = traverseError.message;
     const match = customMessage.match(/Undefined symbol (\w+)/);
@@ -529,6 +593,18 @@ export function useFlowchartExecutor(
     speedRef.current = 2;
     setLocalPaused(false);
     setPaused(false);
+
+    // Run validation before executing.
+    const validationErrors = validateFlowchart(blocks, edges);
+    if (validationErrors.length > 0) {
+      validationErrors.forEach((err) => {
+        toast.error(err);
+        outputs.push(err);
+      });
+      setConsoleOutput(outputs.join("\n"));
+      return; 
+    }
+
     runFlowchart();
   }, [
     blocks,
