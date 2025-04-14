@@ -36,6 +36,7 @@ function FlowchartCanvas({
 }) {
   const [activeBlockId, setActiveBlockId] = useState(null);
   const [activeEdgeId, setActiveEdgeId] = useState(null);
+  const [errorBlockId, setErrorBlockId] = useState(null); 
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [selectedEdges, setSelectedEdges] = useState([]);
   const [paletteVisible, setPaletteVisible] = useState(false);
@@ -520,6 +521,8 @@ function FlowchartCanvas({
       value={{
         activeBlockId,
         activeEdgeId,
+        errorBlockId,
+        setErrorBlockId, 
         onReplace: (dummyId, e) => {
           if (e && e.currentTarget) {
             const rect = e.currentTarget.getBoundingClientRect();
@@ -585,7 +588,8 @@ function FlowchartCanvas({
           setCharacterPosition,
           setCharacterMessage,
           setActiveBlockId,
-          setActiveEdgeId
+          setActiveEdgeId,
+          setErrorBlockId
         ).executeFlowchart}
         resetExecution={useFlowchartExecutor(
           blocks,
@@ -594,7 +598,8 @@ function FlowchartCanvas({
           setCharacterPosition,
           setCharacterMessage,
           setActiveBlockId,
-          setActiveEdgeId
+          setActiveEdgeId,
+          setErrorBlockId
         ).resetExecution}
         setSpeedMultiplier={useFlowchartExecutor(
           blocks,
@@ -603,7 +608,8 @@ function FlowchartCanvas({
           setCharacterPosition,
           setCharacterMessage,
           setActiveBlockId,
-          setActiveEdgeId
+          setActiveEdgeId,
+          setErrorBlockId
         ).setSpeedMultiplier}
         selectedNodes={selectedNodes}
         selectedEdges={selectedEdges}

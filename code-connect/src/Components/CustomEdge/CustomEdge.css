@@ -3,6 +3,19 @@
 .react-flow__edge-path.selected {
   stroke: #3267f8 !important;
   stroke-width: 4 !important;
+  /* Create a dashed effect */
+  stroke-dasharray: 6 6;
+  /* Animate the dash offset */
+  animation: edgeDash 1s linear infinite;
+}
+
+@keyframes edgeDash {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 12;
+  }
 }
 
 .react-flow__edge-path.hovered {

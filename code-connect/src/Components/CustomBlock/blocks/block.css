@@ -43,9 +43,40 @@
 }
 
 .block-container.selected {
-  border-color: var(--block-selected-border);
-  background-color: var(--block-selected-bg);
+  /* border-color: var(--block-selected-border); */
+  /* background-color: var(--block-selected-bg); */
   box-shadow: 0 8px 16px var(--block-shadow);
+  position: relative;
+}
+
+.block-container.selected::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(90deg, var(--block-selected-border) 50%, transparent 50%), 
+    linear-gradient(90deg, var(--block-selected-border) 50%, transparent 50%), 
+    linear-gradient(0deg, var(--block-selected-border) 50%, transparent 50%), 
+    linear-gradient(0deg, var(--block-selected-border) 50%, transparent 50%);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 15px 3px, 15px 3px, 3px 15px, 3px 15px;
+  background-position: left top, right bottom, left bottom, right top;
+  animation: border-dance 0.4s infinite linear;
+}
+
+/* Keyframes to animate the dotted border */
+@keyframes border-dance {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+  to {
+    background-position: 8px 8px, 8px 8px, 8px 8px, 8px 8px;
+  }
 }
 
 .start-block {

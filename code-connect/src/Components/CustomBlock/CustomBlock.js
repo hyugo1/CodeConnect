@@ -12,6 +12,7 @@ import ChangeVariableBlock from './blocks/ChangeVariableBlock';
 import DummyBlock from './blocks/DummyBlock';
 import MoveBlock from './blocks/MoveBlock';
 import JoinBlock from './blocks/JoinBlock';
+import './CustomBlock.css';
 
 const blockMapping = {
   start: StartBlock,
@@ -27,21 +28,29 @@ const blockMapping = {
 };
 
 const CustomBlock = ({ id, data, selected }) => {
-  const { activeBlockId, onReplace } = useActiveFlow();
+  const { activeBlockId, errorBlockId, onReplace } = useActiveFlow();
   const executing = id === activeBlockId;
+  const hasError = id === errorBlockId;
   const SpecificBlock = blockMapping[data.blockType];
   if (!SpecificBlock) {
     return <div className={executing ? 'executing' : ''}>Unknown Block</div>;
   }
   
   return (
-    <SpecificBlock
-      id={id}
-      data={data}
-      selected={selected}
-      executing={executing}
-      onReplace={data.blockType === 'dummy' ? onReplace : undefined}
-    />
+    <div className={`custom-block-wrapper ${hasError ? 'error-highlight' : ''}`}>
+      <SpecificBlock
+        id={id}
+        data={data}
+        selected={selected}
+        executing={executing}
+        onReplace={data.blockType === 'dummy' ? onReplace : undefined}
+      />
+      {hasError && (
+        <div className="error-snackbar">
+          Error in this block!
+        </div>
+      )}
+    </div>
   );
 };
 

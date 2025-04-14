@@ -2,6 +2,7 @@
 
 import { evaluate } from 'mathjs';
 import { useRef, useState, useCallback } from 'react';
+import toast from 'react-hot-toast';
 
 export function useFlowchartExecutor(
   blocks,
@@ -10,7 +11,8 @@ export function useFlowchartExecutor(
   setCharacterPosition,
   setCharacterMessage,
   setActiveBlockId,
-  setActiveEdgeId
+  setActiveEdgeId,
+  setErrorBlockId
 ) {
   const MAX_VISITS_PER_NODE = 50;
   const BASE_BLOCK_DELAY = 800;
@@ -75,8 +77,10 @@ export function useFlowchartExecutor(
     if (context.variables.hasOwnProperty(operand)) return operand;
     if (!isNaN(parseFloat(operand))) return operand;
     const trimmed = operand.trim();
-    if ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-        (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    if (
+      (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      (trimmed.startsWith("'") && trimmed.endsWith("'"))
+    ) {
       return trimmed;
     }
     return `"${trimmed}"`;
@@ -102,11 +106,11 @@ export function useFlowchartExecutor(
       return;
     }
 
+    const blockDisplayName =
+      block && block.data && block.data.label ? block.data.label : blockId;
+
     setActiveBlockId(block.id);
     await delay(BASE_BLOCK_DELAY);
-
-    const blockDisplayName =
-    block && block.data && block.data.label ? block.data.label : blockId;
 
     console.log(`\n--- Executing Node: ${block.id} (${blockDisplayName}) ---`);
     outputs.push(`Executing block "${blockDisplayName}"`);
@@ -114,7 +118,8 @@ export function useFlowchartExecutor(
     switch (block.data.blockType) {
       case 'start':
         await executeNextNode(block.id, visitCounts);
-        return;  //Return immediately to avoid processing outgoing edges twice.
+        return; //Return immediately to avoid processing outgoing edges twice.
+
       case 'end':
         outputs.push('Execution ended.');
         console.log('Execution ended.');
@@ -124,6 +129,7 @@ export function useFlowchartExecutor(
         setCharacterPosition(context.characterPos);
         setCharacterMessage(context.characterMsg);
         return;
+
       case 'setVariable':
         if (block.data.varName) {
           try {
@@ -137,13 +143,14 @@ export function useFlowchartExecutor(
             outputs.push(`Set variable ${block.data.varName} = ${JSON.stringify(value)}`);
             console.log(`Set variable ${block.data.varName} = ${JSON.stringify(value)}`);
           } catch (error) {
-            console.error(`Error evaluating value in block ${block.id}:`, error);
-            outputs.push(`Error evaluating value in block ${block.id}: ${error.message}`);
+            console.error(`Error evaluating value in block ${blockDisplayName}:`, error);
+            outputs.push(`Error evaluating value in block ${blockDisplayName}: ${error.message}`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
         }
         break;
+
       case 'changeVariable':
         if (block.data.varName && context.variables.hasOwnProperty(block.data.varName)) {
           try {
@@ -166,31 +173,46 @@ export function useFlowchartExecutor(
                   context.variables[block.data.varName] += value;
               }
             }
-            outputs.push(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
-            console.log(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
+            outputs.push(
+              `Changed variable ${block.data.varName} to ${JSON.stringify(
+                context.variables[block.data.varName]
+              )}`
+            );
+            console.log(
+              `Changed variable ${block.data.varName} to ${JSON.stringify(
+                context.variables[block.data.varName]
+              )}`
+            );
           } catch (error) {
-            console.error(`Error changing variable in block ${block.id}:`, error);
-            outputs.push(`Error changing variable in block ${block.id}: ${error.message}`);
+            console.error(`Error changing variable in block ${blockDisplayName}:`, error);
+            outputs.push(
+              `Error changing variable in block ${blockDisplayName}: ${error.message}`
+            );
             setConsoleOutput(outputs.join('\n'));
             return;
           }
         } else {
-          outputs.push(`Variable "${block.data.varName}" not found in block ${block.id}.`);
-          console.error(`Variable "${block.data.varName}" not found in block ${block.id}.`);
+          outputs.push(`Variable "${block.data.varName}" not found in block ${blockDisplayName}.`);
+          console.error(`Variable "${block.data.varName}" not found in block ${blockDisplayName}.`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
         break;
+
       case 'if': {
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
         if (leftOperand && rightOperand) {
-          const op = operator || '==';  // Default to "=="
-          if ((op === '==' || op === '!=') && typeof context.variables[leftOperand] === 'string') {
+          const op = operator || '=='; // Default to "=="
+          if (
+            (op === '==' || op === '!=') &&
+            typeof context.variables[leftOperand] === 'string'
+          ) {
             const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            conditionMet = op === '==' 
-              ? context.variables[leftOperand] === rightValue 
-              : context.variables[leftOperand] !== rightValue;
+            conditionMet =
+              op === '=='
+                ? context.variables[leftOperand] === rightValue
+                : context.variables[leftOperand] !== rightValue;
             outputs.push(`Condition ${leftOperand} ${op} ${rightValue} evaluated to ${conditionMet}`);
           } else {
             const condition = `${leftOperand} ${op} ${autoQuote(rightOperand)}`;
@@ -198,27 +220,66 @@ export function useFlowchartExecutor(
             conditionMet = evaluate(condition, context.variables);
           }
         } else {
-          outputs.push(`Incomplete condition in block ${block.id}.`);
-          console.error(`Incomplete condition in block ${block.id}.`);
+          outputs.push(`Incomplete condition in block ${blockDisplayName}.`);
+          console.error(`Incomplete condition in block ${blockDisplayName}.`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
         block.conditionMet = conditionMet;
+
+        //check that the corresponding branch edge exists.
+        const branchEdges = currentEdges.filter((e) => e.source === block.id);
+        if (conditionMet) {
+          const trueEdge = branchEdges.find(
+            (e) => e.sourceHandle && e.sourceHandle.startsWith('yes')
+          );
+          if (!trueEdge) {
+            const errorMsg = `Missing edge for true branch in "${blockDisplayName}".`;
+            toast.error(errorMsg);
+            outputs.push(errorMsg);
+            setConsoleOutput(outputs.join('\n'));
+            if (setErrorBlockId) {
+              setErrorBlockId(block.id);
+              setTimeout(() => setErrorBlockId(null), 5000);
+            }
+            return;
+          }
+        } else {
+          const falseEdge = branchEdges.find(
+            (e) => e.sourceHandle && e.sourceHandle.startsWith('no')
+          );
+          if (!falseEdge) {
+            const errorMsg = `Missing edge for false branch in "${blockDisplayName}".`;
+            toast.error(errorMsg);
+            outputs.push(errorMsg);
+            setConsoleOutput(outputs.join('\n'));
+            if (setErrorBlockId) {
+              setErrorBlockId(block.id);
+              setTimeout(() => setErrorBlockId(null), 5000);
+            }
+            return;
+          }
+        }
         break;
       }
+
       case 'join':
         await executeNextNode(block.id, visitCounts);
         return;
+
       case 'whileStart': {
         const { leftOperand, operator, rightOperand } = block.data;
         let conditionMet = false;
         if (leftOperand && operator && rightOperand) {
-          if ((operator === '==' || operator === '!=') &&
-              typeof context.variables[leftOperand] === 'string') {
+          if (
+            (operator === '==' || operator === '!=') &&
+            typeof context.variables[leftOperand] === 'string'
+          ) {
             const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            conditionMet = operator === '==' 
-              ? context.variables[leftOperand] === rightValue 
-              : context.variables[leftOperand] !== rightValue;
+            conditionMet =
+              operator === '=='
+                ? context.variables[leftOperand] === rightValue
+                : context.variables[leftOperand] !== rightValue;
             outputs.push(`While condition ${leftOperand} ${operator} ${rightValue} evaluated to ${conditionMet}`);
           } else {
             const condition = `${leftOperand} ${operator} ${autoQuote(rightOperand)}`;
@@ -226,8 +287,8 @@ export function useFlowchartExecutor(
             conditionMet = evaluate(condition, context.variables);
           }
         } else {
-          outputs.push(`Incomplete while condition in block ${block.id}.`);
-          console.error(`Incomplete while condition in block ${block.id}.`);
+          outputs.push(`Incomplete while condition in block ${blockDisplayName}.`);
+          console.error(`Incomplete while condition in block ${blockDisplayName}.`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
@@ -243,8 +304,8 @@ export function useFlowchartExecutor(
             setActiveEdgeId(null);
             await traverse(loopBodyEdge.target, new Map(visitCounts));
           } else {
-            outputs.push(`No loop body connected to block ${block.id}.`);
-            console.error(`No loop body connected to block ${block.id}.`);
+            outputs.push(`No loop body connected to block ${blockDisplayName}.`);
+            console.error(`No loop body connected to block ${blockDisplayName}.`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
@@ -259,8 +320,8 @@ export function useFlowchartExecutor(
             setActiveEdgeId(null);
             await traverse(exitEdge.target, new Map(visitCounts));
           } else {
-            outputs.push(`No exit path connected to block ${block.id}.`);
-            console.error(`No exit path connected to block ${block.id}.`);
+            outputs.push(`No exit path connected to block "${blockDisplayName}".`);
+            console.error(`No exit path connected to block "${blockDisplayName}".`);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
@@ -270,8 +331,8 @@ export function useFlowchartExecutor(
       case 'print': {
         let message = block.data.message || '';
         if (!message) {
-          outputs.push(`Error: No message set in Print block "${block.id}".`);
-          console.error(`No message set in Print block "${block.id}".`);
+          outputs.push(`Error: No message set in Print block "${blockDisplayName}".`);
+          console.error(`No message set in Print block "${blockDisplayName}".`);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
@@ -283,8 +344,8 @@ export function useFlowchartExecutor(
         if (evaluatedMessage === message && context.variables.hasOwnProperty(message)) {
           evaluatedMessage = context.variables[message].toString();
         }
-        outputs.push(`Print: ${evaluatedMessage}`);
-        console.log(`Print: ${evaluatedMessage}`);
+        outputs.push(`Print Block: ${evaluatedMessage}`);
+        console.log(`Print Block: ${evaluatedMessage}`);
         setCharacterMessage(evaluatedMessage);
         await delay(PRINT_DELAY);
         setCharacterMessage('');
@@ -309,8 +370,8 @@ export function useFlowchartExecutor(
               newY += distance;
               break;
             default:
-              outputs.push(`Unknown direction "${direction}" in Move block "${block.id}".`);
-              console.error(`Unknown direction "${direction}" in Move block "${block.id}".`);
+              outputs.push(`Unknown direction "${direction}" in Move block "${blockDisplayName}".`);
+              console.error(`Unknown direction "${direction}" in Move block "${blockDisplayName}".`);
               setConsoleOutput(outputs.join('\n'));
               return;
           }
@@ -319,63 +380,74 @@ export function useFlowchartExecutor(
           console.log(`Moved ${direction} by ${distance} units to (${newX}, ${newY})`);
           setCharacterPosition({ x: newX, y: newY });
         } else {
-          outputs.push(`Incomplete move data in block "${block.id}".`);
-          console.error(`Incomplete move data in block "${block.id}".`);
+          outputs.push(`Incomplete move data in block "${blockDisplayName}".`);
+          console.error(`Incomplete move data in block "${blockDisplayName}".`);
         }
         break;
       }
       default:
-        outputs.push(`Warning: Unknown block type "${block.data.blockType}" in block "${block.id}".`);
-        console.error(`Unknown block type: ${block.data.blockType}`);
+        outputs.push(
+          `Unknown block type "${block.data.blockType}" in block "${blockDisplayName}".`
+        );
+        console.error(
+          `Unknown block type: ${block.data.blockType} in block ${blockDisplayName}`
+        );
         break;
     }
 
     // Process all connected edges with individual error handling
     const connectedEdges = currentEdges.filter((e) => e.source === block.id);
     for (const edge of connectedEdges) {
-    try {
-      if (block.data.blockType === 'if') {
-        const sourceHandleType = edge.sourceHandle ? edge.sourceHandle.split('-')[0] : '';
-        if (
-          (sourceHandleType === 'yes' && block.conditionMet) ||
-          (sourceHandleType === 'no' && !block.conditionMet)
-        ) {
+      try {
+        if (block.data.blockType === 'if') {
+          const sourceHandleType = edge.sourceHandle ? edge.sourceHandle.split('-')[0] : '';
+          if (
+            (sourceHandleType === 'yes' && block.conditionMet) ||
+            (sourceHandleType === 'no' && !block.conditionMet)
+          ) {
+            setActiveEdgeId(edge.id);
+            await delay(BASE_EDGE_DELAY);
+            setActiveEdgeId(null);
+            await traverse(edge.target, new Map(visitCounts));
+          } else {
+            console.log(`Skipping branch on edge ${edge.id} as its condition does not match.`);
+          }
+        } else {
           setActiveEdgeId(edge.id);
           await delay(BASE_EDGE_DELAY);
           setActiveEdgeId(null);
           await traverse(edge.target, new Map(visitCounts));
-        } else {
-          console.log(`Skipping branch on edge ${edge.id} as its condition does not match.`);
         }
-      } else {
-        setActiveEdgeId(edge.id);
-        await delay(BASE_EDGE_DELAY);
-        setActiveEdgeId(null);
-        await traverse(edge.target, new Map(visitCounts));
-      }
-    } catch (edgeError) {
-      console.error(`Error processing edge ${edge.id}:`, edgeError);
-      outputs.push(`Error processing edge ${edge.id}: ${edgeError.message}`);
-      setConsoleOutput(outputs.join('\n'));
-      return;
+      } catch (edgeError) {
+        console.error(`Error processing edge ${edge.id}:`, edgeError);
+        outputs.push(`Error processing edge ${edge.id}: ${edgeError.message}`);
+        setConsoleOutput(outputs.join('\n'));
+        return;
       }
     }
 
     console.log(`--- Finished Node: ${block.id} ---\n`);
   } catch (traverseError) {
-    const block = currentNodes.find(n => n.id === blockId);
+    // We only know the blockDisplayName if we've found the block.
+    const block = currentNodes.find((n) => n.id === blockId);
     const blockDisplayName =
       block && block.data && block.data.label ? block.data.label : blockId;
-  
+
     let customMessage = traverseError.message;
     const match = customMessage.match(/Undefined symbol (\w+)/);
     if (match) {
       const missingVar = match[1];
       customMessage = `Variable "${missingVar}" is not defined. Please initialise it before using this condition.`;
     }
-  
+    toast.error(`Error in block "${blockDisplayName}": ${customMessage}`);
     console.error(`Unexpected error in block "${blockDisplayName}":`, traverseError);
     outputs.push(`Unexpected error in block "${blockDisplayName}": ${customMessage}`);
+
+    if (setErrorBlockId && block) {
+      setErrorBlockId(block.id);
+      setTimeout(() => setErrorBlockId(null), 5000);
+    }
+
     setConsoleOutput(outputs.join('\n'));
   }
   }
@@ -402,20 +474,26 @@ export function useFlowchartExecutor(
       (block) => (block.data.blockType || "").toLowerCase() === "end"
     );
     if (!endBlockExists) {
-      outputs.push("Error: No End block connected.");
+      const msg = "Error: No End block connected.";
+      outputs.push(msg);
       setConsoleOutput(outputs.join("\n"));
+      toast.error(msg);
       return;
     }
   
     const startBlock = currentNodes.find(
-      (block) => block.type === "custom" && (block.data.blockType || "").toLowerCase() === "start"
+      (block) =>
+        block.type === "custom" &&
+        (block.data.blockType || "").toLowerCase() === "start"
     );
     if (startBlock) {
       await traverse(startBlock.id, new Map());
       setConsoleOutput(outputs.join("\n"));
     } else {
-      outputs.push("Error: No start block found.");
+      const msg = "Error: No start block found.";
+      outputs.push(msg);
       setConsoleOutput(outputs.join("\n"));
+      toast.error(msg);
     }
   }
 

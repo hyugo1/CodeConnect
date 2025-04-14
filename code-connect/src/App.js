@@ -9,6 +9,7 @@ import RightPanel from './Components/RightPanel/RightPanel';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/App.css';
 import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'react-hot-toast'; 
 
 function App() {
   const [consoleOutput, setConsoleOutput] = useState('');
@@ -29,6 +30,7 @@ function App() {
   return (
     <div className="App">
       <Navbar blocks={blocks} edges={edges} setNodes={setNodes} setEdges={setEdges} />
+      <Toaster/>
       <ToastContainer />
       <div className="app-container">
         <BlockPalette
