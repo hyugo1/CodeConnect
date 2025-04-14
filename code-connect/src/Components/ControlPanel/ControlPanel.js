@@ -1,18 +1,35 @@
 // src/Components/ControlPanel/ControlPanel.js
-
 import React from 'react';
 import './ControlPanel.css';
 import { FaPlay, FaRedo, FaTrash } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import useFlowchartReset from '../../hooks/useFlowchartReset';
 
 const ControlPanel = ({
   executeFlowchart,
-  resetExecution,
+  setConsoleOutput,
+  setCharacterPosition,
+  setCharacterRotation,
+  setCharacterMessage,
+  setActiveBlockId,
+  setActiveEdgeId,
+  setPaused,
   selectedNodes, 
   selectedEdges,
   setNodes,
   setEdges,
+  setSpeedMultiplier,
 }) => {
+  const resetExecution = useFlowchartReset({
+    setConsoleOutput,
+    setCharacterPosition,
+    setCharacterRotation,
+    setCharacterMessage,
+    setActiveBlockId,
+    setActiveEdgeId,
+    setPaused,
+  });
+
   const handleDelete = () => {
     if (
       window.confirm(
@@ -55,12 +72,18 @@ const ControlPanel = ({
 
 ControlPanel.propTypes = {
   executeFlowchart: PropTypes.func.isRequired,
-  resetExecution: PropTypes.func.isRequired,
-  setSpeedMultiplier: PropTypes.func.isRequired,
+  setConsoleOutput: PropTypes.func.isRequired,
+  setCharacterPosition: PropTypes.func.isRequired,
+  setCharacterRotation: PropTypes.func.isRequired,
+  setCharacterMessage: PropTypes.func.isRequired,
+  setActiveBlockId: PropTypes.func.isRequired,
+  setActiveEdgeId: PropTypes.func.isRequired,
+  setPaused: PropTypes.func.isRequired,
   selectedNodes: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedEdges: PropTypes.arrayOf(PropTypes.string).isRequired,
   setNodes: PropTypes.func.isRequired,
   setEdges: PropTypes.func.isRequired,
+  setSpeedMultiplier: PropTypes.func.isRequired,
 };
 
 export default ControlPanel;

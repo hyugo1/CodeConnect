@@ -15,10 +15,11 @@ import CustomBlock from './CustomBlock/CustomBlock';
 import CustomEdge from './CustomEdge/CustomEdge';
 import ControlPanel from './ControlPanel/ControlPanel';
 import { useFlowchartExecutor } from '../hooks/useFlowchartExecutor';
-import { v4 as uuidv4 } from 'uuid';
 import useFlowchartHandlers from './useFlowchartHandlers';
 import PaletteOverlay from './PaletteOverlay';
 import { ActiveFlowContext } from '../contexts/ActiveFlowContext';
+import useFlowchartReset from '../hooks/useFlowchartReset';
+import { v4 as uuidv4 } from 'uuid';
 import './FlowchartCanvas.css';
 
 function FlowchartCanvas({
@@ -44,11 +45,12 @@ function FlowchartCanvas({
   const [currentDummyBlockId, setCurrentDummyBlockId] = useState(null);
   const [dummyBlockPosition, setDummyBlockPosition] = useState(null);
   const [helpModal, setHelpModal] = useState({ visible: false, title: '', content: '' });
+  // A new state for pausing execution – needed for the reset hook.
+  const [paused, setPaused] = useState(false);
 
   const reactFlowWrapper = useRef(null);
   const { project } = useReactFlow();
 
-  // Track last added block
   const lastBlockId = useRef(null);
   useEffect(() => {
     if (blocks.length > 0) {
@@ -309,7 +311,7 @@ function FlowchartCanvas({
         setDummyBlockPosition(null);
       }, 1000);
     },
-    [blocks, setNodes, setEdges] 
+    [blocks, setNodes, setEdges]
   );
 
   const CustomBlockWrapper = (props) => <CustomBlock {...props} />;
@@ -513,6 +515,31 @@ function FlowchartCanvas({
     }
   }, []);
 
+  // Get execution functions from our executor hook.
+  const flowchartExecutor = useFlowchartExecutor(
+    blocks,
+    edges,
+    setConsoleOutput,
+    setCharacterPosition,
+    setCharacterMessage,
+    setCharacterRotation,
+    setActiveBlockId,
+    setActiveEdgeId,
+    setErrorBlockId,
+    setPaused
+  );
+
+  // Create our new reset function using the reset hook.
+  const resetExecution = useFlowchartReset({
+    setConsoleOutput,
+    setCharacterPosition,
+    setCharacterRotation,
+    setCharacterMessage,
+    setActiveBlockId,
+    setActiveEdgeId,
+    setPaused,
+  });
+
   return (
     <div
       ref={reactFlowWrapper}
@@ -581,45 +608,22 @@ function FlowchartCanvas({
         <Controls />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
-  
+
       <ControlPanel
-        executeFlowchart={useFlowchartExecutor(
-          blocks,
-          edges,
-          setConsoleOutput,
-          setCharacterPosition,
-          setCharacterMessage,
-          setCharacterRotation,
-          setActiveBlockId,
-          setActiveEdgeId,
-          setErrorBlockId
-        ).executeFlowchart}
-        resetExecution={useFlowchartExecutor(
-          blocks,
-          edges,
-          setConsoleOutput,
-          setCharacterPosition,
-          setCharacterRotation,
-          setCharacterMessage,
-          setActiveBlockId,
-          setActiveEdgeId,
-          setErrorBlockId
-        ).resetExecution}
-        setSpeedMultiplier={useFlowchartExecutor(
-          blocks,
-          edges,
-          setConsoleOutput,
-          setCharacterPosition,
-          setCharacterRotation,
-          setCharacterMessage,
-          setActiveBlockId,
-          setActiveEdgeId,
-          setErrorBlockId
-        ).setSpeedMultiplier}
+        executeFlowchart={flowchartExecutor.executeFlowchart}
+        resetExecution={resetExecution}
+        setSpeedMultiplier={flowchartExecutor.setSpeedMultiplier}
         selectedNodes={selectedNodes}
         selectedEdges={selectedEdges}
         setNodes={setNodes}
         setEdges={setEdges}
+        setConsoleOutput={setConsoleOutput}
+        setCharacterPosition={setCharacterPosition}
+        setCharacterRotation={setCharacterRotation}
+        setCharacterMessage={setCharacterMessage}
+        setActiveBlockId={setActiveBlockId}
+        setActiveEdgeId={setActiveEdgeId}
+        setPaused={setPaused}
       />
   
       {paletteVisible && dummyBlockPosition && (

@@ -3,14 +3,11 @@ import React from 'react';
   import './Character.css';
 
   const Character = ({ message, position, rotation }) => {
-    const { x, y } = position;
-    const z = rotation;
-
     return (
       <div
         className="character-container"
         style={{
-          transform: `translate(${x}px, ${y}px) rotate(${z}deg)`,
+          transform: `translate(${position.x}px, ${position.y}px) rotate(${rotation}deg)`,
           transition: 'transform 0.5s ease',
         }}
       >

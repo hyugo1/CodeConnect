@@ -13,7 +13,8 @@ export function useFlowchartExecutor(
   setCharacterRotation,
   setActiveBlockId,
   setActiveEdgeId,
-  setErrorBlockId
+  setErrorBlockId,
+  setPaused
 ) {
   const MAX_VISITS_PER_NODE = 50;
   const BASE_BLOCK_DELAY = 800;
@@ -21,7 +22,7 @@ export function useFlowchartExecutor(
   const PRINT_DELAY = 3000;
 
   const speedRef = useRef(2);
-  const [paused, setPaused] = useState(false);
+  const [paused, setLocalPaused] = useState(false);
 
   const delay = async (ms) => {
     let remaining = ms / speedRef.current;
@@ -44,23 +45,13 @@ export function useFlowchartExecutor(
   }, []);
 
   const togglePause = useCallback(() => {
-    setPaused((prev) => {
+    setLocalPaused((prev) => {
       const newVal = !prev;
       console.log(`Paused: ${newVal}`);
+      setPaused(newVal); // also update parent state if needed
       return newVal;
     });
-  }, []);
-
-  const resetExecution = useCallback(() => {
-    setConsoleOutput('');
-    setCharacterPosition({ x: 0, y: 0 });
-    setCharacterMessage('');
-    setCharacterRotation(0);
-    setActiveBlockId(null);
-    setActiveEdgeId(null);
-    setPaused(false);
-    console.log('Execution has been reset.');
-  }, [setConsoleOutput, setCharacterPosition, setCharacterRotation, setCharacterMessage, setActiveBlockId, setActiveEdgeId]);
+  }, [setPaused]);
 
   // Context to hold variables and character state during execution
   const context = {
@@ -74,7 +65,7 @@ export function useFlowchartExecutor(
   const currentNodes = blocks;
   const currentEdges = edges;
 
-  // autoQuote helper: returns the operand unquoted if it exists in context, otherwise wraps it in quotes
+  // Helper to auto-quote operands if needed.
   function autoQuote(operand) {
     if (typeof operand !== 'string' || operand.trim() === '') return operand;
     if (context.variables.hasOwnProperty(operand)) return operand;
@@ -109,8 +100,7 @@ export function useFlowchartExecutor(
       return;
     }
 
-    const blockDisplayName =
-      block && block.data && block.data.label ? block.data.label : blockId;
+    const blockDisplayName = block?.data?.label || blockId;
 
     setActiveBlockId(block.id);
     await delay(BASE_BLOCK_DELAY);
@@ -131,7 +121,7 @@ export function useFlowchartExecutor(
         setConsoleOutput(outputs.join('\n'));
         setCharacterPosition(context.characterPos);
         setCharacterMessage(context.characterMsg);
-        setCharacterRotation(context.characterRotation)
+        setCharacterRotation(context.characterRotation);
         return;
 
       case 'setVariable':
@@ -537,6 +527,7 @@ export function useFlowchartExecutor(
     setCharacterMessage('');
     setCharacterPosition({ x: 0, y: 0 });
     speedRef.current = 2;
+    setLocalPaused(false);
     setPaused(false);
     runFlowchart();
   }, [
@@ -548,11 +539,12 @@ export function useFlowchartExecutor(
     setCharacterRotation,
     setActiveBlockId,
     setActiveEdgeId,
+    setErrorBlockId,
+    setPaused,
   ]);
 
   return {
     executeFlowchart,
-    resetExecution,
     setSpeedMultiplier,
     togglePause,
     paused,
