@@ -91,7 +91,7 @@ function FlowchartCanvas({
               label: 'If Then',
               blockType: 'if',
               leftOperand: '',
-              operator: '',
+              operator: '==',
               rightOperand: '',
               flash: false,
             },
@@ -354,7 +354,7 @@ function FlowchartCanvas({
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX, y: snappedY },
-          data: { label: 'If Then', blockType: 'if', leftOperand: '', operator: '', rightOperand: '' },
+          data: { label: 'If Then', blockType: 'if', leftOperand: '', operator: '==', rightOperand: '' },
         };
         const dummyTrue = {
           id: uuidv4(),

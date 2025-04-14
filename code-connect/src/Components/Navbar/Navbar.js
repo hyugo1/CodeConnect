@@ -619,13 +619,13 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           }
         >
           <div className="settings-section">
-            <h4>Delete Account</h4>
+            <h4 className="delete-account-title">Delete Account</h4>
             <button onClick={handleDeleteAccount} className="btn modal-btn delete-btn animated-btn">
               <FaTrash className="icon" /> Delete Account
             </button>
           </div>
           <div className="settings-section">
-            <h4>Theme</h4>
+            <h4 className="theme-title">Theme</h4>
             <button onClick={toggleDarkMode} className="btn modal-btn animated-btn">
               <FaMoon className="icon" /> Dark Mode
             </button>

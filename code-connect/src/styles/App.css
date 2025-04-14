@@ -290,9 +290,28 @@ body, html {
   color: black;
 }
 
-.dark-mode .modal-content {
-  opacity: 0.8;
-  color: black;
+.dark-mode .modal-content, .dark-mode .modal-title, .dark-mode  .modal-input {
+  opacity: 0.95;
+  /* color: black; */
+  background-color: rgb(31,34,38);
+  color: #ecf0f1;
+}
+
+.dark-mode .project-list, .dark-mode .modal-subtitle .darkmode .settings-section .delete-account-title, .darkmode .settings-section .theme-title {
+  background-color: rgb(31,34,38);
+  color: #ecf0f1;
+}
+
+.dark-mode .modal-btn {
+  background-color: #555;
+  color: #ecf0f1;
+  border: 2px solid #ecf0f19c;
+}
+
+.dark-mode .modal-btn:hover {
+  background-color: #555;
+  color: #ecf0f1;
+  border: 2px solid #ecf0f1;
 }
 
 .dark-mode .react-flow__edge-path {

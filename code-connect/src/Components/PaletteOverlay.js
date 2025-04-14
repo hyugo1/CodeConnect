@@ -2,6 +2,7 @@
 
 import React from 'react';
 import BlockPalette from './BlockPalette/BlockPalette';
+import './PaletteOverlay.css';
 
 const PaletteOverlay = ({
   dummyBlockPosition,
@@ -16,15 +17,10 @@ const PaletteOverlay = ({
 
   return (
     <div
+      className="palette-overlay"
       style={{
-        position: 'absolute',
         top: dummyBlockPosition.top,
         left: dummyBlockPosition.left,
-        zIndex: 1000,
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        boxShadow: '0px 0px 10px rgba(0,0,0,0.3)',
-        borderRadius: '4px',
-        padding: '10px',
       }}
       onClick={(e) => e.stopPropagation()}
     >
