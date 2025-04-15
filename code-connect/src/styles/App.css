@@ -226,6 +226,10 @@ body, html {
   border-bottom: 1px solid white;
 }
 
+.dark-mode .hint-list li {
+  color: #fff;
+}
+
 .dark-mode .btn {
   background-color: #555;
   color: #fff;
@@ -290,6 +294,10 @@ body, html {
   color: black;
 }
 
+.dark-mode .delete-account-title, .dark-mode .theme-title {
+  color: #ecf0f1;
+}
+
 .dark-mode .modal-content, .dark-mode .modal-title, .dark-mode  .modal-input {
   opacity: 0.95;
   /* color: black; */
@@ -297,9 +305,22 @@ body, html {
   color: #ecf0f1;
 }
 
-.dark-mode .project-list, .dark-mode .modal-subtitle .darkmode .settings-section .delete-account-title, .darkmode .settings-section .theme-title {
+.dark-mode .project-list {
   background-color: rgb(31,34,38);
   color: #ecf0f1;
+}
+
+.dark-mode .modal-subtitle {
+  color: #ecf0f1;
+}
+
+.dark-mode .project-actions .btn {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark-mode .project-load-btn:hover, .dark-mode .project-delete-btn:hover {
+  transform: scale(1.05);
+  background-color: #747373;
 }
 
 .dark-mode .modal-btn {
@@ -312,6 +333,7 @@ body, html {
   background-color: #555;
   color: #ecf0f1;
   border: 2px solid #ecf0f1;
+  transform: scale(1.05);
 }
 
 .dark-mode .react-flow__edge-path {

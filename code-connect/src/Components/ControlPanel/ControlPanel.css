@@ -1,5 +1,19 @@
 /* src/Components/ControlPanel/ControlPanel.css */
 
+:root {
+  --execute-btn-bg-color: #66BB6A; 
+  --execute-btn-hover-bg-color: #43A047;
+
+  --reset-btn-bg-color: #FFB74D;
+  --reset-btn-hover-bg-color: #FB8C00;
+
+  --delete-btn-bg-color: #E57373;
+  --delete-btn-hover-bg-color: #EF5350;
+
+  --speed-btn-bg-color: #42A5F5;
+  --speed-btn-hover-bg-color: #1E88E5;
+}
+
 .control-panel {
   position: absolute;
   top: 10px;
@@ -9,84 +23,65 @@
   gap: 10px;
 }
 
-.execute-button,
-.reset-button,
-.delete-button,
-.pause-button,
-.speed-button {
-  display: flex;
-  align-items: center;
+.control-panel button {
+  display: inline-flex;
+  align-items: center; 
   gap: 5px;
   padding: 8px 12px;
+  font-size: 1rem;
   border: 2px solid transparent;
   border-radius: 3px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease,
+              transform 0.1s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
 }
 
 .execute-button {
-  background-color: #28a745;
+  background-color: var(--execute-btn-bg-color, #66BB6A);
   color: white;
-  border: 2px solid black;
+}
+.execute-button:hover {
+  background-color: var(--execute-btn-hover-bg-color, #43A047);
+  transform: scale(1.02);
+  box-shadow: 0 0 5px rgba(67, 160, 71, 0.7);
 }
 
 .reset-button,
 .pause-button {
-  background-color: #ffc107;
+  background-color: var(--reset-btn-bg-color, #FFB74D);
   color: white;
-  border: 2px solid black;
+}
+.reset-button:hover,
+.pause-button:hover {
+  background-color: var(--reset-btn-hover-bg-color, #FB8C00);
+  transform: scale(1.02);
+  box-shadow: 0 0 5px rgba(251, 140, 0, 0.7);
 }
 
 .delete-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 12px;
-  border: 2px solid black;
-  border-radius: 3px;
-  cursor: pointer;
-  background-color: #dc3545;
+  background-color: var(--delete-btn-bg-color, #E57373);
   color: white;
-  transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  border-color: var(--delete-btn-bg-color, #E57373);
 }
-
 .delete-button:hover {
-  background-color: #c82333;
-  border-color: #c82333;
+  background-color: var(--delete-btn-hover-bg-color, #EF5350);
+  border-color: var(--delete-btn-hover-bg-color, #EF5350);
   transform: scale(1.02);
-  box-shadow: 0 0 5px rgba(200, 35, 51, 0.7);
+  box-shadow: 0 0 5px rgba(239, 83, 80, 0.7);
 }
-
 .delete-button:active {
   transform: scale(0.98);
   box-shadow: none;
 }
 
 .speed-button {
-  background-color: #17a2b8;
+  background-color: var(--speed-btn-bg-color, #42A5F5);
   color: white;
-  border: 2px solid black;
 }
-
-.execute-button:hover {
-  background-color: #218838;
-  border-color: #218838;
-  transform: scale(1.02);
-  box-shadow: 0 0 5px rgba(33, 136, 56, 0.7);
-}
-
-.reset-button:hover,
-.pause-button:hover {
-  background-color: #e0a800;
-  border-color: #e0a800;
-  transform: scale(1.02);
-  box-shadow: 0 0 5px rgba(224, 168, 0, 0.7);
-}
-
-
 .speed-button:hover {
-  background-color: #138496;
-  border-color: #138496;
+  background-color: var(--speed-btn-hover-bg-color, #1E88E5);
   transform: scale(1.02);
-  box-shadow: 0 0 5px rgba(19, 132, 150, 0.7);
+  box-shadow: 0 0 5px rgba(30, 136, 229, 0.7);
 }

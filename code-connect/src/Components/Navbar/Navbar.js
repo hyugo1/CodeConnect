@@ -1,6 +1,6 @@
 // src/Components/Navbar/Navbar.js
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { auth, db, googleProvider } from '../../config/firebase';
 import {
   onAuthStateChanged,
@@ -24,10 +24,19 @@ import { exportFlowchart, importFlowchart } from '../../utils/storage';
 import { toast } from 'react-toastify';
 import AccessibleModal from '../Modal/AccessibleModal';
 import './Navbar.css';
-import { FaUser, FaTrash, FaMoon } from 'react-icons/fa';
+
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import InfoIcon from '@mui/icons-material/Info';
+import SaveIcon from '@mui/icons-material/Save';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import LoginIcon from '@mui/icons-material/Login';
 
 const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [signinDropdownOpen, setsigninDropdownOpen] = useState(false);
    // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide', 'settings', 'examples'
   const [modal, setModal] = useState({ type: null });
   const [email, setEmail] = useState('');
@@ -65,6 +74,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     return () => unsubscribe();
   }, []);
 
+  // Show guide modal on first load
   useEffect(() => {
     if (!localStorage.getItem('guideModalShown')) {
       setModal({ type: 'guide' });
@@ -72,7 +82,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     }
   }, []);
 
-  const getUserProjects = async () => {
+  const getUserProjects = useCallback(async () => {
     if (currentUser) {
       try {
         const projectsQuery = query(
@@ -89,7 +99,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         console.error('Could not load your projects:', error);
       }
     }
-  };
+  }, [currentUser]);
 
   useEffect(() => {
     if (currentUser) {
@@ -97,7 +107,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
     } else {
       setMyProjects([]);
     }
-  }, [currentUser]);
+  }, [currentUser, getUserProjects]);
 
   const handleSaveAsJSON = () => {
     if (!projectName.trim()) {
@@ -129,7 +139,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       return;
     }
     if (!currentUser) {
-      toast.error('You need to be logged in to save your project.');
+      toast.error('You need to be signed in to save your project.');
       return;
     }
     try {
@@ -317,7 +327,8 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                   onClick={() => setModal({ type: 'guide' })}
                   className="navbar-menu-item"
                 >
-                  How to Play
+                  <InfoIcon style={{ marginRight: '0.5rem' }} />
+                  HOW TO PLAY
                 </button>
               </li>
               <li>
@@ -325,7 +336,8 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                   onClick={() => setModal({ type: 'save' })}
                   className="navbar-menu-item"
                 >
-                  Save Your Project
+                  <SaveIcon style={{ marginRight: '0.5rem' }} />
+                  SAVE
                 </button>
               </li>
               <li>
@@ -333,7 +345,8 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                   onClick={() => setModal({ type: 'load' })}
                   className="navbar-menu-item"
                 >
-                  Open a Project
+                  <FolderOpenIcon style={{ marginRight: '0.5rem' }} />
+                  OPEN
                 </button>
               </li>
               <li>
@@ -341,7 +354,8 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                   onClick={() => setModal({ type: 'examples' })}
                   className="navbar-menu-item"
                 >
-                  Examples
+                  <LibraryBooksIcon style={{ marginRight: '0.5rem' }} />
+                  EXAMPLES
                 </button>
               </li>
             </ul>
@@ -373,14 +387,13 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                           onClick={() => setModal({ type: 'settings' })}
                           className="dropdown-item"
                         >
+                          <AccountCircleIcon style={{ marginRight: '0.5rem' }} />
                           Settings
                         </button>
                       </li>
                       <li>
-                        <button
-                          onClick={handleSignOut}
-                          className="dropdown-item"
-                        >
+                        <button onClick={handleSignOut} className="dropdown-item">
+                          <LoginIcon style={{ marginRight: '0.5rem' }} />
                           Sign Out
                         </button>
                       </li>
@@ -389,21 +402,48 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                 )}
               </div>
             ) : (
-              <div className="auth-buttons">
+              <div className="signin-menu-container" style={{ position: 'relative' }}>
                 <button
-                  className="btn login-btn"
-                  onClick={() => setModal({ type: 'signin' })}
+                  className="btn signin-btn"
+                  onClick={() => setsigninDropdownOpen(!signinDropdownOpen)}
                 >
-                  Log In
+                  <LoginIcon style={{ marginRight: '0.5rem' }} />
+                  SIGN IN
                 </button>
-                <button
-                  className="btn login-btn"
-                  onClick={handleSignInWithGoogle}
-                >
-                  Log In with Google
-                </button>
+                {signinDropdownOpen && (
+                  <div className="signin-dropdown">
+                    <button
+                      className="signin-dropdown-item"
+                      onClick={() => {
+                        setModal({ type: 'signin' });
+                        setsigninDropdownOpen(false);
+                      }}
+                    >
+                      <LoginIcon style={{ marginRight: '0.5rem' }} />
+                      Sign In with Email
+                    </button>
+                    <button
+                      className="signin-dropdown-item"
+                      onClick={() => {
+                        handleSignInWithGoogle();
+                        setsigninDropdownOpen(false);
+                      }}
+                    >
+                      <LoginIcon style={{ marginRight: '0.5rem' }} />
+                      Sign In with Google
+                    </button>
+                  </div>
+                )}
               </div>
             )}
+            {/* Dark mode toggle */}
+            <button
+              className="btn darkmode-btn-custom"
+              onClick={toggleDarkMode}
+              title="Toggle Dark Mode"
+            >
+              <DarkModeIcon />
+            </button>
           </div>
         </div>
       </nav>
@@ -420,7 +460,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
 
       {/* Save Modal */}
       {modal.type === 'save' && (
-        <AccessibleModal onClose={() => setModal({ type: null })} title="Save Your Project">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="SAVE YOUR PROJECT">
           <input
             type="text"
             placeholder="Enter a project name"
@@ -430,9 +470,11 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
           />
           <div className="modal-button-group">
             <button onClick={handleSaveAsJSON} className="btn modal-btn file-btn">
+              <SaveIcon style={{ marginRight: '0.5rem' }} />
               Save to Your Computer
             </button>
             <button onClick={handleSaveAsDatabase} className="btn modal-btn account-btn">
+              <SaveIcon style={{ marginRight: '0.5rem' }} />
               Save to Your Account
             </button>
           </div>
@@ -441,18 +483,19 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
 
       {/* Load Modal */}
       {modal.type === 'load' && (
-        <AccessibleModal onClose={() => setModal({ type: null })} title="Open a Project">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="OPEN A PROJECT">
           <div className="modal-section">
             <button
               onClick={() => fileInputRef.current.click()}
               className="btn modal-btn import-btn"
             >
-              Import from Your Computer
+              <FolderOpenIcon style={{ marginRight: '0.5rem' }} />
+              IMPORT
             </button>
           </div>
           {currentUser ? (
             <>
-              <h4 className="modal-subtitle">Your Projects</h4>
+              <h4 className="modal-subtitle">YOUR PROJECTS</h4>
               {myProjects.length ? (
                 <ul className="project-list">
                   {myProjects.map((project) => (
@@ -463,12 +506,14 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
                           onClick={() => handleLoadProject(project)}
                           className="btn project-load-btn"
                         >
-                          Open
+                          <FolderOpenIcon style={{ marginRight: '0.5rem' }} />
+                          Load
                         </button>
                         <button
                           onClick={() => handleDeleteProject(project.id)}
                           className="btn project-delete-btn"
                         >
+                          <DeleteIcon style={{ marginRight: '0.5rem' }} />
                           Delete
                         </button>
                       </div>
@@ -480,22 +525,24 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
               )}
             </>
           ) : (
-            <p className="no-projects">
-              Log in to see your projects.
-            </p>
+            <p className="no-projects">Sign in to see your projects.</p>
           )}
         </AccessibleModal>
       )}
 
       {/* Examples Modal */}
       {modal.type === 'examples' && (
-        <AccessibleModal onClose={() => setModal({ type: null })} title="Examples">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="EXAMPLES">
           <ul className="example-list">
             {defaultExamples.map((example) => (
               <li key={example.id} className="example-list-item">
-                <h4>{example.name}</h4>
+                <h4 className="example-with-icon">
+                  <LibraryBooksIcon style={{ marginRight: '0.5rem' }} />
+                  {example.name}
+                </h4>
                 <p>{example.description}</p>
-                <button onClick={() => handleLoadExample(example)} className="btn modal-btn">
+                <button onClick={() => handleLoadExample(example)} className="btn modal-btn load-example-btn">
+                  <FolderOpenIcon style={{ marginRight: '0.5rem' }}/>
                   Load Example
                 </button>
               </li>
@@ -506,7 +553,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
 
       {/* Sign Up Modal */}
       {modal.type === 'signup' && (
-        <AccessibleModal onClose={() => setModal({ type: null })} title="Create an Account">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="CREATE ACCOUNT">
           <input
             type="email"
             placeholder="Email"
@@ -522,14 +569,14 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             className="modal-input"
           />
           <button onClick={handleSignUp} className="btn modal-btn signup-btn">
+            <LoginIcon style={{ marginRight: '0.5rem' }} />
             Join Now
           </button>
         </AccessibleModal>
       )}
 
-      {/* Sign In Modal */}
       {modal.type === 'signin' && (
-        <AccessibleModal onClose={() => setModal({ type: null })} title="Log In">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="SIGN IN">
           <input
             type="email"
             placeholder="Email"
@@ -544,20 +591,24 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             onChange={(e) => setPassword(e.target.value)}
             className="modal-input"
           />
+          {/* Use the updated modal-button-group to fix the positions of these three buttons */}
           <div className="modal-button-group">
-            <button onClick={handleSignIn} className="btn modal-btn signin-btn">
-              Log In
+            <button onClick={handleSignIn} className="btn signin-btn-custom modal-btn">
+              <LoginIcon style={{ marginRight: '0.5rem' }} />
+              Sign In
             </button>
             <button
               onClick={() => setModal({ type: 'forgotPassword' })}
-              className="btn modal-btn forgot-btn"
+              className="btn forgot-btn modal-btn"
             >
+              <LoginIcon style={{ marginRight: '0.5rem' }} />
               Forgot Password?
             </button>
             <button
               onClick={() => setModal({ type: 'signup' })}
-              className="btn modal-btn newuser-btn"
+              className="btn newuser-btn modal-btn"
             >
+              <LoginIcon style={{ marginRight: '0.5rem' }} />
               New here?
             </button>
           </div>
@@ -574,7 +625,8 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             onChange={(e) => setEmail(e.target.value)}
             className="modal-input"
           />
-          <button onClick={handleForgotPassword} className="btn modal-btn forgot-btn">
+          <button onClick={handleForgotPassword} className="btn forgot-btn modal-btn">
+            <LoginIcon style={{ marginRight: '0.5rem' }} />
             Send Reset Email
           </button>
         </AccessibleModal>
@@ -582,7 +634,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
 
       {/* Guide Modal */}
       {modal.type === 'guide' && (
-        <AccessibleModal onClose={() => setModal({ type: null })} title="How to Play with Blocks" customClass="hint-modal">
+        <AccessibleModal onClose={() => setModal({ type: null })} title="How to Play Code Connect" customClass="hint-modal">
           <ul className="hint-list">
             <li>Code Connect is a visual programming language website.</li>
             <li>
@@ -603,7 +655,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             </li>
           </ul>
           <p className="hint-footer">
-            Press the "How to Play" button anytime to review these hints and learn more about what each block does.
+            Press the "HOW TO PLAY" button anytime to review these hints and learn more about what each block does.
           </p>
         </AccessibleModal>
       )}
@@ -613,21 +665,24 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
         <AccessibleModal 
           onClose={() => setModal({ type: null })} 
           title={
-            <>
-              <FaUser className="modal-icon" /> Account Settings
-            </>
+            // <>
+            //   <AccountCircleIcon style={{ marginRight: '0.5rem' }} className="account-settings-title" /> Account Settings
+            // </>
+            <>Account Settings</>
           }
         >
           <div className="settings-section">
             <h4 className="delete-account-title">Delete Account</h4>
             <button onClick={handleDeleteAccount} className="btn modal-btn delete-btn animated-btn">
-              <FaTrash className="icon" /> Delete Account
+              <DeleteIcon style={{ marginRight: '0.5rem' }} />
+              Delete Account
             </button>
           </div>
           <div className="settings-section">
             <h4 className="theme-title">Theme</h4>
-            <button onClick={toggleDarkMode} className="btn modal-btn animated-btn">
-              <FaMoon className="icon" /> Dark Mode
+            <button onClick={toggleDarkMode} className="btn modal-btn animated-btn darkmode-btn-custom">
+              <DarkModeIcon style={{ marginRight: '0.5rem' }} />
+              Dark Mode
             </button>
           </div>
         </AccessibleModal>

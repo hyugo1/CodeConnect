@@ -31,14 +31,18 @@ const AccessibleModal = ({ onClose, title, children, customClass }) => {
         <h3 id="modal-title" className="modal-title">
           {title}
         </h3>
-        {children}
-        <button
-          onClick={onClose}
-          className="btn modal-btn cancel-btn"
-          aria-label="Close modal"
-        >
-          Close
-        </button>
+        <div className="modal-body">
+          {children}
+        </div>
+        <div className="modal-footer">
+          <button
+            onClick={onClose}
+            className="btn modal-btn cancel-btn"
+            aria-label="Close modal"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

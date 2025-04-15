@@ -78,7 +78,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
         {!collapsed && (
           <>
             <h3 className="palette-title">
-              {excludeStart ? 'Select a Replacement' : 'Block Palette'}
+              {excludeStart ? 'Select a Replacement' : 'BLOCK PALETTE'}
             </h3>
             <div className="blocks-container">
               {Object.keys(groupedBlocks).map((category) => (

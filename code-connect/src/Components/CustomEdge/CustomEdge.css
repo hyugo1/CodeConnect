@@ -11,10 +11,10 @@
 
 @keyframes edgeDash {
   from {
-    stroke-dashoffset: 0;
+    stroke-dashoffset: 12;
   }
   to {
-    stroke-dashoffset: 12;
+    stroke-dashoffset: 0;
   }
 }
 
