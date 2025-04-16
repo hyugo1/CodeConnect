@@ -99,15 +99,17 @@ const MoveBlock = ({ id, data, selected, executing }) => {
       <Tooltip id={`tooltip-${id}-source`} place="top" />
       <input
         type="number"
-        placeholder="Distance to move"
+        placeholder="Distance to Move"
         value={data.distance || ''}
         onChange={handleDistanceChange}
         style={inputStyle}
+        className="block-input"
       />
       <select
         value={data.direction || ''}
         onChange={handleDirectionChange}
         style={inputStyle}
+        className='operator-select'
       >
         <option value="">Select Direction</option>
         <option value="up">Up</option>

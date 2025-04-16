@@ -1,15 +1,35 @@
 /* src/Components/BlockPalette/BlockPalette.css */
 
+:root {
+  --aside-bg:        #f7f9fc;
+  --aside-border:    #e0e0e0;
+  --text-main:       #333;
+  --text-muted:      #353535;
+  --block-bg:        #ffffff;
+  --block-border:    #555;
+  --hover-bg:        #e0e0e0;
+}
+
+.dark-mode {
+  --aside-bg:        #1e1e1e;
+  --aside-border:    #444;
+  --text-main:       #0b0b0b;
+  --text-muted:      #ebebeb;
+  --block-bg:        #e2e2e2;
+  --block-border:    #666;
+  --hover-bg:        #555;
+}
+
 .aside-container {
   padding: 10px;
   width: 250px;
   height: calc(100vh - 60px);
-  max-height: 100vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  transition: width 0.3s;
-  border: 2px solid #555;
+  background-color: var(--aside-bg);
+  border-right: 1px solid var(--aside-border);
   box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  transition: width 0.3s ease, background-color 0.3s, border-color 0.3s;
+  color: var(--text-main);
 }
 
 .aside-container.collapsed {
@@ -39,44 +59,53 @@
 
 .palette-title {
   text-align: center;
-  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin: 0 0 15px;
+  font-weight: 500;
+}
+
+.collapse-button:hover {
+  background-color: var(--hover-bg);
+  border-radius: 4px;
 }
 
 .blocks-container {
   max-height: calc(100vh - 30vh);
   overflow-y: auto;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #555;
+  padding: 10px;
+  border-top: 3px solid var(--aside-border);
 }
 
 .block-category {
-  margin-top: 20px;
-  margin-bottom: 5px;
-  border-bottom: 1px solid #555;
+  margin: 20px 0 10px;
+  font-size: 1rem;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--aside-border);
+  padding-bottom: 5px;
 }
 
 .dndblock {
-  margin: 8px 0;
+  margin: 10px 0;
   padding: 10px;
-  cursor: grab;
-  border-radius: 5px;
-  color: #000;
-  font-weight: bold;
-  font-family: 'kumbh-sans', sans-serif;
-  border: 2px solid #555;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
+  cursor: grab;
+  background-color: var(--block-bg);
+  border: 1px solid var(--block-border);
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s,
+              background-color 0.3s;
+}
+
+.dndblock:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--hover-bg);
 }
 
 .dndblock span {
   margin-left: 8px;
-}
-
-aside h3 {
-  text-align: center;
-}
-
-.block-container input[type="text"] {
-  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-main);
 }

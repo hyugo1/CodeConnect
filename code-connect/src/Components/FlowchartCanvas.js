@@ -69,11 +69,11 @@ function FlowchartCanvas({
         return;
       }
       if (newBlockType === 'start') {
-        alert("Cannot replace a dummy block with a start block.");
+        alert("Cannot replace a placement block with a start block.");
         return;
       }
       if (newBlockType === 'end' && blockToReplace.data.dummyFor === 'whileBody') {
-        alert("Cannot replace the dummy block for the while loop body with an End block.");
+        alert("Cannot replace the placement block for the while loop body with an End block.");
         return;
       }
       setNodes((nds) =>

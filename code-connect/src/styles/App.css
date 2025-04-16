@@ -282,12 +282,17 @@ body, html {
 .dark-mode .block-input,
 .dark-mode .operand-input,
 .dark-mode .operator-select {
-  color: #F0F0F0;
-  background-color: #3A3F47;
+  background-color: #44475a;
+  color: #f8f8f2;
+  border: 1px solid #6272a4; 
 }
 
 .dark-mode .block-input::placeholder {
-  color: #B0B3B8;
+  color: #c7c8c9;
+}
+
+.dark-mode .message-bubble {
+  color: black;
 }
 
 

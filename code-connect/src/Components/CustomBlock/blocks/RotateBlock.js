@@ -89,11 +89,13 @@ const RotateBlock = ({ id, data, selected, executing }) => {
         value={data.degrees || ''}
         onChange={handleDegreesChange}
         style={inputStyle}
+        className="block-input"
       />
       <select
         value={data.rotateDirection || ''}
         onChange={handleDirectionChange}
         style={inputStyle}
+        className="operator-select"
       >
         <option value="">Select Direction</option>
         <option value="left">Rotate Left</option>
