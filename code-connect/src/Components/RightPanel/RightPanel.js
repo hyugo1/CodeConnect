@@ -13,7 +13,7 @@ const RightPanel = ({ characterMessage, characterPosition, rotation, blocks, edg
       <button 
         className="collapse-button"
         onClick={() => setCollapsed(!collapsed)}
-        title="Toggle Right Panel"
+        title={collapsed ? "Expand palette" : "Collapse palette"}
       >
         {collapsed ? <FaChevronLeft /> : <FaChevronRight />}
       </button>

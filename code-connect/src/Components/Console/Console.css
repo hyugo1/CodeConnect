@@ -42,7 +42,7 @@
   overflow-y: auto;
   margin: 0;
   transition: height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
-  height: 150px; /* Reduced height for expanded state */
+  height: 150px;
   opacity: 1;
   padding: 10px;
   background-color: #eee;
@@ -56,6 +56,11 @@
   padding-bottom: 0;
   padding-left: 10px;
   padding-right: 10px;
+}
+
+.error-line {
+  color: rgb(255, 44, 44);
+  font-weight: bold;
 }
 
 .console {

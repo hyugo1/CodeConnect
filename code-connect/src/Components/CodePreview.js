@@ -17,7 +17,7 @@ const CodePreview = ({ blocks, edges }) => {
       <div className="console-header">
         <h3>Generated Code</h3>
         <button className="console-toggle-button" onClick={toggleMinimize}>
-          {isMinimized ? 'Expand' : 'Minimize'}
+          {isMinimized ? 'Show' : 'Hide'}
         </button>
       </div>
       <pre className="console-pre">

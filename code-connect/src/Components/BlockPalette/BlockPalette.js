@@ -71,6 +71,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
             onClick={() => setCollapsed(!collapsed)}
             className="collapse-button"
             aria-label={collapsed ? "Expand palette" : "Collapse palette"}
+            title={collapsed ? "Expand palette" : "Collapse palette"}
           >
             {collapsed ? '>' : '<'}
           </button>

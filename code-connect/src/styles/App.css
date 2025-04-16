@@ -250,7 +250,7 @@ body, html {
   background-color: rgb(31,34,38);
   border-color: #1F2129;
   color: #000;
-  opacity: 0.8;
+  opacity: 0.95;
 }
 
 .dark-mode .right-panel {
@@ -274,7 +274,24 @@ body, html {
   color: #ecf0f1;
 }
 
-.dark-mode .console-pre {
+.dark-mode .code-preview .console-pre  {
+  color: #ecf0f1;
+  background-color: rgb(31, 32, 36);
+}
+
+.dark-mode .block-input,
+.dark-mode .operand-input,
+.dark-mode .operator-select {
+  color: #F0F0F0;
+  background-color: #3A3F47;
+}
+
+.dark-mode .block-input::placeholder {
+  color: #B0B3B8;
+}
+
+
+.dark-mode .console .console-pre  {
   color: #00FF00;
   background-color: rgb(31, 32, 36);
 }
@@ -334,16 +351,6 @@ body, html {
   color: #ecf0f1;
   border: 2px solid #ecf0f1;
   transform: scale(1.05);
-}
-
-.dark-mode .react-flow__edge-path {
-  transition: stroke 0.4s ease, stroke-width 0.4s ease;
-  stroke: #fff;
-  fill: white;
-}
-
-.dark-mode .react-flow__edge-text {
-  fill: white;
 }
 
 

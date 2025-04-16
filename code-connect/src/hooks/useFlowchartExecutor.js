@@ -88,19 +88,6 @@ function validateFlowchart(blocks, edges) {
         );
       }
     }
-
-    // For conditional blocks (if and whileStart), ensure all parts of the condition are provided.
-    if (type === "if" || type === "whileStart") {
-      if (
-        !block.data.leftOperand ||
-        !block.data.operator ||
-        !block.data.rightOperand
-      ) {
-        errors.push(
-          `Error: Block "${displayName}" must have a complete condition (left operand, operator, and right operand).`
-        );
-      }
-    }
   });
 
   return errors;
@@ -116,7 +103,8 @@ export function useFlowchartExecutor(
   setActiveBlockId,
   setActiveEdgeId,
   setErrorBlockId,
-  setPaused
+  setPaused,
+  setSnackbar
 ) {
   const MAX_VISITS_PER_NODE = 50;
   const BASE_BLOCK_DELAY = 800;
@@ -182,13 +170,19 @@ export function useFlowchartExecutor(
     return `"${trimmed}"`;
   }
 
-  // Recursive function to traverse nodes with enhanced error handling and logging
   async function traverse(blockId, visitCounts = new Map()) {
     try {
     const count = visitCounts.get(blockId) || 0;
     if (count >= MAX_VISITS_PER_NODE) {
-      outputs.push(`Error: Block ${blockId} visited too many times. Possible infinite loop.`);
-      console.warn(`Block ${blockId} visited ${count} times. Stopping traversal.`);
+      const errMsg = `Error: Block ${blockId} visited too many times. Possible infinite loop.`;
+      outputs.push(errMsg);
+      console.warn(errMsg);
+      toast.error(errMsg);
+      if (setSnackbar) setSnackbar(errMsg);
+      if (setErrorBlockId) {
+        setErrorBlockId(blockId);
+        setTimeout(() => setErrorBlockId(null), 5000);
+      }
       setConsoleOutput(outputs.join('\n'));
       return;
     }
@@ -196,8 +190,11 @@ export function useFlowchartExecutor(
 
     const block = currentNodes.find((n) => n.id === blockId);
     if (!block) {
-      outputs.push(`Error: Node with ID ${blockId} not found.`);
-      console.error(`Node with ID ${blockId} not found.`);
+      const errMsg = `Error: Node with ID ${blockId} not found.`;
+      outputs.push(errMsg);
+      console.error(errMsg);
+      toast.error(errMsg);
+      if (setSnackbar) setSnackbar(errMsg);
       setConsoleOutput(outputs.join('\n'));
       return;
     }
@@ -236,14 +233,34 @@ export function useFlowchartExecutor(
               value = evaluate(block.data.varValue, context.variables);
             }
             context.variables[block.data.varName] = value;
-            outputs.push(`Set variable ${block.data.varName} = ${JSON.stringify(value)}`);
-            console.log(`Set variable ${block.data.varName} = ${JSON.stringify(value)}`);
+            const msg = `Set variable ${block.data.varName} = ${JSON.stringify(value)}`;
+            outputs.push(msg);
+            console.log(msg);
           } catch (error) {
-            console.error(`Error evaluating value in block ${blockDisplayName}:`, error);
-            outputs.push(`Error evaluating value in block ${blockDisplayName}: ${error.message}`);
+            const errMsg = `Error evaluating value in block ${blockDisplayName}: ${error.message}`;
+            console.error(errMsg);
+            outputs.push(errMsg);
+            toast.error(errMsg);
+            if (setSnackbar) setSnackbar(errMsg);
+            if (setErrorBlockId) {
+              setErrorBlockId(block.id);
+              setTimeout(() => setErrorBlockId(null), 5000);
+            }
             setConsoleOutput(outputs.join('\n'));
             return;
           }
+        } else {
+          const errMsg = `Error: Set Variable block "${blockDisplayName}" must have a valid variable name.`;
+          outputs.push(errMsg);
+          console.error(errMsg);
+          toast.error(errMsg);
+          if (setSnackbar) setSnackbar(errMsg);
+          if (setErrorBlockId) {
+            setErrorBlockId(block.id);
+            setTimeout(() => setErrorBlockId(null), 5000);
+          }
+          setConsoleOutput(outputs.join("\n"));
+          return;
         }
         break;
 
@@ -269,18 +286,33 @@ export function useFlowchartExecutor(
                   context.variables[block.data.varName] += value;
               }
             }
-            outputs.push(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
-            console.log(`Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
+            const msg = `Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`;
+            outputs.push(msg);
+            console.log(msg);
           } catch (error) {
-            console.error(`Error changing variable in block ${blockDisplayName}:`, error);
-            outputs.push(`Error changing variable in block ${blockDisplayName}: ${error.message}`);
+            const errMsg = `Error changing variable in block ${blockDisplayName}: ${error.message}`;
+            console.error(errMsg);
+            outputs.push(errMsg);
+            toast.error(errMsg);
+            if (setSnackbar) setSnackbar(errMsg);
+            if (setErrorBlockId) {
+              setErrorBlockId(block.id);
+              setTimeout(() => setErrorBlockId(null), 5000);
+            }
             setConsoleOutput(outputs.join('\n'));
             return;
           }
         } else {
-          outputs.push(`Variable "${block.data.varName}" not found in block ${blockDisplayName}.`);
-          console.error(`Variable "${block.data.varName}" not found in block ${blockDisplayName}.`);
-          setConsoleOutput(outputs.join('\n'));
+          const errMsg = `Error: Variable "${block.data.varName}" not found in block ${blockDisplayName}.`;
+          outputs.push(errMsg);
+          console.error(errMsg);
+          toast.error(errMsg);
+          if (setSnackbar) setSnackbar(errMsg);
+          if (setErrorBlockId) {
+            setErrorBlockId(block.id);
+            setTimeout(() => setErrorBlockId(null), 5000);
+          }
+          setConsoleOutput(outputs.join("\n"));
           return;
         }
         break;
@@ -300,8 +332,15 @@ export function useFlowchartExecutor(
             conditionMet = evaluate(condition, context.variables);
           }
         } else {
-          outputs.push(`Incomplete condition in block ${blockDisplayName}.`);
-          console.error(`Incomplete condition in block ${blockDisplayName}.`);
+          const errMsg = `Error: Incomplete condition in block ${blockDisplayName}.`;
+          outputs.push(errMsg);
+          console.error(errMsg);
+          toast.error(errMsg);
+          if (setSnackbar) setSnackbar(errMsg);
+          if (setErrorBlockId) {
+            setErrorBlockId(block.id);
+            setTimeout(() => setErrorBlockId(null), 5000);
+          }
           setConsoleOutput(outputs.join('\n'));
           return;
         }
@@ -312,27 +351,29 @@ export function useFlowchartExecutor(
         if (conditionMet) {
           const trueEdge = branchEdges.find((e) => e.sourceHandle && e.sourceHandle.startsWith('yes'));
           if (!trueEdge) {
-            const errorMsg = `Missing edge for true branch in "${blockDisplayName}".`;
-            toast.error(errorMsg);
-            outputs.push(errorMsg);
-            setConsoleOutput(outputs.join('\n'));
+            const errMsg = `Error: Missing edge for true branch in "${blockDisplayName}".`;
+            toast.error(errMsg);
+            if (setSnackbar) setSnackbar(errMsg);
+            outputs.push(errMsg);
             if (setErrorBlockId) {
               setErrorBlockId(block.id);
               setTimeout(() => setErrorBlockId(null), 5000);
             }
+            setConsoleOutput(outputs.join('\n'));
             return;
           }
         } else {
           const falseEdge = branchEdges.find((e) => e.sourceHandle && e.sourceHandle.startsWith('no'));
           if (!falseEdge) {
-            const errorMsg = `Missing edge for false branch in "${blockDisplayName}".`;
-            toast.error(errorMsg);
-            outputs.push(errorMsg);
-            setConsoleOutput(outputs.join('\n'));
+            const errMsg = `Error: Missing edge for false branch in "${blockDisplayName}".`;
+            toast.error(errMsg);
+            if (setSnackbar) setSnackbar(errMsg);
+            outputs.push(errMsg);
             if (setErrorBlockId) {
               setErrorBlockId(block.id);
               setTimeout(() => setErrorBlockId(null), 5000);
             }
+            setConsoleOutput(outputs.join('\n'));
             return;
           }
         }
@@ -357,8 +398,15 @@ export function useFlowchartExecutor(
             conditionMet = evaluate(condition, context.variables);
           }
         } else {
-          outputs.push(`Incomplete while condition in block ${blockDisplayName}.`);
-          console.error(`Incomplete while condition in block ${blockDisplayName}.`);
+          const errMsg = `Error: Incomplete while condition in block ${blockDisplayName}.`;
+          outputs.push(errMsg);
+          console.error(errMsg);
+          toast.error(errMsg);
+          if (setSnackbar) setSnackbar(errMsg);
+          if (setErrorBlockId) {
+            setErrorBlockId(block.id);
+            setTimeout(() => setErrorBlockId(null), 5000);
+          }
           setConsoleOutput(outputs.join('\n'));
           return;
         }
@@ -372,8 +420,15 @@ export function useFlowchartExecutor(
             setActiveEdgeId(null);
             await traverse(loopBodyEdge.target, new Map(visitCounts));
           } else {
-            outputs.push(`No loop body connected to block ${blockDisplayName}.`);
-            console.error(`No loop body connected to block ${blockDisplayName}.`);
+            const errMsg = `Error: No loop body connected to block ${blockDisplayName}.`;
+            outputs.push(errMsg);
+            console.error(errMsg);
+            toast.error(errMsg);
+            if (setSnackbar) setSnackbar(errMsg);
+            if (setErrorBlockId) {
+              setErrorBlockId(block.id);
+              setTimeout(() => setErrorBlockId(null), 5000);
+            }
             setConsoleOutput(outputs.join('\n'));
             return;
           }
@@ -386,8 +441,15 @@ export function useFlowchartExecutor(
             setActiveEdgeId(null);
             await traverse(exitEdge.target, new Map(visitCounts));
           } else {
-            outputs.push(`No exit path connected to block "${blockDisplayName}".`);
-            console.error(`No exit path connected to block "${blockDisplayName}".`);
+            const errMsg = `Error: No exit path connected to block "${blockDisplayName}".`;
+            outputs.push(errMsg);
+            console.error(errMsg);
+            toast.error(errMsg);
+            if (setSnackbar) setSnackbar(errMsg);
+            if (setErrorBlockId) {
+              setErrorBlockId(block.id);
+              setTimeout(() => setErrorBlockId(null), 5000);
+            }
             setConsoleOutput(outputs.join('\n'));
             return;
           }
@@ -397,8 +459,15 @@ export function useFlowchartExecutor(
       case 'print': {
         let message = block.data.message || '';
         if (!message) {
-          outputs.push(`Error: No message set in Print block "${blockDisplayName}".`);
-          console.error(`No message set in Print block "${blockDisplayName}".`);
+          const errMsg = `Error: No message set in Print block "${blockDisplayName}".`;
+          outputs.push(errMsg);
+          console.error(errMsg);
+          toast.error(errMsg);
+          if (setSnackbar) setSnackbar(errMsg);
+          if (setErrorBlockId) {
+            setErrorBlockId(block.id);
+            setTimeout(() => setErrorBlockId(null), 5000);
+          }
           setConsoleOutput(outputs.join('\n'));
           return;
         }
@@ -415,7 +484,6 @@ export function useFlowchartExecutor(
         setCharacterMessage('');
         break;
       }
-
       case 'move': {
         const { distance, direction } = block.data;
         if (distance && direction) {
@@ -435,18 +503,33 @@ export function useFlowchartExecutor(
               newY += distance;
               break;
             default:
-              outputs.push(`Unknown direction "${direction}" in Move block "${blockDisplayName}".`);
-              console.error(`Unknown direction "${direction}" in Move block "${blockDisplayName}".`);
+              const errMsg = `Error: Unknown direction "${direction}" in Move block "${blockDisplayName}".`;
+              outputs.push(errMsg);
+              console.error(errMsg);
+              toast.error(errMsg);
+              if (setSnackbar) setSnackbar(errMsg);
+              if (setErrorBlockId) {
+                setErrorBlockId(block.id);
+                setTimeout(() => setErrorBlockId(null), 5000);
+              }
               setConsoleOutput(outputs.join('\n'));
               return;
           }
           context.characterPos = { x: newX, y: newY };
-          outputs.push(`Moved ${direction} by ${distance} units to (${newX}, ${newY})`);
-          console.log(`Moved ${direction} by ${distance} units to (${newX}, ${newY})`);
+          const msg = `Moved ${direction} by ${distance} units to (${newX}, ${newY})`;
+          outputs.push(msg);
+          console.log(msg);
           setCharacterPosition({ x: newX, y: newY });
         } else {
-          outputs.push(`Incomplete move data in block "${blockDisplayName}".`);
-          console.error(`Incomplete move data in block "${blockDisplayName}".`);
+          const errMsg = `Error: Incomplete move data in block "${blockDisplayName}".`;
+          outputs.push(errMsg);
+          console.error(errMsg);
+          toast.error(errMsg);
+          if (setSnackbar) setSnackbar(errMsg);
+          if (setErrorBlockId) {
+            setErrorBlockId(block.id);
+            setTimeout(() => setErrorBlockId(null), 5000);
+          }
         }
         break;
       }
@@ -462,24 +545,46 @@ export function useFlowchartExecutor(
               newRotation += degrees;
               break;
             default:
-              outputs.push(`Unknown rotation direction "${rotateDirection}" in Rotate block "${blockDisplayName}".`);
-              console.error(`Unknown rotation direction "${rotateDirection}" in Rotate block "${blockDisplayName}".`);
+              const errMsg = `Error: Unknown rotation direction "${rotateDirection}" in Rotate block "${blockDisplayName}".`;
+              outputs.push(errMsg);
+              console.error(errMsg);
+              toast.error(errMsg);
+              if (setSnackbar) setSnackbar(errMsg);
+              if (setErrorBlockId) {
+                setErrorBlockId(block.id);
+                setTimeout(() => setErrorBlockId(null), 5000);
+              }
               setConsoleOutput(outputs.join('\n'));
               return;
           }
           context.characterRotation = newRotation;
-          outputs.push(`Rotated ${rotateDirection} by ${degrees} degrees to (${newRotation}°)`);
-          console.log(`Rotated ${rotateDirection} by ${degrees} degrees to (${newRotation}°)`);
+          const msg = `Rotated ${rotateDirection} by ${degrees} degrees to (${newRotation}°)`;
+          outputs.push(msg);
+          console.log(msg);
           setCharacterRotation(newRotation);
         } else {
-          outputs.push(`Incomplete rotate data in block "${blockDisplayName}".`);
-          console.error(`Incomplete rotate data in block "${blockDisplayName}".`);
+          const errMsg = `Error: Incomplete rotate data in block "${blockDisplayName}".`;
+          outputs.push(errMsg);
+          console.error(errMsg);
+          toast.error(errMsg);
+          if (setSnackbar) setSnackbar(errMsg);
+          if (setErrorBlockId) {
+            setErrorBlockId(block.id);
+            setTimeout(() => setErrorBlockId(null), 5000);
+          }
         }
         break;
       }
       default:
-        outputs.push(`Unknown block type "${block.data.blockType}" in block "${blockDisplayName}".`);
-        console.error(`Unknown block type: ${block.data.blockType} in block ${blockDisplayName}`);
+        const errMsg = `Error: Unknown block type "${block.data.blockType}" in block "${blockDisplayName}".`;
+        outputs.push(errMsg);
+        console.error(errMsg);
+        toast.error(errMsg);
+        if (setSnackbar) setSnackbar(errMsg);
+        if (setErrorBlockId) {
+          setErrorBlockId(block.id);
+          setTimeout(() => setErrorBlockId(null), 5000);
+        }
         break;
     }
 
@@ -507,11 +612,22 @@ export function useFlowchartExecutor(
           await traverse(edge.target, new Map(visitCounts));
         }
       } catch (edgeError) {
-        console.error(`Error processing edge ${edge.id}:`, edgeError);
-        outputs.push(`Error processing edge ${edge.id}: ${edgeError.message}`);
+        const errMsg = `Error processing edge ${edge.id}: ${edgeError.message}`;
+        console.error(errMsg, edgeError);
+        outputs.push(errMsg);
+        toast.error(errMsg);
+        if (setSnackbar) setSnackbar(errMsg);
         setConsoleOutput(outputs.join('\n'));
         return;
       }
+    }
+    if (connectedEdges.length === 0 && block.data.blockType !== 'end') {
+      const warnMsg = `Warning: Block "${blockDisplayName}" has no outgoing connections; execution ended abruptly.`;
+      outputs.push(warnMsg);
+      console.warn(warnMsg);
+      toast.error(warnMsg);
+      if (setSnackbar) setSnackbar(warnMsg);
+      setConsoleOutput(outputs.join('\n'));
     }
 
     console.log(`--- Finished Node: ${block.id} ---\n`);
@@ -525,9 +641,11 @@ export function useFlowchartExecutor(
       const missingVar = match[1];
       customMessage = `Variable "${missingVar}" is not defined. Please initialise it before using this condition.`;
     }
-    toast.error(`Error in block "${blockDisplayName}": ${customMessage}`);
+    const errMsg = `Error in block "${blockDisplayName}": ${customMessage}`;
+    toast.error(errMsg);
+    if (setSnackbar) setSnackbar(errMsg);
     console.error(`Unexpected error in block "${blockDisplayName}":`, traverseError);
-    outputs.push(`Unexpected error in block "${blockDisplayName}": ${customMessage}`);
+    outputs.push(errMsg);
 
     if (setErrorBlockId && block) {
       setErrorBlockId(block.id);
@@ -549,7 +667,7 @@ export function useFlowchartExecutor(
     } else {
       outputs.push('Execution ended.');
       console.log('No outgoing edges. Execution ended.');
-      setConsoleOutput(outputs.join('\n'));
+      setConsoleOutput(outputs.join("\n"));
       setCharacterPosition(context.characterPos);
       setCharacterMessage(context.characterMsg);
     }
@@ -560,10 +678,11 @@ export function useFlowchartExecutor(
       (block) => (block.data.blockType || "").toLowerCase() === "end"
     );
     if (!endBlockExists) {
-      const msg = "Error: No End block connected.";
-      outputs.push(msg);
+      const errMsg = "Error: No End block connected.";
+      outputs.push(errMsg);
       setConsoleOutput(outputs.join("\n"));
-      toast.error(msg);
+      toast.error(errMsg);
+      if (setSnackbar) setSnackbar(errMsg);
       return;
     }
   
@@ -576,15 +695,15 @@ export function useFlowchartExecutor(
       await traverse(startBlock.id, new Map());
       setConsoleOutput(outputs.join("\n"));
     } else {
-      const msg = "Error: No start block found.";
-      outputs.push(msg);
+      const errMsg = "Error: No start block found.";
+      outputs.push(errMsg);
       setConsoleOutput(outputs.join("\n"));
-      toast.error(msg);
+      toast.error(errMsg);
+      if (setSnackbar) setSnackbar(errMsg);
     }
   }
 
   const executeFlowchart = useCallback(() => {
-    // iterationCount = 0;
     outputs.length = 0;
     context.variables = {};
     setConsoleOutput('');
@@ -599,6 +718,7 @@ export function useFlowchartExecutor(
     if (validationErrors.length > 0) {
       validationErrors.forEach((err) => {
         toast.error(err);
+        if (setSnackbar) setSnackbar(err);
         outputs.push(err);
       });
       setConsoleOutput(outputs.join("\n"));
@@ -617,6 +737,7 @@ export function useFlowchartExecutor(
     setActiveEdgeId,
     setErrorBlockId,
     setPaused,
+    setSnackbar,
   ]);
 
   return {

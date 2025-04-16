@@ -46,11 +46,11 @@ const ControlPanel = ({
 
   return (
     <div className="control-panel">
-      <button onClick={executeFlowchart} className="execute-button" title="Run Flowchart">
+      <button onClick={executeFlowchart} className="execute-button" title="Run Program">
         <FaPlay /> Run
       </button>
-      <button onClick={resetExecution} className="reset-button" title="Reset/Stop Execution">
-        <FaRedo /> Reset/Stop
+      <button onClick={resetExecution} className="reset-button" title="Reset Execution">
+        <FaRedo /> Reset
       </button>
       {/* <button onClick={togglePause} className="pause-button" title="Pause/Resume Execution"> */}
         {/* {paused ? <><FaPlayCircle /> Resume</> : <><FaPause /> Pause</>} */}
@@ -62,7 +62,7 @@ const ControlPanel = ({
         <FaTachometerAlt /> Normal Speed
       </button> */}
       {(selectedNodes.length > 0 || selectedEdges.length > 0) && (
-        <button onClick={handleDelete} className="delete-button" title="Delete Selected">
+        <button onClick={handleDelete} className="delete-button" title="Delete Selected Component">
           <FaTrash /> Delete Selected
         </button>
       )}

@@ -27,10 +27,30 @@ const CustomEdge = ({
   });
 
   const { activeEdgeId } = useActiveFlow();
-  const edgeColor = (style && style.stroke) || '#555';
   const markerEnd = 'url(#customArrow)';
   const [isHovered, setIsHovered] = useState(false);
   const executing = id === activeEdgeId;
+  const isDarkMode = document.body.classList.contains('dark-mode');
+
+  const computedStyle = {
+    ...style,
+    fill: 'none',
+    stroke: isDarkMode
+      ? label === 'Loop Back'
+        ? '#c933ff'
+        : label === 'True'
+          ? '#28a745'
+          : label === 'False'
+            ? '#dc3545'
+            : '#e0e0e0' 
+      : label === 'Loop Back'
+        ? '#c933ff'
+        : label === 'True'
+          ? '#28a745'
+          : label === 'False'
+            ? '#dc3545'
+            : style.stroke || '#e0e0e0', 
+  };
 
   const invisiblePathStyle = {
     stroke: 'transparent',
@@ -71,7 +91,7 @@ const CustomEdge = ({
       <path
         id={id}
         d={edgePath}
-        style={{ ...style, fill: 'none', color: edgeColor }}
+        style={computedStyle}
         className={`react-flow__edge-path 
           ${selected ? 'selected' : ''} 
           ${isHovered ? 'hovered' : ''} 
@@ -82,13 +102,14 @@ const CustomEdge = ({
         {label && (
           <text dy="-5">
             <textPath
-              href={`#${id}`}
-              style={{ fontSize: 18, fill: '#777' }}
-              startOffset="50%"
-              textAnchor="middle"
-            >
-              {label}
-            </textPath>
+                href={`#${id}`}
+                className={`edge-label ${label === 'Loop Back' ? 'edge-label-loop' : label === 'True' ? 'edge-label-true' : label === 'False' ? 'edge-label-false' : ''}`}
+                style={{ fontSize: 18 }}
+                startOffset="50%"
+                textAnchor="middle"
+              >
+                {label}
+              </textPath>
           </text>
         )}
     </>

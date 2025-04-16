@@ -10,16 +10,27 @@ function Console({ consoleOutput }) {
     setIsMinimized(prev => !prev);
   };
 
+  const lines = consoleOutput ? consoleOutput.split('\n') : [];
+
   return (
     <div className={`console ${isMinimized ? 'minimized' : 'expanded'}`}>
       <div className="console-header">
         <h3>Console Output</h3>
         <button className="console-toggle-button" onClick={toggleMinimize}>
-          {isMinimized ? 'Expand' : 'Minimize'}
+          {isMinimized ? 'Show' : 'Hide'}
         </button>
       </div>
       <pre className="console-pre">
-        {consoleOutput}
+        {lines.map((line, idx) => {
+          if (line.startsWith("Error:")) {
+            return (
+              <div key={idx} className="error-line">
+                {line}
+              </div>
+            );
+          }
+          return <div key={idx}>{line}</div>;
+        })}
       </pre>
     </div>
   );

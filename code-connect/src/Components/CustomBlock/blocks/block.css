@@ -272,27 +272,6 @@
   }
 }
 
-.react-flow__edge-path {
-  transition: stroke 0.4s ease, stroke-width 0.4s ease;
-  z-index: 1000;
-}
-
-.react-flow__edge-path:hover {
-  cursor: pointer;
-}
-
-.react-flow__edge-path.executing {
-  animation: edgePulse 0.4s ease-in-out infinite;
-}
-
-.react-flow__edge-label {
-  color: #555;
-}
-
-.dark-mode .react-flow__edge-label {
-  color: #fff;
-}
-
 @keyframes edgePulse {
   0% {
     stroke-width: 3;
