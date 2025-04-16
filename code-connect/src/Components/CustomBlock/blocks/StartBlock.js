@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaPlay, FaQuestion } from 'react-icons/fa';
+import { FaPlay} from 'react-icons/fa';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -22,7 +23,7 @@ const StartBlock = ({ id, data, selected, executing }) => {
         className="help-button"
         title="How to use this block"
       >
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}

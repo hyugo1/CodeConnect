@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaPrint, FaQuestion } from 'react-icons/fa';
+import PrintIcon from '@mui/icons-material/Print';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -30,7 +31,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
         className="help-button"
         title="How to use this block"
       >
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}
@@ -38,7 +39,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
         title="Print Block Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaPrint className="block-icon" />
+      <PrintIcon className="block-icon" />
       <div>{data.label || 'Print'}</div>
       <Handle
         type="target"

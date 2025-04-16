@@ -3,7 +3,8 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaSync, FaQuestion } from 'react-icons/fa';
+import LoopIcon from '@mui/icons-material/Loop';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -39,7 +40,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         className="help-button"
         title="How to use this block"
       >
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}
@@ -47,7 +48,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
         title="While Block Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaSync className="block-icon" />
+      <LoopIcon className="block-icon" />
       <div>{data.label || 'While'}</div>
       <Handle
         type="target"

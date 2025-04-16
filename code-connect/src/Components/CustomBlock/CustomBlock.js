@@ -8,7 +8,7 @@ import IfBlock from './blocks/IfBlock';
 import WhileStartBlock from './blocks/WhileStartBlock';
 import PrintBlock from './blocks/PrintBlock';
 import SetVariableBlock from './blocks/SetVariableBlock';
-import ChangeVariableBlock from './blocks/ChangeVariableBlock';
+import AdjustVariableBlock from './blocks/AdjustVariableBlock';
 import DummyBlock from './blocks/DummyBlock';
 import MoveBlock from './blocks/MoveBlock';
 import JoinBlock from './blocks/JoinBlock';
@@ -22,7 +22,7 @@ const blockMapping = {
   whileStart: WhileStartBlock,
   print: PrintBlock,
   setVariable: SetVariableBlock,
-  changeVariable: ChangeVariableBlock,
+  adjustVariable: AdjustVariableBlock,
   dummy: DummyBlock,
   move: MoveBlock,
   rotate : RotateBlock,

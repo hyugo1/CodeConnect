@@ -279,10 +279,10 @@ function FlowchartCanvas({
         } else {
           // For other block types, simply replace the dummy block.
           let newBlockData;
-          if (newBlockType === 'changeVariable') {
+          if (newBlockType === 'adjustVariable') {
             newBlockData = {
               label: 'Adjust Variable',
-              blockType: 'changeVariable',
+              blockType: 'adjustVariable',
               varName: '',
               varValue: '',
             };
@@ -473,7 +473,7 @@ function FlowchartCanvas({
       } else if (
         blockType === 'start' ||
         blockType === 'end' ||
-        blockType === 'changeVariable' ||
+        blockType === 'adjustVariable' ||
         blockType === 'setVariable' ||
         blockType === 'move' ||
         blockType === 'rotate' ||

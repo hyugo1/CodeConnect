@@ -264,7 +264,7 @@ export function useFlowchartExecutor(
         }
         break;
 
-      case 'changeVariable':
+      case 'adjustVariable':
         if (block.data.varName && context.variables.hasOwnProperty(block.data.varName)) {
           try {
             if (block.data.valueType === 'string') {

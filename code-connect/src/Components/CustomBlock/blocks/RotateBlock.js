@@ -1,7 +1,9 @@
-// src/Components/CustomBlock/blocks/RotateBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaArrowLeft, FaArrowRight, FaArrowsAltH, FaQuestion } from 'react-icons/fa';
+import Rotate90DegreesCcwIcon from '@mui/icons-material/Rotate90DegreesCcw';
+import Rotate90DegreesCwIcon from '@mui/icons-material/Rotate90DegreesCw';
+import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -27,9 +29,7 @@ const RotateBlock = ({ id, data, selected, executing }) => {
   • Then, choose a direction from the dropdown.
   `;
   
-  // Rename the handler to update "degrees" (instead of "distance")
   const handleDegreesChange = (e) => {
-    // Save degrees as a number
     const newDegrees = parseInt(e.target.value, 10) || 0;
     updateNodeData({ degrees: newDegrees });
   };
@@ -38,23 +38,22 @@ const RotateBlock = ({ id, data, selected, executing }) => {
     updateNodeData({ rotateDirection: e.target.value });
   };
 
-  // Choose an icon based on rotateDirection
-  let icon = null;
+  let icon;
   switch (data.rotateDirection) {
     case 'left':
-      icon = <FaArrowLeft className="block-icon" />;
+      icon = <Rotate90DegreesCcwIcon className="block-icon" />;
       break;
     case 'right':
-      icon = <FaArrowRight className="block-icon" />;
+      icon = <Rotate90DegreesCwIcon className="block-icon" />;
       break;
     default:
-      icon = <FaArrowsAltH className="block-icon" />;
+      icon = <ThreeSixtyIcon className="block-icon" />;
   }
 
   return (
     <div className={`block-container rotate-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
       <button onClick={() => setShowHelp(true)} className="help-button" title="How to use this block">
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}

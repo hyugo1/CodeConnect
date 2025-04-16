@@ -9,7 +9,7 @@
   --block-selected-border: rgba(239, 98, 175);
   --block-shadow: rgba(0, 0, 0, 0.3);
   --transition-time: 0.3s;
-  --operand-width: 108px;
+  --operand-width: 110px;
   --operator-width: 60px;
 }
 
@@ -112,7 +112,15 @@
   min-height: 30px;
   justify-content: center;
   align-items: center;
+  width: 230px;
 }
+.join-block .block-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* gap: 4px; */
+}
+
 .dark-mode .block-container {
   color: rgb(25,26,30);
 }

@@ -1,15 +1,16 @@
-// src/Components/blocks/ChangeVariableBlock.js
+// src/Components/blocks/AdjustVariableBlock.js
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaPlusCircle, FaQuestion } from 'react-icons/fa';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const ChangeVariableBlock = ({ id, data, selected, executing }) => {
+const AdjustVariableBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
 
@@ -38,7 +39,7 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
       className={`block-container change-variable-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
     >
       <button onClick={() => setShowHelp(true)} className="help-button" title="How to use this block">
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}
@@ -46,8 +47,8 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
         title="Adjust Variable Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaPlusCircle className="block-icon" />
-      <div>{data.label || 'Adjust Variable'}</div>
+      <AddCircleIcon className="block-icon" />
+      <div>{'Adjust Variable'}</div>
       <Handle
         type="target"
         position={Position.Top}
@@ -90,8 +91,8 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
           type="number"
           placeholder={
             (data.valueType || 'number') === 'number'
-              ? 'numerical value'
-              : 'text value'
+              ? 'Numerical Value'
+              : 'Text Value'
           }
           value={data.varValue || ''}
           onChange={handleVarValueChange}
@@ -102,4 +103,4 @@ const ChangeVariableBlock = ({ id, data, selected, executing }) => {
   );
 };
 
-export default ChangeVariableBlock;
+export default AdjustVariableBlock;

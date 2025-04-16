@@ -84,7 +84,7 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
 
-      case 'changevariable':
+      case 'adjustVariable':
         if (block.data.varName) {
           const vt = block.data.valueType || 'number';
           if (vt === 'string') {

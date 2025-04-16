@@ -3,7 +3,12 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaArrowUp, FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowsAltH, FaQuestion } from 'react-icons/fa';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -40,19 +45,19 @@ const MoveBlock = ({ id, data, selected, executing }) => {
   let icon = null;
   switch (data.direction) {
     case 'up':
-      icon = <FaArrowUp className="block-icon" />;
+      icon = <ArrowUpwardIcon className="block-icon" />;
       break;
     case 'down':
-      icon = <FaArrowDown className="block-icon" />;
+      icon = <ArrowDownwardIcon className="block-icon" />;
       break;
     case 'left':
-      icon = <FaArrowLeft className="block-icon" />;
+      icon = <ArrowBackIcon className="block-icon" />;
       break;
     case 'right':
-      icon = <FaArrowRight className="block-icon" />;
+      icon = <ArrowForwardIcon className="block-icon" />;
       break;
     default:
-      icon = <FaArrowsAltH className="block-icon" />;
+      icon = <CompareArrowsIcon className="block-icon" />;
   }
 
   return (
@@ -62,7 +67,7 @@ const MoveBlock = ({ id, data, selected, executing }) => {
         className="help-button"
         title="How to use this block"
       >
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}
@@ -71,7 +76,7 @@ const MoveBlock = ({ id, data, selected, executing }) => {
         onClose={() => setShowHelp(false)}
       />
       {icon}
-      <div>{data.label || 'Move Character'}</div>
+      <div>{'Move Character'}</div>
       <Handle
         type="target"
         position={Position.Top}

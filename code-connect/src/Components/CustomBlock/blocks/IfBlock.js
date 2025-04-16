@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaCodeBranch, FaQuestion } from 'react-icons/fa';
+import CallSplitIcon from '@mui/icons-material/CallSplit';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -41,7 +42,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
         className="help-button"
         title="How to use this block"
       >
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}
@@ -49,7 +50,7 @@ const IfBlock = ({ id, data, selected, executing }) => {
         title="If Then Block Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaCodeBranch className="block-icon" />
+      <CallSplitIcon className="block-icon" />
       <div>{data.label || 'If Then'}</div>
       <Handle
         type="target"

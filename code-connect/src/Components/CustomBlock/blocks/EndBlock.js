@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaStop, FaQuestion } from 'react-icons/fa';
+import { FaStop} from 'react-icons/fa';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -17,15 +18,9 @@ const EndBlock = ({ id, data, selected, executing }) => {
   `;
 
   return (
-    <div
-      className={`block-container end-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}
-    >
-      <button
-        onClick={() => setShowHelp(true)}
-        className="help-button"
-        title="How to use this block"
-      >
-        <FaQuestion />
+    <div className={`block-container end-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
+      <button onClick={() => setShowHelp(true)} className="help-button" title="How to use this block">
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}

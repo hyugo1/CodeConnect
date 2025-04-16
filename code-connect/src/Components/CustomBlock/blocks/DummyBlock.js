@@ -1,7 +1,7 @@
-// src/Components/blocks/DummyBlock.js
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaQuestion } from 'react-icons/fa';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -11,7 +11,7 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
   • This block is a placeholder that shows where you can add a new command.
-  • To replace it, simply click on the dummy block and choose the block you want to use.
+  • To replace it, simply click on the placeholder block and choose the block you want to use.
   `;
 
   const handleDrop = (event) => {
@@ -39,7 +39,7 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
       onClick={handleClick}
       role="button"
       tabIndex={0}
-      aria-label="Dummy block – click or drop to replace"
+      aria-label="Placeholder block – click or drop to replace"
     >
       <button
         onClick={(e) => {
@@ -49,7 +49,7 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
         className="help-button"
         title="How to use this block"
       >
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}
@@ -57,7 +57,9 @@ const DummyBlock = ({ id, data, selected, executing, onReplace }) => {
         title="Placeholder Block Help"
         onClose={() => setShowHelp(false)}
       />
-      <div>{data.label || 'Dummy Block'}</div>
+      {/* Using HourglassEmptyIcon as an alternative for a placeholder */}
+      <HourglassEmptyIcon className="block-icon" />
+      <div>{data.label || 'Placeholder'}</div>
       <Handle
         type="target"
         position={Position.Top}

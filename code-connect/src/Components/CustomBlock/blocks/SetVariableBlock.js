@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaPenFancy, FaQuestion } from 'react-icons/fa';
+import CreateIcon from '@mui/icons-material/Create';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -44,7 +45,7 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
         className="help-button"
         title="How to use this block"
       >
-        <FaQuestion />
+        <HelpOutlineIcon />
       </button>
       <HelpModal
         visible={showHelp}
@@ -52,8 +53,8 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
         title="Set Variable Help"
         onClose={() => setShowHelp(false)}
       />
-      <FaPenFancy className="block-icon" />
-      <div>{data.label || 'Set Variable'}</div>
+      <CreateIcon className="block-icon" />
+      <div>{'Set Variable'}</div>
       <Handle
         type="target"
         position={Position.Top}
