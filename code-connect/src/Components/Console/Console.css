@@ -45,7 +45,7 @@
   height: 150px;
   opacity: 1;
   padding: 10px;
-  background-color: #eee;
+  /* background-color: #eee; */
 }
 
 .code-preview.minimized .console-pre,

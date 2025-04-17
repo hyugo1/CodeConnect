@@ -58,10 +58,12 @@ body, html {
   gap: 10px;
   height: 100%;
   padding: 10px;
-  background-color: #eee;
+  background-color: #f7f9fc;
   border: 2px solid #555;
   box-sizing: border-box;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  transition: width 0.3s;
 }
 
 .right-panel > * {
@@ -128,30 +130,6 @@ body, html {
 
 .character-container {
   position: relative;
-}
-
-.message-bubble {
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: white;
-  border: 2px solid #555;
-  border-radius: 10px;
-  padding: 10px;
-  min-width: 100px;
-  text-align: center;
-}
-
-.message-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 15px 10px 0;
-  border-style: solid;
-  border-color: white transparent;
 }
 
 .panel {

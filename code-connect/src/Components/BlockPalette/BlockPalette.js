@@ -98,7 +98,7 @@ const BlockPalette = ({ onSelectBlock, isDragging, setIsDragging, setCancelDrag,
                       aria-label={`Drag to add ${block.label} block`}
                       style={{ backgroundColor: block.color }} 
                     >
-                      {block.icon}
+                      <div className="icon">{block.icon}</div>
                       <span>{block.label}</span>
                     </div>
                   ))}

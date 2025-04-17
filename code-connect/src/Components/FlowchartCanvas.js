@@ -104,7 +104,7 @@ function FlowchartCanvas({
               y: blockToReplace.position.y + 150,
             },
             data: {
-              label: 'Placeholder (True Action)',
+              label: 'Placeholder (True Path)',
               blockType: 'dummy',
               dummyAllowed: true,
             },
@@ -117,7 +117,7 @@ function FlowchartCanvas({
               y: blockToReplace.position.y + 150,
             },
             data: {
-              label: 'Placeholder (False Action)',
+              label: 'Placeholder (False Path)',
               blockType: 'dummy',
               dummyAllowed: true,
             },
@@ -360,13 +360,13 @@ function FlowchartCanvas({
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX - 150, y: snappedY + 150 },
-          data: { label: 'Placeholder (True Action)', blockType: 'dummy', dummyAllowed: true },
+          data: { label: 'Placeholder (True Path)', blockType: 'dummy', dummyAllowed: true },
         };
         const dummyFalse = {
           id: uuidv4(),
           type: 'custom',
           position: { x: snappedX + 150, y: snappedY + 150 },
-          data: { label: 'Placeholder (False Action)', blockType: 'dummy', dummyAllowed: true },
+          data: { label: 'Placeholder (False Path)', blockType: 'dummy', dummyAllowed: true },
         };
 
         const joinBlock = {

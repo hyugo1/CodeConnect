@@ -55,6 +55,31 @@
   background-color: #fff;
   border-radius: 4px;
   /* margin-bottom: 20px; */
+  transition:
+  transform var(--transition-time) ease,
+  background-color var(--transition-time);
+  display: inline-block;
+}
+
+.aside-container.collapsed .collapse-button,
+.right-panel.collapsed .collapse-button {
+  transform: rotate(180deg);
+}
+
+.collapse-button:hover {
+  transform: scale(1.05);
+}
+
+.aside-container.collapsed .collapse-button:hover {
+  transform: rotate(180deg) scale(1.1);
+}
+
+.collapse-button:active {
+  transform: scale(0.9);
+}
+
+.collapse-button:hover {
+  background-color: var(--hover-bg);
 }
 
 .palette-title {
@@ -63,12 +88,9 @@
   color: var(--text-muted);
   margin: 0 0 15px;
   font-weight: 500;
+  font-family: "Inter", sans-serif;
 }
 
-.collapse-button:hover {
-  background-color: var(--hover-bg);
-  border-radius: 4px;
-}
 
 .blocks-container {
   max-height: calc(100vh - 30vh);
@@ -90,12 +112,14 @@
   padding: 10px;
   display: flex;
   align-items: center;
+  line-height: 0;
   cursor: grab;
   background-color: var(--block-bg);
   border: 1px solid var(--block-border);
   border-radius: 8px;
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s,
               background-color 0.3s;
+  font-size: 1.1rem;
 }
 
 .dndblock:hover {
@@ -109,3 +133,20 @@
   font-weight: 500;
   color: var(--text-main);
 }
+
+.dndblock svg:not(.MuiSvgIcon-root) {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  margin-right: 1em;
+  vertical-align: middle;
+}
+
+.dndblock svg.MuiSvgIcon-root {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.41em;
+  vertical-align: middle;
+}
+

@@ -585,7 +585,8 @@ export function useFlowchartExecutor(
           setErrorBlockId(block.id);
           setTimeout(() => setErrorBlockId(null), 5000);
         }
-        break;
+        setConsoleOutput(outputs.join('\n'));
+        return;
     }
 
     // Process all connected edges with individual error handling
