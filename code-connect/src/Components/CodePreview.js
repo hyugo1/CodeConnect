@@ -5,7 +5,7 @@ import { generateJavaScriptCode } from '../hooks/useCodeGenerator';
 import './Console/Console.css';
 
 const CodePreview = ({ blocks, edges }) => {
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
   const generatedCode = generateJavaScriptCode(blocks, edges);
 
   const toggleMinimize = () => {

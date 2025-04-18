@@ -1,15 +1,111 @@
+/* src/Components/RightPanel/RightPanel.css */
+
+/* bring in the hover color you already use elsewhere */
+:root {
+  --transition-time: 0.3s;
+  --hover-bg:        #e0e0e0;
+}
+
+.right-panel {
+  position: relative; 
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  width: 300px;
+  min-width: 60px;
+  max-width: 800px;
+
+  height: 100%;
+  padding: 10px;
+  background-color: #f7f9fc;
+  border: 2px solid #929292;
+  box-sizing: border-box;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  /* animate width on collapse/expand */
+  transition:
+    width var(--transition-time) ease,
+    background-color var(--transition-time),
+    border-color var(--transition-time);
+}
+
+/* while dragging the gutter, kill that width transition */
+.right-panel.resizing {
+  transition: none !important;
+}
+
+/* collapsed state */
 .right-panel.collapsed {
   width: 60px;
 }
 
+/* left‑edge drag handle */
+.resizer-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  cursor: ew-resize;
+  background-color: rgba(0,0,0,0.05);
+  z-index: 10;
+}
+
+/* collapse/expand button */
 .collapse-button {
   width: 100%;
   padding: 5px;
+  margin-bottom: 20px;
   cursor: pointer;
-  border: 2px solid #555;
+  border: 2px solid #929292;
   background-color: #fff;
   border-radius: 4px;
-  margin-bottom: 20px;
+
+  /* same font as everything else */
+  font-family: 'kumbh-sans', sans-serif;
+  font-size: 1rem;
+  text-align: center;
+  line-height: 1;
+
+  /* animate the transform & background-color */
+  transition:
+    transform var(--transition-time),
+    background-color var(--transition-time);
+}
+
+/* rotate the button when collapsed */
+.right-panel.collapsed .collapse-button {
+  transform: rotate(180deg);
+}
+
+/* hover state */
+.right-panel .collapse-button:hover {
+  transform: scale(1.05);
+  background-color: var(--hover-bg);
+}
+
+/* hover when collapsed: keep the rotation + the scale */
+.right-panel.collapsed .collapse-button:hover {
+  transform: rotate(180deg) scale(1.1);
+}
+
+/* active (pressed) state */
+.right-panel .collapse-button:active {
+  transform: scale(0.9);
+}
+
+/* dark‑mode tweaks if you need them */
+.dark-mode .right-panel {
+  background-color: #34495e;
+  color: #ecf0f1;
+  border-color: #aaa;
+}
+
+.dark-mode .collapse-button {
+  background-color: #555;
+  color: #ecf0f1;
 }
 
 .dark-mode .aside-container {

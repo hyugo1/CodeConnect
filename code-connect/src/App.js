@@ -1,6 +1,6 @@
 // src/App.js
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import BlockPalette from './Components/BlockPalette/BlockPalette';
 import FlowchartCanvas from './Components/FlowchartCanvas';
@@ -24,13 +24,15 @@ function App() {
   const [blocks, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
 
+  const reactFlowWrapper = useRef(null);
+
   const handleSelectBlock = useCallback((blockType) => {
     console.log(`Block selected from left palette: ${blockType}`);
   }, []);
 
   return (
     <div className="App">
-      <Navbar blocks={blocks} edges={edges} setNodes={setNodes} setEdges={setEdges} />
+      <Navbar blocks={blocks} edges={edges} setNodes={setNodes} setEdges={setEdges} reactFlowWrapperRef={reactFlowWrapper}/>
       <Toaster/>
       <ToastContainer />
       <div className="app-container">
@@ -41,6 +43,7 @@ function App() {
           setCancelDrag={setCancelDrag}
         />
         <ReactFlowProvider>
+        <div className="flowchart-wrapper" ref={reactFlowWrapper}>
           <FlowchartCanvas
             blocks={blocks}
             setNodes={setNodes}
@@ -59,6 +62,7 @@ function App() {
             setCancelDrag={setCancelDrag}
             setIsDragging={setIsDragging}
           />
+          </div>
         </ReactFlowProvider>
         <RightPanel
           characterMessage={characterMessage}

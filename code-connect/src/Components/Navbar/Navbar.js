@@ -1,5 +1,7 @@
 // src/Components/Navbar/Navbar.js
 
+import html2canvas from 'html2canvas';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { auth, db, googleProvider } from '../../config/firebase';
 import {
@@ -34,7 +36,7 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import LoginIcon from '@mui/icons-material/Login';
 
-const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
+const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [signinDropdownOpen, setsigninDropdownOpen] = useState(false);
    // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide', 'settings', 'examples'
@@ -81,6 +83,37 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
       localStorage.setItem('guideModalShown', 'true');
     }
   }, []);
+
+  // new: snapshot the canvas and download as PNG
+  const handleSaveAsImage = async () => {
+    const wrapper = reactFlowWrapperRef.current;
+    if (!reactFlowWrapperRef?.current) {
+      if (!wrapper) return toast.error('Could not capture the canvas.');
+      return;
+    }
+    wrapper.classList.add('exporting');
+    try {
+      const canvas = await html2canvas(wrapper, {
+        backgroundColor: null,
+        scale: 2,
+        ignoreElements: (el) => {
+          return el.closest('.react-flow__controls')
+              || el.closest('.react-flow__minimap')
+              || el.classList.contains('control-panel');
+        }
+      });
+      const link = document.createElement('a');
+      link.download = `${projectName.trim() || 'code-connect-project'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      toast.success('Project image saved!');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to save image.');
+    } finally {
+      wrapper.classList.remove('exporting');
+    }
+  };
 
   const getUserProjects = useCallback(async () => {
     if (currentUser) {
@@ -476,6 +509,10 @@ const Navbar = ({ blocks, edges, setNodes, setEdges }) => {
             <button onClick={handleSaveAsDatabase} className="btn modal-btn account-btn">
               <SaveIcon style={{ marginRight: '0.5rem' }} />
               Save to Your Account
+            </button>
+            <button onClick={handleSaveAsImage} className="btn modal-btn image-btn">
+              <CameraAltIcon style={{ marginRight: '0.5rem' }} />
+              Save as Image
             </button>
           </div>
         </AccessibleModal>

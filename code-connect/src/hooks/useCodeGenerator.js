@@ -19,49 +19,38 @@ export function generateJavaScriptCode(blocks, edges) {
   // Helper function: if the right operand is not a number and not quoted, wrap it in quotes.
   function autoQuote(operand) {
     if (typeof operand !== 'string' || operand.trim() === '') return operand;
-    const trimmed = operand.trim();
-    // If it’s a valid variable name (identifier), return it as-is.
-    if (/^[a-zA-Z_$][a-zA-Z_$0-9]*$/.test(trimmed)) return trimmed;
-    // If it can be parsed as a number, leave it as a number.
-    if (!isNaN(parseFloat(trimmed))) return trimmed;
-    // If already quoted, return as-is.
-    if (trimmed.startsWith('"') || trimmed.startsWith("'")) return trimmed;
-    // Otherwise, wrap it in quotes.
-    return `"${trimmed}"`;
+    const t = operand.trim();
+    if (/^[a-zA-Z_$][a-zA-Z_$0-9]*$/.test(t)) return t;
+    if (!isNaN(parseFloat(t))) return t;
+    if (t.startsWith('"') || t.startsWith("'")) return t;
+    return `"${t}"`;
   }
 
   /**
-   * Recursively traverse blocks to build code.
-   *
-   * @param {string} blockId - The current block's ID.
-   * @param {number} indentLevel - Current indentation level.
-   * @param {Set<string>} visited - Set of already visited block IDs.
+   * Recursively walk the flowchart.
+   * @param {string} id
+   * @param {number} indentLevel
+   * @param {Set<string>} visited
    */
-  function traverse(blockId, indentLevel = 0, visited = new Set()) {
+  function traverse(id, indentLevel = 0, visited = new Set()) {
     const indent = '  '.repeat(indentLevel);
+    if (visited.has(id)) return;
+    visited.add(id);
 
-    // Prevent infinite recursion.
-    if (visited.has(blockId)) {
-      // codeLines.push(indent + `// Cycle detected: block ${blockId} already processed.`);
-      return;
-    }
-    visited.add(blockId);
-
-    const block = blockMap[blockId];
+    const block = blockMap[id];
     if (!block) {
-      codeLines.push(indent + `// Error: Block ${blockId} not found`);
+      codeLines.push(indent + `// Error: Block ${id} not found`);
       return;
     }
 
-    // Convert block type to lowercase for case-insensitive matching.
     const type = (block.data.blockType || '').toLowerCase();
 
     switch (type) {
       case 'start':
         codeLines.push(indent + 'function runFlowchart() {');
         {
-          const next = getNextBlock(blockId);
-          if (next) traverse(next, indentLevel + 1, new Set(visited));
+          const next = getNext(id);
+          if (next) traverse(next, indentLevel+1, new Set(visited));
         }
         codeLines.push(indent + '}');
         break;
@@ -79,15 +68,14 @@ export function generateJavaScriptCode(blocks, edges) {
           }
         }
         {
-          const next = getNextBlock(blockId);
+          const next = getNext(id);
           if (next) traverse(next, indentLevel, new Set(visited));
         }
         break;
 
-      case 'adjustVariable':
+      case 'adjustvariable':
         if (block.data.varName) {
-          const vt = block.data.valueType || 'number';
-          if (vt === 'string') {
+          if (block.data.valueType === 'string') {
             codeLines.push(indent + `${block.data.varName} = "${block.data.varValue}";`);
           } else {
             const op = block.data.operator || '+';
@@ -95,32 +83,31 @@ export function generateJavaScriptCode(blocks, edges) {
           }
         }
         {
-          const next = getNextBlock(blockId);
+          const next = getNext(id);
           if (next) traverse(next, indentLevel, new Set(visited));
         }
         break;
 
       case 'if':
         if (block.data.leftOperand && block.data.rightOperand) {
-          const operator = block.data.operator || '==';
+          const op = block.data.operator || '==';
           const left = block.data.leftOperand;
           const right = autoQuote(block.data.rightOperand);
-          const condition = `${left} ${operator} ${right}`;
-          codeLines.push(indent + `if (${condition}) {`);
-          const trueBranch = getNextBlock(blockId, 'yes');
-          if (trueBranch) traverse(trueBranch, indentLevel + 1, new Set(visited));
-          codeLines.push(indent + '} else {');
-          const falseBranch = getNextBlock(blockId, 'no');
-          if (falseBranch) traverse(falseBranch, indentLevel + 1, new Set(visited));
-          codeLines.push(indent + '}');
+          codeLines.push(indent + `if (${left} ${op} ${right}) {`);
+          const tBr = getNext(id, 'yes');
+          if (tBr) traverse(tBr, indentLevel+1, new Set(visited));
+          codeLines.push(indent + `} else {`);
+          const fBr = getNext(id, 'no');
+          if (fBr) traverse(fBr, indentLevel+1, new Set(visited));
+          codeLines.push(indent + `}`);
         } else {
-          codeLines.push(indent + '// Incomplete condition in if then block');
+          codeLines.push(indent + `// Incomplete condition in if block`);
         }
         break;
 
       case 'join':
         {
-          const next = getNextBlock(blockId);
+          const next = getNext(id);
           if (next) traverse(next, indentLevel, new Set(visited));
         }
         break;
@@ -129,59 +116,56 @@ export function generateJavaScriptCode(blocks, edges) {
         if (block.data.leftOperand && block.data.operator && block.data.rightOperand) {
           const left = block.data.leftOperand;
           const right = autoQuote(block.data.rightOperand);
-          const condition = `${left} ${block.data.operator} ${right}`;
-          codeLines.push(indent + `while (${condition}) {`);
-          const bodyBranch = getNextBlock(blockId, 'body');
-          if (bodyBranch) traverse(bodyBranch, indentLevel + 1, new Set(visited));
+          codeLines.push(indent + `while (${left} ${block.data.operator} ${right}) {`);
+          const body = getNext(id, 'body');
+          if (body) traverse(body, indentLevel+1, new Set(visited));
           codeLines.push(indent + `}`);
-          const exitBranch = getNextBlock(blockId, 'exit');
-          if (exitBranch) traverse(exitBranch, indentLevel, new Set(visited));
+          const exit = getNext(id, 'exit');
+          if (exit) traverse(exit, indentLevel, new Set(visited));
         } else {
-          codeLines.push(indent + '// Incomplete while condition');
+          codeLines.push(indent + `// Incomplete while condition`);
         }
         break;
 
-      case 'print': {
-        let msg = block.data.message || '';
-        codeLines.push(indent + `console.log(\`${msg}\`);`);
-        const next = getNextBlock(blockId);
-        if (next) traverse(next, indentLevel, new Set(visited));
+      case 'print':
+        codeLines.push(indent + `console.log(\`${block.data.message||''}\`);`);
+        {
+          const next = getNext(id);
+          if (next) traverse(next, indentLevel, new Set(visited));
+        }
         break;
-      }
-      
+
       case 'move':
-        if (block.data.distance && block.data.direction) {
+        if (block.data.direction && block.data.distance != null) {
           codeLines.push(
-            indent +
-              `moveCharacter(${block.data.direction}, ${block.data.distance});`
+            indent + `moveCharacter(${block.data.direction}, ${block.data.distance});`
           );
         } else {
-          codeLines.push(indent + '// Incomplete move block data');
+          codeLines.push(indent + `// Incomplete move block data`);
         }
         {
-          const next = getNextBlock(blockId);
+          const next = getNext(id);
           if (next) traverse(next, indentLevel, new Set(visited));
         }
         break;
-      
-      case 'rotate': {
-        // Get degrees and rotation direction from block data.
-        let degrees = parseInt(block.data.degrees, 10);
-        const direction = block.data.rotateDirection;
-        // Calculate the effective rotation value.
-        const rotationValue = (direction === 'left') ? -degrees : degrees;
-        codeLines.push(indent + `rotateCharacter(${rotationValue});`);
+
+      case 'rotate':
         {
-          const next = getNextBlock(blockId);
+          const deg = parseInt(block.data.degrees,10) || 0;
+          const dir = block.data.rotateDirection;
+          const val = dir==='left' ? -deg : deg;
+          codeLines.push(indent + `rotateCharacter(${val});`);
+        }
+        {
+          const next = getNext(id);
           if (next) traverse(next, indentLevel, new Set(visited));
         }
         break;
-      }
 
       default:
         codeLines.push(indent + `// Unknown block type: ${block.data.blockType}`);
         {
-          const next = getNextBlock(blockId);
+          const next = getNext(id);
           if (next) traverse(next, indentLevel, new Set(visited));
         }
         break;
@@ -189,27 +173,21 @@ export function generateJavaScriptCode(blocks, edges) {
   }
 
   /**
-   * Returns the target block for the given block.
-   *
-   * @param {string} currentBlockId - The current block's ID.
-   * @param {string} [sourceHandleFilter] - Optional filter for the edge's sourceHandle.
-   * @returns {string|null} - The target block's ID, or null if none.
+   * Find next block ID by outgoing edge.
+   * @param {string} from
+   * @param {string} [handle]
    */
-  function getNextBlock(currentBlockId, sourceHandleFilter) {
-    const outgoing = edges.find((edge) => {
-      if (edge.source !== currentBlockId) return false;
-      if (sourceHandleFilter) {
-        return edge.sourceHandle && edge.sourceHandle.startsWith(sourceHandleFilter);
-      }
+  function getNext(from, handle) {
+    const e = edges.find(ed => {
+      if (ed.source !== from) return false;
+      if (handle) return ed.sourceHandle && ed.sourceHandle.startsWith(handle);
       return true;
     });
-    return outgoing ? outgoing.target : null;
+    return e ? e.target : null;
   }
 
-  const startBlock = blocks.find(
-    (block) => (block.data.blockType || '').toLowerCase() === 'start'
-  );
-  if (!startBlock) return '// Error: No start block found.';
-  traverse(startBlock.id);
+  const start = blocks.find(b => (b.data.blockType||'').toLowerCase()==='start');
+  if (!start) return '// Error: No start block found.';
+  traverse(start.id);
   return codeLines.join('\n');
 }

@@ -8,6 +8,7 @@
   --block-bg:        #ffffff;
   --block-border:    #555;
   --hover-bg:        #e0e0e0;
+  --transition-time: 0.3s;
 }
 
 .dark-mode {
@@ -21,19 +22,40 @@
 }
 
 .aside-container {
+  position: relative;
+  min-width: 30px; 
+  max-width: 350px;
   padding: 10px;
-  width: 250px;
   height: calc(100vh - 60px);
   background-color: var(--aside-bg);
   border-right: 1px solid var(--aside-border);
+  border: 2px solid #929292;
   box-sizing: border-box;
   font-family: 'Inter', sans-serif;
-  transition: width 0.3s ease, background-color 0.3s, border-color 0.3s;
+  transition:
+    width var(--transition-time) ease,
+    background-color var(--transition-time),
+    border-color var(--transition-time);
   color: var(--text-main);
+}
+
+.aside-container.resizing {
+  transition: none !important;
 }
 
 .aside-container.collapsed {
   width: 60px;
+}
+
+.resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: ew-resize;
+  background-color: rgba(0,0,0,0.05);
+  z-index: 10;
 }
 
 .aside-inner {
@@ -45,29 +67,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: #929292;
 }
 
 .collapse-button {
   width: 100%;
   padding: 5px;
   cursor: pointer;
-  border: 2px solid #555;
+  /* border: 2px solid #555; */
   background-color: #fff;
   border-radius: 4px;
-  /* margin-bottom: 20px; */
   transition:
-  transform var(--transition-time) ease,
-  background-color var(--transition-time);
-  display: inline-block;
+    transform var(--transition-time),
+    background-color var(--transition-time);
+  color: #929292;
 }
 
-.aside-container.collapsed .collapse-button,
-.right-panel.collapsed .collapse-button {
+.aside-container.collapsed .collapse-button {
   transform: rotate(180deg);
 }
 
 .collapse-button:hover {
   transform: scale(1.05);
+  background-color: var(--hover-bg);
 }
 
 .aside-container.collapsed .collapse-button:hover {
@@ -88,9 +110,7 @@
   color: var(--text-muted);
   margin: 0 0 15px;
   font-weight: 500;
-  font-family: "Inter", sans-serif;
 }
-
 
 .blocks-container {
   max-height: calc(100vh - 30vh);
@@ -108,18 +128,22 @@
 }
 
 .dndblock {
-  margin: 10px 0;
-  padding: 10px;
   display: flex;
   align-items: center;
-  line-height: 0;
+  flex-wrap: wrap; 
+  margin: 10px 0;
+  padding: 10px;
   cursor: grab;
   background-color: var(--block-bg);
   border: 1px solid var(--block-border);
   border-radius: 8px;
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s,
-              background-color 0.3s;
-  font-size: 1.1rem;
+  max-width: 300px;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    border-color var(--transition-time),
+    background-color var(--transition-time);
+  font-size: 1rem;
 }
 
 .dndblock:hover {
@@ -128,14 +152,21 @@
   border-color: var(--hover-bg);
 }
 
+.dndblock .icon {
+  flex-shrink: 0;
+  line-height: 0;
+}
+
 .dndblock span {
   margin-left: 8px;
+  margin-top: 4px;  
+  line-height: 1.2; 
+  white-space: normal;
   font-weight: 500;
   color: var(--text-main);
 }
 
 .dndblock svg:not(.MuiSvgIcon-root) {
-  flex-shrink: 0;
   width: 1em;
   height: 1em;
   margin-right: 1em;
@@ -143,10 +174,8 @@
 }
 
 .dndblock svg.MuiSvgIcon-root {
-  flex-shrink: 0;
   width: 1em;
   height: 1em;
   margin-right: 0.41em;
   vertical-align: middle;
 }
-
