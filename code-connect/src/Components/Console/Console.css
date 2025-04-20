@@ -46,6 +46,7 @@
   opacity: 1;
   padding: 10px;
   /* background-color: #eee; */
+  color: black;
 }
 
 .code-preview.minimized .console-pre,

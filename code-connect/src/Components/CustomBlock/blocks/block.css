@@ -339,11 +339,12 @@
 
 /* Replacement Success Flash */
 @keyframes flash {
-  0% { background-color: transparent; }
-  50% { background-color: var(--block-replacement-bg); }
-  100% { background-color: transparent; }
+  0% { background-color: transparent; transform: scale(1);}
+  50% { background-color: var(--block-replacement-bg); transform: scale(1.2);  }
+  100% { background-color: transparent; transform: scale(1);}
 }
 
 .replacement-success {
   animation: flash 1s ease-out forwards;
+  transform-origin: center center;
 }

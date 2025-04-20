@@ -93,6 +93,7 @@ body, html {
   padding: 10px;
   max-height: 200px;
   overflow-y: auto;
+  color: rgb(0, 0, 0);
 }
 
 .CharacterDisplay {
@@ -224,13 +225,12 @@ body, html {
 }
 
 .dark-mode .aside-container {
-  background-color:  #1F2129;;
+  background-color:  #1e1e1e;;
   color: #ecf0f1;
   border-color: #aaa;
 }
 
 .dark-mode .BlockPalette {
-  background-color: rgb(31,34,38);
   border-color: #aaa;
 }
 

@@ -128,7 +128,9 @@ export function generateJavaScriptCode(blocks, edges) {
         break;
 
       case 'print':
-        codeLines.push(indent + `console.log(\`${block.data.message||''}\`);`);
+        const raw = block.data.message || '';
+        const tpl = raw.replace(/\{([^}]+)\}/g, '${$1}');
+        codeLines.push(indent + `console.log(\`${tpl}\`);`);
         {
           const next = getNext(id);
           if (next) traverse(next, indentLevel, new Set(visited));

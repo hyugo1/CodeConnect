@@ -70,8 +70,7 @@ const RightPanel = ({
         onClick={() => setCollapsed(!collapsed)}
         title={collapsed ? "Expand panel" : "Collapse panel"}
       >
-        {/* plain text arrows inherit the same font */}
-        {collapsed ? '>' : '<'}
+        {collapsed ? '<' : '>'}
       </button>
 
       {!collapsed && (
