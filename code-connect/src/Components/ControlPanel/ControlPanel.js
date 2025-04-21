@@ -13,12 +13,10 @@ const ControlPanel = ({
   setCharacterMessage,
   setActiveBlockId,
   setActiveEdgeId,
-  setPaused,
   selectedNodes, 
   selectedEdges,
   setNodes,
   setEdges,
-  setSpeedMultiplier,
 }) => {
   const resetExecution = useFlowchartReset({
     setConsoleOutput,
@@ -27,7 +25,6 @@ const ControlPanel = ({
     setCharacterMessage,
     setActiveBlockId,
     setActiveEdgeId,
-    setPaused,
   });
 
   const handleDelete = () => {
@@ -78,12 +75,10 @@ ControlPanel.propTypes = {
   setCharacterMessage: PropTypes.func.isRequired,
   setActiveBlockId: PropTypes.func.isRequired,
   setActiveEdgeId: PropTypes.func.isRequired,
-  setPaused: PropTypes.func.isRequired,
   selectedNodes: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedEdges: PropTypes.arrayOf(PropTypes.string).isRequired,
   setNodes: PropTypes.func.isRequired,
   setEdges: PropTypes.func.isRequired,
-  setSpeedMultiplier: PropTypes.func.isRequired,
 };
 
 export default ControlPanel;

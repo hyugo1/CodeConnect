@@ -20,6 +20,8 @@ import React from 'react';
           src={`${process.env.PUBLIC_URL}/orange_blob.png`}
           alt="Character"
           className="character-image"
+          width={48}
+          height={48}
         />
       </div>
     );

@@ -9,7 +9,6 @@ import { useCallback } from 'react';
  * @param {Function} setCharacterMessage - Setter for the character's message.
  * @param {Function} setActiveBlockId - Setter for the active block highlight.
  * @param {Function} setActiveEdgeId - Setter for the active edge highlight.
- * @param {Function} setPaused - Setter to update the pause state (if applicable).
  * @param {Function} [resetExecutionContext] - Optional function to clear any additional execution context.
  * @returns {Function} The resetExecution function.
  */
@@ -20,7 +19,6 @@ const useFlowchartReset = ({
   setCharacterMessage,
   setActiveBlockId,
   setActiveEdgeId,
-  setPaused,
   resetExecutionContext
 }) => {
   const resetExecution = useCallback(() => {
@@ -34,8 +32,6 @@ const useFlowchartReset = ({
     setActiveBlockId(null);
     setActiveEdgeId(null);
 
-    setPaused(false);
-
     if (resetExecutionContext) {
       resetExecutionContext();
     }
@@ -48,7 +44,6 @@ const useFlowchartReset = ({
     setCharacterMessage,
     setActiveBlockId,
     setActiveEdgeId,
-    setPaused,
     resetExecutionContext,
   ]);
 

@@ -103,7 +103,6 @@ export function useFlowchartExecutor(
   setActiveBlockId,
   setActiveEdgeId,
   setErrorBlockId,
-  setPaused,
   setSnackbar
 ) {
   const MAX_VISITS_PER_NODE = 50;
@@ -128,20 +127,6 @@ export function useFlowchartExecutor(
       }
     }
   };
-
-  const setSpeedMultiplier = useCallback((multiplier) => {
-    speedRef.current = multiplier;
-    console.log(`Speed multiplier set to ${multiplier}`);
-  }, []);
-
-  const togglePause = useCallback(() => {
-    setLocalPaused((prev) => {
-      const newVal = !prev;
-      console.log(`Paused: ${newVal}`);
-      setPaused(newVal); // also update parent state if needed
-      return newVal;
-    });
-  }, [setPaused]);
 
   // Context to hold execution variables and character state
   const context = {
@@ -712,7 +697,6 @@ export function useFlowchartExecutor(
     setCharacterPosition({ x: 0, y: 0 });
     speedRef.current = 2;
     setLocalPaused(false);
-    setPaused(false);
 
     // Run validation before executing.
     const validationErrors = validateFlowchart(blocks, edges);
@@ -737,14 +721,10 @@ export function useFlowchartExecutor(
     setActiveBlockId,
     setActiveEdgeId,
     setErrorBlockId,
-    setPaused,
     setSnackbar,
   ]);
 
   return {
     executeFlowchart,
-    setSpeedMultiplier,
-    togglePause,
-    paused,
   };
 }

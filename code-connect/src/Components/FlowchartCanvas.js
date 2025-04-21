@@ -46,7 +46,6 @@ function FlowchartCanvas({
   const [dummyBlockPosition, setDummyBlockPosition] = useState(null);
   const [helpModal, setHelpModal] = useState({ visible: false, title: '', content: '' });
   // A new state for pausing execution – needed for the reset hook.
-  const [paused, setPaused] = useState(false);
 
   const reactFlowWrapper = useRef(null);
   const { project } = useReactFlow();
@@ -526,7 +525,6 @@ function FlowchartCanvas({
     setActiveBlockId,
     setActiveEdgeId,
     setErrorBlockId,
-    setPaused
   );
 
   // Create our new reset function using the reset hook.
@@ -537,7 +535,6 @@ function FlowchartCanvas({
     setCharacterMessage,
     setActiveBlockId,
     setActiveEdgeId,
-    setPaused,
   });
 
   return (
@@ -612,7 +609,6 @@ function FlowchartCanvas({
       <ControlPanel
         executeFlowchart={flowchartExecutor.executeFlowchart}
         resetExecution={resetExecution}
-        setSpeedMultiplier={flowchartExecutor.setSpeedMultiplier}
         selectedNodes={selectedNodes}
         selectedEdges={selectedEdges}
         setNodes={setNodes}
@@ -623,7 +619,6 @@ function FlowchartCanvas({
         setCharacterMessage={setCharacterMessage}
         setActiveBlockId={setActiveBlockId}
         setActiveEdgeId={setActiveEdgeId}
-        setPaused={setPaused}
       />
   
       {paletteVisible && dummyBlockPosition && (
