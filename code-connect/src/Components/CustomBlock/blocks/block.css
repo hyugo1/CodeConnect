@@ -94,7 +94,10 @@
   background-color: #f9f7d8;
   width: var(--conditional-width);
 }
-.print-block {
+.input-block {
+  background-color: #ffcdef;
+}
+.output-block {
   background-color: #ffeeba;
 }
 .set-variable-block {

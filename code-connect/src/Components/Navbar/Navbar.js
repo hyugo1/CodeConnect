@@ -678,7 +678,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
               <strong>Connecting Blocks:</strong> Drag blocks from the block palette and connect them by clicking on their connection points.
             </li>
             <li>
-              <strong>Creating a Flow:</strong> Start with a <em>Start</em> block, then add other blocks like <em>Create Variable</em>, <em>If Then</em>, and <em>Print</em>.
+              <strong>Creating a Flow:</strong> Start with a <em>Start</em> block, then add other blocks like <em>Create Variable</em>, <em>If Then</em>, and <em>Output</em>.
               Connect them in sequence to build your program.
             </li>
             <li>

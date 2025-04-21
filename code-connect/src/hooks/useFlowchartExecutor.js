@@ -87,7 +87,7 @@ export function useFlowchartExecutor(
   const MAX_VISITS    = 50;
   const BLOCK_DELAY   = 800;
   const EDGE_DELAY    = 800;
-  const PRINT_DELAY   = 3000;
+  const OUTPUT_DELAY   = 3000;
   const speedRef      = useRef(2);
   const [paused, setPaused] = useState(false);
   const [inputRequest, setInputRequest] = useState(null);
@@ -372,14 +372,14 @@ export function useFlowchartExecutor(
         break;
       }
 
-      case 'print': {
+      case 'output': {
         let msg = block.data.message || '';
         msg = msg.replace(/\{(\w+)\}/g, (_m, v) =>
           context.variables.hasOwnProperty(v) ? context.variables[v] : _m
         );
-        outputs.push(`Print: ${msg}`);
+        outputs.push(`Output: ${msg}`);
         setCharacterMessage(msg);
-        await delay(PRINT_DELAY);
+        await delay(OUTPUT_DELAY);
         setCharacterMessage('');
         break;
       }

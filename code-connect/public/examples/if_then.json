@@ -49,8 +49,8 @@
         "y": 525
       },
       "data": {
-        "label": "Print",
-        "blockType": "print",
+        "label": "Output",
+        "blockType": "output",
         "dummyAllowed": true,
         "flash": false,
         "className": "replacement-success",
@@ -65,8 +65,8 @@
         "y": 525
       },
       "data": {
-        "label": "Print",
-        "blockType": "print",
+        "label": "Output",
+        "blockType": "output",
         "dummyAllowed": true,
         "flash": false,
         "className": "replacement-success",

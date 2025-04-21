@@ -20,8 +20,8 @@
         "y": 240
       },
       "data": {
-        "label": "Print",
-        "blockType": "print",
+        "label": "Output",
+        "blockType": "output",
         "message": "Hello World!"
       }
     },

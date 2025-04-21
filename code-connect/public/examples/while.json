@@ -63,8 +63,8 @@
         "y": 840
       },
       "data": {
-        "label": "Print",
-        "blockType": "print",
+        "label": "Output",
+        "blockType": "output",
         "message": "x is {x}"
       }
     },

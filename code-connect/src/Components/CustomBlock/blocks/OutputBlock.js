@@ -1,4 +1,4 @@
-// src/Components/CustomBlock/blocks/Printblock.js
+// src/Components/CustomBlock/blocks/Outputblock.js
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
@@ -10,7 +10,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const PrintBlock = ({ id, data, selected, executing }) => {
+const OutputBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
   const helpText = `
@@ -25,7 +25,7 @@ const PrintBlock = ({ id, data, selected, executing }) => {
   };
 
   return (
-    <div className={`block-container print-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
+    <div className={`block-container output-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
       <button
         onClick={() => setShowHelp(true)}
         className="help-button"
@@ -36,11 +36,11 @@ const PrintBlock = ({ id, data, selected, executing }) => {
       <HelpModal
         visible={showHelp}
         helpText={helpText}
-        title="Print Block Help"
+        title="Output Block Help"
         onClose={() => setShowHelp(false)}
       />
       <PrintIcon className="block-icon" />
-      <div>{data.label || 'Print'}</div>
+      <div>{data.label || 'Output'}</div>
       <Handle
         type="target"
         position={Position.Top}
@@ -72,4 +72,4 @@ const PrintBlock = ({ id, data, selected, executing }) => {
   );
 };
 
-export default PrintBlock;
+export default OutputBlock;

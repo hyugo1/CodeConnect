@@ -5,7 +5,7 @@
 ## Key Features
 
 - **Visual Flowchart Editor:**  
-  Drag and drop blocks (such as Start, End, If Then, While, Print, Set/Change Variable, and Move Character) onto the canvas and connect them with intuitive edges.
+  Drag and drop blocks (such as Start, End, If Then, While, Output, Create/Change Variable, and Move Character) onto the canvas and connect them with intuitive edges.
   
 - **Real‑Time Code Generation:**  
   Automatically generate JavaScript code from your flowchart. Preview, copy, and run the generated code to see how your program works.

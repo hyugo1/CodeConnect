@@ -6,7 +6,7 @@ import StartBlock from './blocks/StartBlock';
 import EndBlock from './blocks/EndBlock';
 import IfBlock from './blocks/IfBlock';
 import WhileStartBlock from './blocks/WhileStartBlock';
-import PrintBlock from './blocks/PrintBlock';
+import OutputBlock from './blocks/OutputBlock';
 import createVariableBlock from './blocks/CreateVariableBlock';
 import AdjustVariableBlock from './blocks/AdjustVariableBlock';
 import DummyBlock from './blocks/DummyBlock';
@@ -21,7 +21,7 @@ const blockMapping = {
   end: EndBlock,
   if: IfBlock,
   whileStart: WhileStartBlock,
-  print: PrintBlock,
+  output: OutputBlock,
   createVariable: createVariableBlock,
   adjustVariable: AdjustVariableBlock,
   dummy: DummyBlock,

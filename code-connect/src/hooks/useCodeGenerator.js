@@ -141,7 +141,7 @@ export function generateJavaScriptCode(blocks, edges) {
          }
          break;
 
-      case 'print':
+      case 'output':
         const raw = block.data.message || '';
         const tpl = raw.replace(/\{([^}]+)\}/g, '${$1}');
         codeLines.push(indent + `console.log(\`${tpl}\`);`);

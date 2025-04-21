@@ -477,7 +477,7 @@ function FlowchartCanvas({
         blockType === 'createVariable' ||
         blockType === 'move' ||
         blockType === 'rotate' ||
-        blockType === 'print'
+        blockType === 'output'
       ) {
         const newBlock = {
           id: uuidv4(),

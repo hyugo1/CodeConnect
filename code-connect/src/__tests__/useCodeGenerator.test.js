@@ -94,13 +94,13 @@ describe('generateJavaScriptCode', () => {
   });
 
   // Integration tests: generate code, run it, and verify console output
-  test('program: sums two variables and prints result', () => {
+  test('program: sums two variables and outputs result', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
       { id: '2', data: { blockType: 'createVariable', varName: 'x', varValue: '5', valueType: 'number' } },
       { id: '3', data: { blockType: 'createVariable', varName: 'y', varValue: '3', valueType: 'number' } },
       { id: '4', data: { blockType: 'createVariable', varName: 'z', varValue: 'x + y', valueType: 'number' } },
-      { id: '5', data: { blockType: 'print', message: '${z}' } },
+      { id: '5', data: { blockType: 'output', message: '${z}' } },
       { id: '6', data: { blockType: 'end' } },
     ];
     const edges = [
@@ -118,13 +118,13 @@ describe('generateJavaScriptCode', () => {
     expect(consoleMock.log).toHaveBeenCalledWith('8');
   });
 
-  test('program: print numbers in while loop', () => {
+  test('program: output numbers in while loop', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
       { id: '2', data: { blockType: 'createVariable', varName: 'i', varValue: '0', valueType: 'number' } },
       { id: '3', data: { blockType: 'createVariable', varName: 'limit', varValue: '3', valueType: 'number' } },
       { id: '4', data: { blockType: 'whileStart', leftOperand: 'i', operator: '<', rightOperand: 'limit' } },
-      { id: '5', data: { blockType: 'print', message: '${i}' } },
+      { id: '5', data: { blockType: 'output', message: '${i}' } },
       { id: '6', data: { blockType: 'adjustVariable', varName: 'i', varValue: '1', valueType: 'number', operator: '+' } },
       { id: '7', data: { blockType: 'end' } },
     ];

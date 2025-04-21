@@ -65,8 +65,8 @@ const BlockPalette = ({
     { type: 'end',           label: 'End',             color: '#f9d8d8', icon: <FaStop />,                category: 'Terminal Blocks' },
     { type: 'if',            label: 'If Then',         color: '#d8d8f9', icon: <CallSplitIcon />,         category: 'Control Blocks' },
     { type: 'whileStart',    label: 'While',           color: '#f9f7d8', icon: <LoopIcon />,              category: 'Control Blocks' },
-    { type: 'input',         label: 'Input',           color: '#e0f7fa', icon: <InputIcon />,    category: 'Input/Output Blocks' },
-    { type: 'print',         label: 'Print',           color: '#ffeeba', icon: <PrintIcon />,             category: 'Input/Output Blocks' },
+    { type: 'input',         label: 'Input',           color: '#ffcdef', icon: <InputIcon />,    category: 'Input/Output Blocks' },
+    { type: 'output',         label: 'Output',           color: '#FFECB3', icon: <PrintIcon />,             category: 'Input/Output Blocks' },
     { type: 'createVariable',   label: 'Create Variable',    color: '#e0e0e0', icon: <CreateIcon />,            category: 'Variable Blocks' },
     { type: 'adjustVariable',label: 'Adjust Variable', color: '#e0ffe0', icon: <AddCircleIcon />,         category: 'Variable Blocks' },
     { type: 'move',          label: 'Move Character',  color: '#d8f9f9', icon: <CompareArrowsIcon />,    category: 'Character Action Blocks' },
@@ -94,14 +94,10 @@ const BlockPalette = ({
   }, [isDragging, setCancelDrag, setIsDragging]);
 
   return (
-      <aside
-        className={
-          `aside-container ` +
-          (collapsed   ? 'collapsed ' : '') +
-          (resizing    ? 'resizing'  : '')
-        }
-        style={{ width: collapsed ? 100 : width }}
-      >
+    <aside
+      className={`aside-container ${collapsed ? 'collapsed ' : ''}${resizing ? 'resizing' : ''}`}
+      style={{ width: collapsed ? 100 : width }}
+    >
       {!collapsed && <div className="resizer" onMouseDown={onMouseDownResizer} />}
 
       <div className="aside-inner">
@@ -119,13 +115,13 @@ const BlockPalette = ({
         {!collapsed && (
           <>
             <h3 className="palette-title">
-              {excludeStart ? 'Select a Replacement' : 'BLOCK PALETTE'}
+              {excludeStart ? 'Select Replacement' : 'BLOCK PALETTE'}
             </h3>
             <div className="blocks-container">
-              {Object.keys(grouped).map(category => (
+              {Object.entries(grouped).map(([category, items]) => (
                 <div key={category}>
                   <h4 className="block-category">{category}</h4>
-                  {grouped[category].map(block => (
+                  {items.map(block => (
                     <div
                       key={block.type}
                       className="dndblock"
@@ -133,7 +129,7 @@ const BlockPalette = ({
                       onDragStart={e => onDragStart(e, block.type)}
                       onDragEnd={onDragEnd}
                       draggable
-                      aria-label={`Drag to add ${block.label} block`}
+                      aria-label={`Drag to add ${block.label}`}
                       style={{ backgroundColor: block.color }}
                     >
                       <div className="icon">{block.icon}</div>
