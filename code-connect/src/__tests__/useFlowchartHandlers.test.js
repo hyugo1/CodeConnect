@@ -80,10 +80,10 @@ describe('generateJavaScriptCode', () => {
     expect(code.trim()).toBe(expected);
   });
 
-  test('generates code for setVariable block', () => {
+  test('generates code for createVariable block', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
-      { id: '2', data: { blockType: 'setVariable', varName: 'x', varValue: '10', valueType: 'number' } },
+      { id: '2', data: { blockType: 'createVariable', varName: 'x', varValue: '10', valueType: 'number' } },
       { id: '3', data: { blockType: 'end' } },
     ];
     const edges = [
@@ -102,8 +102,8 @@ describe('generateJavaScriptCode', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
       { id: '2', data: { blockType: 'if', leftOperand: 'x', operator: '>', rightOperand: '5' } },
-      { id: '3', data: { blockType: 'setVariable', varName: 'y', varValue: '1', valueType: 'number' } },
-      { id: '4', data: { blockType: 'setVariable', varName: 'y', varValue: '0', valueType: 'number' } },
+      { id: '3', data: { blockType: 'createVariable', varName: 'y', varValue: '1', valueType: 'number' } },
+      { id: '4', data: { blockType: 'createVariable', varName: 'y', varValue: '0', valueType: 'number' } },
       { id: '5', data: { blockType: 'end' } },
     ];
     const edges = [

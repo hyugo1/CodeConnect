@@ -59,7 +59,7 @@ export function generateJavaScriptCode(blocks, edges) {
         codeLines.push(indent + 'return;');
         break;
 
-      case 'setvariable':
+      case 'createvariable':
         if (block.data.varName) {
           if (block.data.valueType === 'string') {
             codeLines.push(indent + `var ${block.data.varName} = "${block.data.varValue}";`);

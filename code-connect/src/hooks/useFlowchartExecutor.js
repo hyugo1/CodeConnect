@@ -71,11 +71,11 @@ function validateFlowchart(blocks, edges) {
     const type = block.data.blockType;
     const displayName = block.data.label || block.id;
 
-    // For setVariable, ensure variable name is provided and the value is non-empty.
-    if (type === "setVariable") {
+    // For createVariable, ensure variable name is provided and the value is non-empty.
+    if (type === "createVariable") {
       if (!block.data.varName || block.data.varName.trim() === "") {
         errors.push(
-          `Error: Set Variable block "${displayName}" must have a valid variable name.`
+          `Error: Create Variable block "${displayName}" must have a valid variable name.`
         );
       }
       if (
@@ -84,7 +84,7 @@ function validateFlowchart(blocks, edges) {
         block.data.varValue === ""
       ) {
         errors.push(
-          `Error: Set Variable block "${displayName}" must have a non-empty value.`
+          `Error: Create Variable block "${displayName}" must have a non-empty value.`
         );
       }
     }
@@ -208,7 +208,7 @@ export function useFlowchartExecutor(
         setCharacterRotation(context.characterRotation);
         return;
 
-      case 'setVariable':
+      case 'createVariable':
         if (block.data.varName) {
           try {
             let value;
@@ -218,7 +218,7 @@ export function useFlowchartExecutor(
               value = evaluate(block.data.varValue, context.variables);
             }
             context.variables[block.data.varName] = value;
-            const msg = `Set variable ${block.data.varName} = ${JSON.stringify(value)}`;
+            const msg = `Create Variable ${block.data.varName} = ${JSON.stringify(value)}`;
             outputs.push(msg);
             console.log(msg);
           } catch (error) {
@@ -235,7 +235,7 @@ export function useFlowchartExecutor(
             return;
           }
         } else {
-          const errMsg = `Error: Set Variable block "${blockDisplayName}" must have a valid variable name.`;
+          const errMsg = `Error: Create Variable block "${blockDisplayName}" must have a valid variable name.`;
           outputs.push(errMsg);
           console.error(errMsg);
           toast.error(errMsg);

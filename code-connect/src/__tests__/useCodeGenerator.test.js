@@ -15,10 +15,10 @@ describe('generateJavaScriptCode', () => {
     expect(code.trim()).toBe(expected);
   });
 
-  test('generates code for setVariable block', () => {
+  test('generates code for createVariable block', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
-      { id: '2', data: { blockType: 'setVariable', varName: 'x', varValue: '10', valueType: 'number' } },
+      { id: '2', data: { blockType: 'createVariable', varName: 'x', varValue: '10', valueType: 'number' } },
       { id: '3', data: { blockType: 'end' } },
     ];
     const edges = [
@@ -37,8 +37,8 @@ describe('generateJavaScriptCode', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
       { id: '2', data: { blockType: 'if', leftOperand: 'x', operator: '>', rightOperand: '5' } },
-      { id: '3', data: { blockType: 'setVariable', varName: 'y', varValue: '1', valueType: 'number' } },
-      { id: '4', data: { blockType: 'setVariable', varName: 'y', varValue: '0', valueType: 'number' } },
+      { id: '3', data: { blockType: 'createVariable', varName: 'y', varValue: '1', valueType: 'number' } },
+      { id: '4', data: { blockType: 'createVariable', varName: 'y', varValue: '0', valueType: 'number' } },
       { id: '5', data: { blockType: 'end' } },
     ];
     const edges = [
@@ -97,9 +97,9 @@ describe('generateJavaScriptCode', () => {
   test('program: sums two variables and prints result', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
-      { id: '2', data: { blockType: 'setVariable', varName: 'x', varValue: '5', valueType: 'number' } },
-      { id: '3', data: { blockType: 'setVariable', varName: 'y', varValue: '3', valueType: 'number' } },
-      { id: '4', data: { blockType: 'setVariable', varName: 'z', varValue: 'x + y', valueType: 'number' } },
+      { id: '2', data: { blockType: 'createVariable', varName: 'x', varValue: '5', valueType: 'number' } },
+      { id: '3', data: { blockType: 'createVariable', varName: 'y', varValue: '3', valueType: 'number' } },
+      { id: '4', data: { blockType: 'createVariable', varName: 'z', varValue: 'x + y', valueType: 'number' } },
       { id: '5', data: { blockType: 'print', message: '${z}' } },
       { id: '6', data: { blockType: 'end' } },
     ];
@@ -121,8 +121,8 @@ describe('generateJavaScriptCode', () => {
   test('program: print numbers in while loop', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
-      { id: '2', data: { blockType: 'setVariable', varName: 'i', varValue: '0', valueType: 'number' } },
-      { id: '3', data: { blockType: 'setVariable', varName: 'limit', varValue: '3', valueType: 'number' } },
+      { id: '2', data: { blockType: 'createVariable', varName: 'i', varValue: '0', valueType: 'number' } },
+      { id: '3', data: { blockType: 'createVariable', varName: 'limit', varValue: '3', valueType: 'number' } },
       { id: '4', data: { blockType: 'whileStart', leftOperand: 'i', operator: '<', rightOperand: 'limit' } },
       { id: '5', data: { blockType: 'print', message: '${i}' } },
       { id: '6', data: { blockType: 'adjustVariable', varName: 'i', varValue: '1', valueType: 'number', operator: '+' } },

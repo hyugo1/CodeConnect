@@ -20,8 +20,8 @@
         "y": 165
       },
       "data": {
-        "label": "SetVariable",
-        "blockType": "setVariable",
+        "label": "createVariable",
+        "blockType": "createVariable",
         "varName": "x",
         "varValue": "10"
       }

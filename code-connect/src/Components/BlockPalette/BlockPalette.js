@@ -65,7 +65,7 @@ const BlockPalette = ({
     { type: 'if',            label: 'If Then',         color: '#d8d8f9', icon: <CallSplitIcon />,         category: 'Control Blocks' },
     { type: 'whileStart',    label: 'While',           color: '#f9f7d8', icon: <LoopIcon />,              category: 'Control Blocks' },
     { type: 'print',         label: 'Print',           color: '#ffeeba', icon: <PrintIcon />,             category: 'Character Action Blocks' },
-    { type: 'setVariable',   label: 'Set Variable',    color: '#e0e0e0', icon: <CreateIcon />,            category: 'Variable Blocks' },
+    { type: 'createVariable',   label: 'Create Variable',    color: '#e0e0e0', icon: <CreateIcon />,            category: 'Variable Blocks' },
     { type: 'adjustVariable',label: 'Adjust Variable', color: '#e0ffe0', icon: <AddCircleIcon />,         category: 'Variable Blocks' },
     { type: 'move',          label: 'Move Character',  color: '#d8f9f9', icon: <CompareArrowsIcon />,    category: 'Character Action Blocks' },
     { type: 'rotate',        label: 'Rotate',          color: '#e8e8ff', icon: <Rotate90DegreesCcwIcon />, category: 'Character Action Blocks' },

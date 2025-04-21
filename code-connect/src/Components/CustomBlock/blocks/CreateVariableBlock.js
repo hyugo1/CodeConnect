@@ -1,4 +1,4 @@
-// // src/Components/CustomBlock/blocks/SetVariable.js
+// // src/Components/CustomBlock/blocks/createVariable.js
 
 // import React, { useState } from 'react';
 // import { Handle, Position } from 'reactflow';
@@ -10,7 +10,7 @@
 // import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 // import './block.css';
 
-// const SetVariableBlock = ({ id, data, selected, executing }) => {
+// const createVariableBlock = ({ id, data, selected, executing }) => {
 //   const updateNodeData = useNodeUpdater(id);
 //   const [showHelp, setShowHelp] = useState(false);
 
@@ -50,11 +50,11 @@
 //       <HelpModal
 //         visible={showHelp}
 //         helpText={helpText}
-//         title="Set Variable Help"
+//         title="Create Variable Help"
 //         onClose={() => setShowHelp(false)}
 //       />
 //       <CreateIcon className="block-icon" />
-//       <div>{'Set Variable'}</div>
+//       <div>{'Create Variable'}</div>
 //       <Handle
 //         type="target"
 //         position={Position.Top}
@@ -105,7 +105,7 @@
 //   );
 // };
 
-// export default SetVariableBlock;
+// export default createVariableBlock;
 
 
 
@@ -119,7 +119,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { useNodeUpdater } from '../../../hooks/useNodeUpdater';
 import './block.css';
 
-const SetVariableBlock = ({ id, data, selected, executing }) => {
+const CreateVariableBlock = ({ id, data, selected, executing }) => {
   const updateNodeData = useNodeUpdater(id);
   const [showHelp, setShowHelp] = useState(false);
 
@@ -165,12 +165,12 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
       <HelpModal
         visible={showHelp}
         helpText={helpText}
-        title="Set Variable Block Help"
+        title="Create Variable Block Help"
         onClose={() => setShowHelp(false)}
       />
 
       <CreateIcon className="block-icon" />
-      <div>{'Set Variable'}</div>
+      <div>{'Create Variable'}</div>
 
       <Handle
         type="target"
@@ -225,4 +225,4 @@ const SetVariableBlock = ({ id, data, selected, executing }) => {
   );
 };
 
-export default SetVariableBlock;
+export default CreateVariableBlock;

@@ -285,10 +285,10 @@ function FlowchartCanvas({
               varName: '',
               varValue: '',
             };
-          } else if (newBlockType === 'setVariable') {
+          } else if (newBlockType === 'createVariable') {
             newBlockData = {
-              label: 'Set Variable',
-              blockType: 'setVariable',
+              label: 'Create Variable',
+              blockType: 'createVariable',
               varName: '',
               varValue: '',
               valueType: 'number',
@@ -473,7 +473,7 @@ function FlowchartCanvas({
         blockType === 'start' ||
         blockType === 'end' ||
         blockType === 'adjustVariable' ||
-        blockType === 'setVariable' ||
+        blockType === 'createVariable' ||
         blockType === 'move' ||
         blockType === 'rotate' ||
         blockType === 'print'
