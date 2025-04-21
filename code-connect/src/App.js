@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import BlockPalette from './Components/BlockPalette/BlockPalette';
-import FlowchartCanvas from './Components/FlowchartCanvas';
+import Canvas from './Components/Canvas/Canvas';
 import Navbar from './Components/Navbar/Navbar';
 import RightPanel from './Components/RightPanel/RightPanel';
 import 'react-toastify/dist/ReactToastify.css';
@@ -51,7 +51,7 @@ function App() {
         />
         <ReactFlowProvider>
         <div className="flowchart-wrapper" ref={reactFlowWrapper}>
-          <FlowchartCanvas
+          <Canvas
             blocks={blocks}
             setNodes={setNodes}
             edges={edges}

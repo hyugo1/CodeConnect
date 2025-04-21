@@ -1,6 +1,6 @@
 // src/Components/PaletteOverlay.js
 import React, { useState, useEffect, useRef } from 'react';
-import BlockPalette from './BlockPalette/BlockPalette';
+import BlockPalette from '../BlockPalette/BlockPalette';
 import './PaletteOverlay.css';
 
 const PaletteOverlay = ({

@@ -1,4 +1,4 @@
-// src/Components/FlowchartCanvas.js
+// src/Components/Canvas/Canvas.js
 
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
@@ -11,19 +11,19 @@ import ReactFlow, {
   useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import CustomBlock from './CustomBlock/CustomBlock';
-import CustomEdge from './CustomEdge/CustomEdge';
-import ControlPanel from './ControlPanel/ControlPanel';
-import { useFlowchartExecutor } from '../hooks/useFlowchartExecutor';
-import useFlowchartHandlers from './useFlowchartHandlers';
-import PaletteOverlay from './PaletteOverlay';
-import { ActiveFlowContext } from '../contexts/ActiveFlowContext';
-import InputModal from './Modal/InputModal';
-import useFlowchartReset from '../hooks/useFlowchartReset';
+import CustomBlock from '../CustomBlock/CustomBlock';
+import CustomEdge from '../CustomEdge/CustomEdge';
+import ControlPanel from '../ControlPanel/ControlPanel';
+import { useFlowchartExecutor } from '../../hooks/useFlowchartExecutor';
+import useFlowchartHandlers from '../useFlowchartHandlers';
+import PaletteOverlay from '../PaletteOverlay/PaletteOverlay';
+import { ActiveFlowContext } from '../../contexts/ActiveFlowContext';
+import InputModal from '../Modal/InputModal';
+import useFlowchartReset from '../../hooks/useFlowchartReset';
 import { v4 as uuidv4 } from 'uuid';
-import './FlowchartCanvas.css';
+import './Canvas.css';
 
-function FlowchartCanvas({
+function Canvas({
   blocks,
   setNodes,
   edges,
@@ -660,4 +660,4 @@ function FlowchartCanvas({
   );
 }
 
-export default FlowchartCanvas;
+export default Canvas;

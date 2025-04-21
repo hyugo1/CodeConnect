@@ -65,7 +65,7 @@ const BlockPalette = ({
     { type: 'end',           label: 'End',             color: '#f9d8d8', icon: <FaStop />,                category: 'Terminal Blocks' },
     { type: 'if',            label: 'If Then',         color: '#d8d8f9', icon: <CallSplitIcon />,         category: 'Control Blocks' },
     { type: 'whileStart',    label: 'While',           color: '#f9f7d8', icon: <LoopIcon />,              category: 'Control Blocks' },
-    { type: 'input',         label: 'Input',           color: '#ffcdef', icon: <InputIcon />,    category: 'Input/Output Blocks' },
+    { type: 'input',         label: 'Input',           color: '#ffe1f5', icon: <InputIcon />,    category: 'Input/Output Blocks' },
     { type: 'output',         label: 'Output',           color: '#FFECB3', icon: <PrintIcon />,             category: 'Input/Output Blocks' },
     { type: 'createVariable',   label: 'Create Variable',    color: '#e0e0e0', icon: <CreateIcon />,            category: 'Variable Blocks' },
     { type: 'adjustVariable',label: 'Adjust Variable', color: '#e0ffe0', icon: <AddCircleIcon />,         category: 'Variable Blocks' },
