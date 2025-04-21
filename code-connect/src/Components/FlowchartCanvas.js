@@ -18,6 +18,7 @@ import { useFlowchartExecutor } from '../hooks/useFlowchartExecutor';
 import useFlowchartHandlers from './useFlowchartHandlers';
 import PaletteOverlay from './PaletteOverlay';
 import { ActiveFlowContext } from '../contexts/ActiveFlowContext';
+import InputModal from './Modal/InputModal';
 import useFlowchartReset from '../hooks/useFlowchartReset';
 import { v4 as uuidv4 } from 'uuid';
 import './FlowchartCanvas.css';
@@ -515,7 +516,7 @@ function FlowchartCanvas({
   }, []);
 
   // Get execution functions from our executor hook.
-  const flowchartExecutor = useFlowchartExecutor(
+  const { executeFlowchart, inputRequest } = useFlowchartExecutor(
     blocks,
     edges,
     setConsoleOutput,
@@ -607,7 +608,7 @@ function FlowchartCanvas({
       </ReactFlow>
 
       <ControlPanel
-        executeFlowchart={flowchartExecutor.executeFlowchart}
+        executeFlowchart={executeFlowchart}
         resetExecution={resetExecution}
         selectedNodes={selectedNodes}
         selectedEdges={selectedEdges}
@@ -644,6 +645,16 @@ function FlowchartCanvas({
           </div>
         </div>
       )}
+
+      {inputRequest && (
+        <InputModal
+          open={!!inputRequest}
+          promptText={inputRequest.promptText}
+          onSubmit={val => inputRequest.resolve(val)}
+          onCancel={() => inputRequest.resolve(null)}
+        />
+      )}
+
     </ActiveFlowContext.Provider>
     </div>
   );

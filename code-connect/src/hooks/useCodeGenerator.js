@@ -127,6 +127,20 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
 
+      case 'input':
+         if (block.data.varName && block.data.prompt) {
+           // wrap the prompt text in quotes
+           const msg = block.data.prompt.replace(/"/g, '\\"');
+           codeLines.push(indent + `var ${block.data.varName} = prompt("${msg}");`);
+         } else {
+           codeLines.push(indent + `// Error: Incomplete Input block`);
+         }
+         {
+           const next = getNext(id);
+           if (next) traverse(next, indentLevel, visited);
+         }
+         break;
+
       case 'print':
         const raw = block.data.message || '';
         const tpl = raw.replace(/\{([^}]+)\}/g, '${$1}');

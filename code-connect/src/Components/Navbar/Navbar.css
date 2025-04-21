@@ -382,6 +382,7 @@ body {
   color: var(--bg-color);
   margin-bottom: 1rem;
   text-align: center;
+  align-items: center;
 }
 
 .modal-input {

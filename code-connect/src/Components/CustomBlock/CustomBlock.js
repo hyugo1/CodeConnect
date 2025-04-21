@@ -13,6 +13,7 @@ import DummyBlock from './blocks/DummyBlock';
 import MoveBlock from './blocks/MoveBlock';
 import JoinBlock from './blocks/JoinBlock';
 import RotateBlock from './blocks/RotateBlock';
+import InputBlock from './blocks/InputBlock'
 import './CustomBlock.css';
 
 const blockMapping = {
@@ -27,6 +28,7 @@ const blockMapping = {
   move: MoveBlock,
   rotate : RotateBlock,
   join: JoinBlock,
+  input: InputBlock,
 };
 
 const CustomBlock = ({ id, data, selected }) => {

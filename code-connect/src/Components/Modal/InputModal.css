@@ -1,0 +1,71 @@
+.input-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center; 
+  }
+  
+  .input-modal-prompt {
+    margin: 0;
+    font-size: 1.4rem;
+    padding-bottom: 2rem;
+  }
+  
+  .input-modal-input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    max-width: 60%;
+  }
+  
+  .input-modal-footer {
+    display: flex;
+    padding: 0.75rem 1rem;
+    display: flex;
+  justify-content: center;
+  align-items: center; 
+  }
+  
+  /* Base “btn” styles (just in case submit-btn isn’t already getting these) */
+.input-modal-footer .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-family: var(--font-primary);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform var(--transition-speed) ease,
+                box-shadow var(--transition-speed) ease,
+                background-color var(--transition-speed) ease,
+                color var(--transition-speed) ease;
+    outline: none;
+  
+    /* match your chosen color scheme */
+    background: var(--delete-btn-bg-color);           /* or any accent */
+    color: #fff;
+    box-shadow: 0 3px 6px var(--shadow-color);
+  }
+  
+  /* Hover state */
+  .input-modal-footer .submit-btn:hover,
+  .input-modal-footer .submit-btn:focus {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px var(--shadow-color);
+    background-color: var(--delete-btn-hover-bg-color); /* or your chosen hover color */
+    color: var(--accent-color);                         /* optional text flip */
+  }
+  
+  /* If you want a gradient like some of your other buttons: */
+  
+  .input-modal-footer .submit-btn {
+    background: linear-gradient(145deg, #1e90ff, #00bfff);
+  }
+  .input-modal-footer .submit-btn:hover {
+    background: linear-gradient(145deg, #1c86ee, #009acd);
+  }
+ 

@@ -10,6 +10,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import './styles/App.css';
 import { ToastContainer } from 'react-toastify';
 import { Toaster } from 'react-hot-toast'; 
+import InputModal from './Components/Modal/InputModal';
+import { useFlowchartExecutor } from './hooks/useFlowchartExecutor';
 
 function App() {
   const [consoleOutput, setConsoleOutput] = useState('');
@@ -25,6 +27,11 @@ function App() {
   const [edges, setEdges] = useState([]);
 
   const reactFlowWrapper = useRef(null);
+
+  const {
+    executeFlowchart,
+    inputRequest,
+  } = useFlowchartExecutor
 
   const handleSelectBlock = useCallback((blockType) => {
     console.log(`Block selected from left palette: ${blockType}`);
@@ -73,6 +80,12 @@ function App() {
           consoleOutput={consoleOutput}
         />
       </div>
+      <InputModal
+        open={!!inputRequest}
+        promptText={inputRequest?.promptText}
+        onSubmit={val => inputRequest.resolve(val)}
+        onCancel={() => inputRequest.resolve(null)} 
+      />
     </div>
   );
 }

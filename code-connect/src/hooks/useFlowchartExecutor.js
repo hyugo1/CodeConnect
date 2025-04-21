@@ -14,77 +14,55 @@ import toast from 'react-hot-toast';
  */
 function validateFlowchart(blocks, edges) {
   const errors = [];
-  const nodeIds = blocks.map((b) => b.id);
+  const nodeIds = blocks.map(b => b.id);
 
-  // Check for existence of a Start block (blockType "start", custom node)
-  const startBlock = blocks.find(
-    (b) =>
-      (b.data.blockType || "").toLowerCase() === "start" &&
-      b.type === "custom"
+  // Start block?
+  const start = blocks.find(b =>
+    (b.data.blockType || '').toLowerCase() === 'start' && b.type === 'custom'
   );
-  if (!startBlock) {
-    errors.push("Error: No Start block found.");
-  }
+  if (!start) errors.push('Error: No Start block found.');
 
   // Check for existence of an End block
-  const endBlock = blocks.find(
-    (b) => (b.data.blockType || "").toLowerCase() === "end"
+  const end = blocks.find(b =>
+    (b.data.blockType || '').toLowerCase() === 'end'
   );
-  if (!endBlock) {
-    errors.push("Error: No End block found.");
-  }
+  if (!end) errors.push('Error: No End block found.');
 
   // Check that all edges point to existing blocks
-  edges.forEach((edge) => {
-    if (!nodeIds.includes(edge.source)) {
-      errors.push(
-        `Error: Edge ${edge.id} refers to a non-existent source node (${edge.source}).`
-      );
+  edges.forEach(e => {
+    if (!nodeIds.includes(e.source)) {
+      errors.push(`Error: Edge ${e.id} refers to missing source ${e.source}`);
     }
-    if (!nodeIds.includes(edge.target)) {
-      errors.push(
-        `Error: Edge ${edge.id} refers to a non-existent target node (${edge.target}).`
-      );
+    if (!nodeIds.includes(e.target)) {
+      errors.push(`Error: Edge ${e.id} refers to missing target ${e.target}`);
     }
   });
 
   // Check for connectivity from Start to End
-  if (startBlock && endBlock) {
+  if (start && end) {
     const visited = new Set();
-    function dfs(nodeId) {
-      if (visited.has(nodeId)) return;
-      visited.add(nodeId);
-      edges.forEach((edge) => {
-        if (edge.source === nodeId) {
-          dfs(edge.target);
-        }
-      });
+    function dfs(id) {
+      if (visited.has(id)) return;
+      visited.add(id);
+      edges.forEach(e => { if (e.source === id) dfs(e.target); });
     }
-    dfs(startBlock.id);
-    if (!visited.has(endBlock.id)) {
-      errors.push("Error: The End block is not reachable from the Start block.");
+    dfs(start.id);
+    if (!visited.has(end.id)) {
+      errors.push('Error: End block is not reachable from Start block.');
     }
   }
 
   // Validate each block's internal data
-  blocks.forEach((block) => {
-    const type = block.data.blockType;
-    const displayName = block.data.label || block.id;
-
-    // For createVariable, ensure variable name is provided and the value is non-empty.
-    if (type === "createVariable") {
-      if (!block.data.varName || block.data.varName.trim() === "") {
+  blocks.forEach(b => {
+    if ((b.data.blockType || '').toLowerCase() === 'createvariable') {
+      if (!b.data.varName?.trim()) {
         errors.push(
-          `Error: Create Variable block "${displayName}" must have a valid variable name.`
+          `Error: Create Variable block "${b.data.label || b.id}" needs a variable name.`
         );
       }
-      if (
-        block.data.varValue === null ||
-        block.data.varValue === undefined ||
-        block.data.varValue === ""
-      ) {
+      if (b.data.varValue == null || b.data.varValue === '') {
         errors.push(
-          `Error: Create Variable block "${displayName}" must have a non-empty value.`
+          `Error: Create Variable block "${b.data.label || b.id}" needs a non-empty value.`
         );
       }
     }
@@ -98,633 +76,405 @@ export function useFlowchartExecutor(
   edges,
   setConsoleOutput,
   setCharacterPosition,
-  setCharacterMessage, 
+  setCharacterMessage,
   setCharacterRotation,
   setActiveBlockId,
   setActiveEdgeId,
   setErrorBlockId,
   setSnackbar
 ) {
-  const MAX_VISITS_PER_NODE = 50;
-  const BASE_BLOCK_DELAY = 800;
-  const BASE_EDGE_DELAY = 800;
-  const PRINT_DELAY = 3000;
+  // configuration
+  const MAX_VISITS    = 50;
+  const BLOCK_DELAY   = 800;
+  const EDGE_DELAY    = 800;
+  const PRINT_DELAY   = 3000;
+  const speedRef      = useRef(2);
+  const [paused, setPaused] = useState(false);
+  const [inputRequest, setInputRequest] = useState(null);
 
-  const speedRef = useRef(2);
-  const [paused, setLocalPaused] = useState(false);
-
-  const delay = async (ms) => {
-    let remaining = ms / speedRef.current;
-    while (remaining > 0) {
-      if (paused) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      } else {
-        const chunk = Math.min(50, remaining);
-        const t0 = Date.now();
-        await new Promise((resolve) => setTimeout(resolve, chunk));
-        const t1 = Date.now();
-        remaining -= (t1 - t0);
-      }
-    }
-  };
-
-  // Context to hold execution variables and character state
+  // context holds variables & character state
   const context = {
     variables: {},
-    characterPos: { x: 0, y: 0 },
-    characterMsg: '',
+    characterPos:      { x: 0, y: 0 },
+    characterMsg:      '',
     characterRotation: 0,
   };
-
   const outputs = [];
-  const currentNodes = blocks;
-  const currentEdges = edges;
+  const nodes = blocks;
+  const conns = edges;
 
-  // Helper to auto-quote operands if needed.
-  function autoQuote(operand) {
-    if (typeof operand !== 'string' || operand.trim() === '') return operand;
-    if (context.variables.hasOwnProperty(operand)) return operand;
-    if (!isNaN(parseFloat(operand))) return operand;
-    const trimmed = operand.trim();
-    if (
-      (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-      (trimmed.startsWith("'") && trimmed.endsWith("'"))
-    ) {
-      return trimmed;
+  // helper: delay with pause & speed multiplier
+  async function delay(ms) {
+    let rem = ms / speedRef.current;
+    while (rem > 0) {
+      if (paused) {
+        await new Promise(r => setTimeout(r, 50));
+      } else {
+        const chunk = Math.min(50, rem);
+        const t0 = Date.now();
+        await new Promise(r => setTimeout(r, chunk));
+        const t1 = Date.now();
+        rem -= (t1 - t0);
+      }
     }
-    return `"${trimmed}"`;
   }
 
-  async function traverse(blockId, visitCounts = new Map()) {
-    try {
-    const count = visitCounts.get(blockId) || 0;
-    if (count >= MAX_VISITS_PER_NODE) {
-      const errMsg = `Error: Block ${blockId} visited too many times. Possible infinite loop.`;
-      outputs.push(errMsg);
-      console.warn(errMsg);
-      toast.error(errMsg);
-      if (setSnackbar) setSnackbar(errMsg);
-      if (setErrorBlockId) {
-        setErrorBlockId(blockId);
-        setTimeout(() => setErrorBlockId(null), 5000);
-      }
+  // helper: resolve {varName} in strings to either quoted string or raw number
+  function resolveTemplate(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/\{(\w+)\}/g, (_m, v) => {
+      const val = context.variables[v];
+      if (val === undefined) return `{${v}}`;
+      return typeof val === 'string' ? `"${val}"` : val;
+    });
+  }
+
+  // helper: auto‑quote an operand if it's not a number or a known variable
+  function autoQuote(op) {
+    if (typeof op !== 'string' || !op.trim()) return op;
+    if (context.variables.hasOwnProperty(op)) return op;
+    if (!isNaN(parseFloat(op))) return op;
+    const t = op.trim();
+    if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'")))
+      return t;
+    return `"${t}"`;
+  }
+
+  // helper: mark an error block, then auto‑clear it after 5s
+  function markError(id) {
+    if (!setErrorBlockId) return;
+    setErrorBlockId(id);
+    setTimeout(() => setErrorBlockId(null), 5000);
+  }
+
+  // recursive executor
+  async function traverse(id, visits = new Map()) {
+    // infinite‑loop guard
+    const count = visits.get(id) || 0;
+    if (count >= MAX_VISITS) {
+      const msg = `Error: Block ${id} visited too many times.`;
+      outputs.push(msg);
+      toast.error(msg);
+      markError(id);
       setConsoleOutput(outputs.join('\n'));
       return;
     }
-    visitCounts.set(blockId, count + 1);
+    visits.set(id, count + 1);
 
-    const block = currentNodes.find((n) => n.id === blockId);
+    const block = nodes.find(n => n.id === id);
     if (!block) {
-      const errMsg = `Error: Node with ID ${blockId} not found.`;
-      outputs.push(errMsg);
-      console.error(errMsg);
-      toast.error(errMsg);
-      if (setSnackbar) setSnackbar(errMsg);
+      const msg = `Error: Node ${id} not found.`;
+      outputs.push(msg);
+      toast.error(msg);
       setConsoleOutput(outputs.join('\n'));
       return;
     }
 
-    const blockDisplayName = block?.data?.label || blockId;
+    const disp = block.data.label || id;
+    setActiveBlockId(id);
+    await delay(BLOCK_DELAY);
+    outputs.push(`Executing block "${disp}"`);
 
-    setActiveBlockId(block.id);
-    await delay(BASE_BLOCK_DELAY);
-
-    console.log(`\n--- Executing Node: ${block.id} (${blockDisplayName}) ---`);
-    outputs.push(`Executing block "${blockDisplayName}"`);
-
-    switch (block.data.blockType) {
+    const type = (block.data.blockType || '').toLowerCase();
+    switch (type) {
       case 'start':
-        await executeNextNode(block.id, visitCounts);
-        return; //Return immediately to avoid processing outgoing edges twice.
-
-      case 'end':
-        outputs.push('Execution ended.');
-        console.log('Execution ended.');
-        setActiveBlockId(null);
-        setActiveEdgeId(null);
-        setConsoleOutput(outputs.join('\n'));
-        setCharacterPosition(context.characterPos);
-        setCharacterMessage(context.characterMsg);
-        setCharacterRotation(context.characterRotation);
+        await stepNext(id, visits);
         return;
 
-      case 'createVariable':
-        if (block.data.varName) {
-          try {
-            let value;
-            if (block.data.valueType === 'string') {
-              value = block.data.varValue;
-            } else {
-              value = evaluate(block.data.varValue, context.variables);
-            }
-            context.variables[block.data.varName] = value;
-            const msg = `Create Variable ${block.data.varName} = ${JSON.stringify(value)}`;
-            outputs.push(msg);
-            console.log(msg);
-          } catch (error) {
-            const errMsg = `Error evaluating value in block ${blockDisplayName}: ${error.message}`;
-            console.error(errMsg);
-            outputs.push(errMsg);
-            toast.error(errMsg);
-            if (setSnackbar) setSnackbar(errMsg);
-            if (setErrorBlockId) {
-              setErrorBlockId(block.id);
-              setTimeout(() => setErrorBlockId(null), 5000);
-            }
-            setConsoleOutput(outputs.join('\n'));
-            return;
+      case 'input': {
+        const raw = await new Promise(res =>
+          setInputRequest({
+            varName:   block.data.varName,
+            promptText: block.data.prompt,
+            resolve:    res,
+          })
+        );
+        const val = block.data.valueType === 'number' ? parseFloat(raw) : raw;
+        context.variables[block.data.varName] = val;
+        outputs.push(`Input ${block.data.varName} = ${JSON.stringify(val)}`);
+        setInputRequest(null);
+        break;
+      }
+
+      case 'createvariable':
+        try {
+          let val;
+          if (block.data.valueType === 'string') {
+            const tmpl = resolveTemplate(block.data.varValue);
+            val = tmpl.replace(/^"|"$/g, '');
+          } else {
+            const tmpl = resolveTemplate(block.data.varValue);
+            val = evaluate(tmpl, context.variables);
           }
-        } else {
-          const errMsg = `Error: Create Variable block "${blockDisplayName}" must have a valid variable name.`;
-          outputs.push(errMsg);
-          console.error(errMsg);
-          toast.error(errMsg);
-          if (setSnackbar) setSnackbar(errMsg);
-          if (setErrorBlockId) {
-            setErrorBlockId(block.id);
-            setTimeout(() => setErrorBlockId(null), 5000);
-          }
-          setConsoleOutput(outputs.join("\n"));
+          context.variables[block.data.varName] = val;
+          outputs.push(`Create Variable ${block.data.varName} = ${JSON.stringify(val)}`);
+        } catch (e) {
+          const msg = `Error in CreateVariable "${disp}": ${e.message}`;
+          outputs.push(msg);
+          toast.error(msg);
+          markError(id);
+          setConsoleOutput(outputs.join('\n'));
           return;
         }
         break;
 
-      case 'adjustVariable':
-        if (block.data.varName && context.variables.hasOwnProperty(block.data.varName)) {
-          try {
-            if (block.data.valueType === 'string') {
-              context.variables[block.data.varName] = block.data.varValue;
-            } else {
-              const value = evaluate(block.data.varValue, context.variables);
-              const operator = block.data.operator || '+';
-              switch (operator) {
-                case '-':
-                  context.variables[block.data.varName] -= value;
-                  break;
-                case '*':
-                  context.variables[block.data.varName] *= value;
-                  break;
-                case '/':
-                  context.variables[block.data.varName] /= value;
-                  break;
-                default:
-                  context.variables[block.data.varName] += value;
-              }
-            }
-            const msg = `Changed variable ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`;
-            outputs.push(msg);
-            console.log(msg);
-          } catch (error) {
-            const errMsg = `Error changing variable in block ${blockDisplayName}: ${error.message}`;
-            console.error(errMsg);
-            outputs.push(errMsg);
-            toast.error(errMsg);
-            if (setSnackbar) setSnackbar(errMsg);
-            if (setErrorBlockId) {
-              setErrorBlockId(block.id);
-              setTimeout(() => setErrorBlockId(null), 5000);
-            }
-            setConsoleOutput(outputs.join('\n'));
-            return;
+      case 'adjustvariable':
+        if (!context.variables.hasOwnProperty(block.data.varName)) {
+          const msg = `Error: Variable "${block.data.varName}" not defined.`;
+          outputs.push(msg);
+          toast.error(msg);
+          markError(id);
+          setConsoleOutput(outputs.join('\n'));
+          return;
+        }
+        try {
+          let nv;
+          if (block.data.valueType === 'string') {
+            const tmpl = resolveTemplate(block.data.varValue);
+            nv = tmpl.replace(/^"|"$/g, '');
+          } else {
+            const tmpl = resolveTemplate(block.data.varValue);
+            nv = evaluate(tmpl, context.variables);
           }
-        } else {
-          const errMsg = `Error: Variable "${block.data.varName}" not found in block ${blockDisplayName}.`;
-          outputs.push(errMsg);
-          console.error(errMsg);
-          toast.error(errMsg);
-          if (setSnackbar) setSnackbar(errMsg);
-          if (setErrorBlockId) {
-            setErrorBlockId(block.id);
-            setTimeout(() => setErrorBlockId(null), 5000);
+          const op = block.data.operator || '+';
+          switch (op) {
+            case '-': context.variables[block.data.varName] -= nv; break;
+            case '*': context.variables[block.data.varName] *= nv; break;
+            case '/': context.variables[block.data.varName] /= nv; break;
+            default:  context.variables[block.data.varName] += nv; 
           }
-          setConsoleOutput(outputs.join("\n"));
+          outputs.push(`Changed ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
+        } catch (e) {
+          const msg = `Error in AdjustVariable "${disp}": ${e.message}`;
+          outputs.push(msg);
+          toast.error(msg);
+          markError(id);
+          setConsoleOutput(outputs.join('\n'));
           return;
         }
         break;
 
       case 'if': {
         const { leftOperand, operator, rightOperand } = block.data;
-        let conditionMet = false;
-        if (leftOperand && rightOperand) {
-          const op = operator || '==';
-          if ((op === '==' || op === '!=') && typeof context.variables[leftOperand] === 'string') {
-            const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            conditionMet = op === '==' ? context.variables[leftOperand] === rightValue : context.variables[leftOperand] !== rightValue;
-            outputs.push(`Condition ${leftOperand} ${op} ${rightValue} evaluated to ${conditionMet}`);
-          } else {
-            const condition = `${leftOperand} ${op} ${autoQuote(rightOperand)}`;
-            outputs.push(`Evaluating condition: ${condition}`);
-            conditionMet = evaluate(condition, context.variables);
-          }
-        } else {
-          const errMsg = `Error: Incomplete condition in block ${blockDisplayName}.`;
-          outputs.push(errMsg);
-          console.error(errMsg);
-          toast.error(errMsg);
-          if (setSnackbar) setSnackbar(errMsg);
-          if (setErrorBlockId) {
-            setErrorBlockId(block.id);
-            setTimeout(() => setErrorBlockId(null), 5000);
-          }
+        if (!leftOperand || rightOperand == null) {
+          const msg = `Error: Incomplete condition in "${disp}".`;
+          outputs.push(msg);
+          toast.error(msg);
+          markError(id);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
-        block.conditionMet = conditionMet;
-
-        //check that the corresponding branch edge exists.
-        const branchEdges = currentEdges.filter((e) => e.source === block.id);
-        if (conditionMet) {
-          const trueEdge = branchEdges.find((e) => e.sourceHandle && e.sourceHandle.startsWith('yes'));
-          if (!trueEdge) {
-            const errMsg = `Error: Missing edge for true branch in "${blockDisplayName}".`;
-            toast.error(errMsg);
-            if (setSnackbar) setSnackbar(errMsg);
-            outputs.push(errMsg);
-            if (setErrorBlockId) {
-              setErrorBlockId(block.id);
-              setTimeout(() => setErrorBlockId(null), 5000);
-            }
-            setConsoleOutput(outputs.join('\n'));
-            return;
-          }
+        let cond = false;
+        const op = operator || '==';
+        if ((op === '==' || op === '!=') && typeof context.variables[leftOperand] === 'string') {
+          const rhs = rightOperand.trim().replace(/^['"]|['"]$/g, '');
+          cond = op === '==' 
+            ? context.variables[leftOperand] === rhs 
+            : context.variables[leftOperand] !== rhs;
         } else {
-          const falseEdge = branchEdges.find((e) => e.sourceHandle && e.sourceHandle.startsWith('no'));
-          if (!falseEdge) {
-            const errMsg = `Error: Missing edge for false branch in "${blockDisplayName}".`;
-            toast.error(errMsg);
-            if (setSnackbar) setSnackbar(errMsg);
-            outputs.push(errMsg);
-            if (setErrorBlockId) {
-              setErrorBlockId(block.id);
-              setTimeout(() => setErrorBlockId(null), 5000);
-            }
-            setConsoleOutput(outputs.join('\n'));
-            return;
-          }
+          const expr = `${leftOperand} ${op} ${autoQuote(rightOperand)}`;
+          cond = evaluate(expr, context.variables);
         }
+        block.conditionMet = cond;
+        outputs.push(`If condition ${leftOperand} ${op} ${rightOperand} => ${cond}`);
         break;
       }
 
       case 'join':
-        await executeNextNode(block.id, visitCounts);
+        await stepNext(id, visits);
         return;
 
-      case 'whileStart': {
+      case 'whilestart': {
         const { leftOperand, operator, rightOperand } = block.data;
-        let conditionMet = false;
-        if (leftOperand && operator && rightOperand) {
-          if ((operator === '==' || operator === '!=') && typeof context.variables[leftOperand] === 'string') {
-            const rightValue = rightOperand.trim().replace(/^['"]|['"]$/g, '');
-            conditionMet = operator === '==' ? context.variables[leftOperand] === rightValue : context.variables[leftOperand] !== rightValue;
-            outputs.push(`While condition ${leftOperand} ${operator} ${rightValue} evaluated to ${conditionMet}`);
-          } else {
-            const condition = `${leftOperand} ${operator} ${autoQuote(rightOperand)}`;
-            outputs.push(`Evaluating while condition: ${condition}`);
-            conditionMet = evaluate(condition, context.variables);
-          }
+        const op = operator || '==';
+        let cond = false;
+        if ((op === '==' || op === '!=') && typeof context.variables[leftOperand] === 'string') {
+          const rhs = rightOperand.trim().replace(/^['"]|['"]$/g, '');
+          cond = op === '==' 
+            ? context.variables[leftOperand] === rhs 
+            : context.variables[leftOperand] !== rhs;
         } else {
-          const errMsg = `Error: Incomplete while condition in block ${blockDisplayName}.`;
-          outputs.push(errMsg);
-          console.error(errMsg);
-          toast.error(errMsg);
-          if (setSnackbar) setSnackbar(errMsg);
-          if (setErrorBlockId) {
-            setErrorBlockId(block.id);
-            setTimeout(() => setErrorBlockId(null), 5000);
-          }
-          setConsoleOutput(outputs.join('\n'));
-          return;
+          const expr = `${leftOperand} ${op} ${autoQuote(rightOperand)}`;
+          cond = evaluate(expr, context.variables);
         }
-
-        if (conditionMet) {
-          const loopBodyEdge = currentEdges.find((e) => e.source === block.id && e.sourceHandle === `body-${block.id}`);
-          if (loopBodyEdge) {
-            console.log(`Condition met. Traversing to loop body: ${loopBodyEdge.target}`);
-            setActiveEdgeId(loopBodyEdge.id);
-            await delay(BASE_EDGE_DELAY);
-            setActiveEdgeId(null);
-            await traverse(loopBodyEdge.target, new Map(visitCounts));
-          } else {
-            const errMsg = `Error: No loop body connected to block ${blockDisplayName}.`;
-            outputs.push(errMsg);
-            console.error(errMsg);
-            toast.error(errMsg);
-            if (setSnackbar) setSnackbar(errMsg);
-            if (setErrorBlockId) {
-              setErrorBlockId(block.id);
-              setTimeout(() => setErrorBlockId(null), 5000);
-            }
+        if (cond) {
+          const bodyEdge = conns.find(e => e.source === id && e.sourceHandle === `body-${id}`);
+          if (!bodyEdge) {
+            const msg = `Error: No loop body on "${disp}".`;
+            outputs.push(msg);
+            toast.error(msg);
+            markError(id);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
+          setActiveEdgeId(bodyEdge.id);
+          await delay(EDGE_DELAY);
+          setActiveEdgeId(null);
+          await traverse(bodyEdge.target, new Map(visits));
         } else {
-          const exitEdge = currentEdges.find((e) => e.source === block.id && e.sourceHandle === `exit-${block.id}`);
-          if (exitEdge) {
-            console.log(`Condition not met. Exiting loop to block: ${exitEdge.target}`);
-            setActiveEdgeId(exitEdge.id);
-            await delay(BASE_EDGE_DELAY);
-            setActiveEdgeId(null);
-            await traverse(exitEdge.target, new Map(visitCounts));
-          } else {
-            const errMsg = `Error: No exit path connected to block "${blockDisplayName}".`;
-            outputs.push(errMsg);
-            console.error(errMsg);
-            toast.error(errMsg);
-            if (setSnackbar) setSnackbar(errMsg);
-            if (setErrorBlockId) {
-              setErrorBlockId(block.id);
-              setTimeout(() => setErrorBlockId(null), 5000);
-            }
+          const exitEdge = conns.find(e => e.source === id && e.sourceHandle === `exit-${id}`);
+          if (!exitEdge) {
+            const msg = `Error: No exit path on "${disp}".`;
+            outputs.push(msg);
+            toast.error(msg);
+            markError(id);
             setConsoleOutput(outputs.join('\n'));
             return;
           }
+          setActiveEdgeId(exitEdge.id);
+          await delay(EDGE_DELAY);
+          setActiveEdgeId(null);
+          await traverse(exitEdge.target, new Map(visits));
         }
         return;
       }
-      case 'print': {
-        let message = block.data.message || '';
-        if (!message) {
-          const errMsg = `Error: No message set in Print block "${blockDisplayName}".`;
-          outputs.push(errMsg);
-          console.error(errMsg);
-          toast.error(errMsg);
-          if (setSnackbar) setSnackbar(errMsg);
-          if (setErrorBlockId) {
-            setErrorBlockId(block.id);
-            setTimeout(() => setErrorBlockId(null), 5000);
+
+      case 'move': {
+        const { distance, direction } = block.data;
+        if (typeof distance === 'number' && direction) {
+          let { x, y } = context.characterPos;
+          switch (direction) {
+            case 'left':  x -= distance; break;
+            case 'right': x += distance; break;
+            case 'up':    y -= distance; break;
+            case 'down':  y += distance; break;
           }
+          context.characterPos = { x, y };
+          outputs.push(`Moved ${direction} by ${distance} to (${x},${y})`);
+          setCharacterPosition({ x, y });
+        } else {
+          const msg = `Error: Invalid Move data in "${disp}".`;
+          outputs.push(msg);
+          toast.error(msg);
+          markError(id);
           setConsoleOutput(outputs.join('\n'));
           return;
         }
-        let evaluatedMessage = message.replace(/{(\w+)}/g, (match, varName) =>
-          context.variables.hasOwnProperty(varName) ? context.variables[varName] : match
-        );
-        if (evaluatedMessage === message && context.variables.hasOwnProperty(message)) {
-          evaluatedMessage = context.variables[message].toString();
+        break;
+      }
+
+      case 'rotate': {
+        const { degrees, rotateDirection } = block.data;
+        if (typeof degrees === 'number' && rotateDirection) {
+          let rot = context.characterRotation;
+          rot += rotateDirection === 'left' ? -degrees : degrees;
+          context.characterRotation = rot;
+          outputs.push(`Rotated ${rotateDirection} by ${degrees}° to ${rot}°`);
+          setCharacterRotation(rot);
+        } else {
+          const msg = `Error: Invalid Rotate data in "${disp}".`;
+          outputs.push(msg);
+          toast.error(msg);
+          markError(id);
+          setConsoleOutput(outputs.join('\n'));
+          return;
         }
-        outputs.push(`Print Block: ${evaluatedMessage}`);
-        console.log(`Print Block: ${evaluatedMessage}`);
-        setCharacterMessage(evaluatedMessage);
+        break;
+      }
+
+      case 'print': {
+        let msg = block.data.message || '';
+        msg = msg.replace(/\{(\w+)\}/g, (_m, v) =>
+          context.variables.hasOwnProperty(v) ? context.variables[v] : _m
+        );
+        outputs.push(`Print: ${msg}`);
+        setCharacterMessage(msg);
         await delay(PRINT_DELAY);
         setCharacterMessage('');
         break;
       }
-      case 'move': {
-        const { distance, direction } = block.data;
-        if (distance && direction) {
-          let newX = context.characterPos?.x || 0;
-          let newY = context.characterPos?.y || 0;
-          switch (direction) {
-            case 'left':
-              newX -= distance;
-              break;
-            case 'right':
-              newX += distance;
-              break;
-            case 'up':
-              newY -= distance;
-              break;
-            case 'down':
-              newY += distance;
-              break;
-            default:
-              const errMsg = `Error: Unknown direction "${direction}" in Move block "${blockDisplayName}".`;
-              outputs.push(errMsg);
-              console.error(errMsg);
-              toast.error(errMsg);
-              if (setSnackbar) setSnackbar(errMsg);
-              if (setErrorBlockId) {
-                setErrorBlockId(block.id);
-                setTimeout(() => setErrorBlockId(null), 5000);
-              }
-              setConsoleOutput(outputs.join('\n'));
-              return;
-          }
-          context.characterPos = { x: newX, y: newY };
-          const msg = `Moved ${direction} by ${distance} units to (${newX}, ${newY})`;
-          outputs.push(msg);
-          console.log(msg);
-          setCharacterPosition({ x: newX, y: newY });
-        } else {
-          const errMsg = `Error: Incomplete move data in block "${blockDisplayName}".`;
-          outputs.push(errMsg);
-          console.error(errMsg);
-          toast.error(errMsg);
-          if (setSnackbar) setSnackbar(errMsg);
-          if (setErrorBlockId) {
-            setErrorBlockId(block.id);
-            setTimeout(() => setErrorBlockId(null), 5000);
-          }
-        }
-        break;
-      }
-      case 'rotate': {
-        const { degrees, rotateDirection } = block.data;
-        if (degrees && rotateDirection) {
-          let newRotation = context.characterRotation || 0;
-          switch (rotateDirection) {
-            case 'left':
-              newRotation -= degrees;
-              break;
-            case 'right':
-              newRotation += degrees;
-              break;
-            default:
-              const errMsg = `Error: Unknown rotation direction "${rotateDirection}" in Rotate block "${blockDisplayName}".`;
-              outputs.push(errMsg);
-              console.error(errMsg);
-              toast.error(errMsg);
-              if (setSnackbar) setSnackbar(errMsg);
-              if (setErrorBlockId) {
-                setErrorBlockId(block.id);
-                setTimeout(() => setErrorBlockId(null), 5000);
-              }
-              setConsoleOutput(outputs.join('\n'));
-              return;
-          }
-          context.characterRotation = newRotation;
-          const msg = `Rotated ${rotateDirection} by ${degrees} degrees to (${newRotation}°)`;
-          outputs.push(msg);
-          console.log(msg);
-          setCharacterRotation(newRotation);
-        } else {
-          const errMsg = `Error: Incomplete rotate data in block "${blockDisplayName}".`;
-          outputs.push(errMsg);
-          console.error(errMsg);
-          toast.error(errMsg);
-          if (setSnackbar) setSnackbar(errMsg);
-          if (setErrorBlockId) {
-            setErrorBlockId(block.id);
-            setTimeout(() => setErrorBlockId(null), 5000);
-          }
-        }
-        break;
-      }
+
+      case 'end':
+        outputs.push('Execution ended.');
+        setConsoleOutput(outputs.join('\n'));
+        setActiveBlockId(null);
+        setActiveEdgeId(null);
+        setCharacterPosition(context.characterPos);
+        setCharacterMessage(context.characterMsg);
+        setCharacterRotation(context.characterRotation);
+        return;
+
       default:
-        const errMsg = `Error: Unknown block type "${block.data.blockType}" in block "${blockDisplayName}".`;
-        outputs.push(errMsg);
-        console.error(errMsg);
-        toast.error(errMsg);
-        if (setSnackbar) setSnackbar(errMsg);
-        if (setErrorBlockId) {
-          setErrorBlockId(block.id);
-          setTimeout(() => setErrorBlockId(null), 5000);
-        }
+        const err = `Error: Unknown block type "${type}" in "${disp}".`;
+        outputs.push(err);
+        toast.error(err);
+        markError(id);
         setConsoleOutput(outputs.join('\n'));
         return;
     }
 
-    // Process all connected edges with individual error handling
-    const connectedEdges = currentEdges.filter((e) => e.source === block.id);
-    for (const edge of connectedEdges) {
-      try {
-        if (block.data.blockType === 'if') {
-          const sourceHandleType = edge.sourceHandle ? edge.sourceHandle.split('-')[0] : '';
-          if (
-            (sourceHandleType === 'yes' && block.conditionMet) ||
-            (sourceHandleType === 'no' && !block.conditionMet)
-          ) {
-            setActiveEdgeId(edge.id);
-            await delay(BASE_EDGE_DELAY);
-            setActiveEdgeId(null);
-            await traverse(edge.target, new Map(visitCounts));
-          } else {
-            console.log(`Skipping branch on edge ${edge.id} as its condition does not match.`);
-          }
-        } else {
-          setActiveEdgeId(edge.id);
-          await delay(BASE_EDGE_DELAY);
+    // walk all outgoing edges
+    const outs = conns.filter(e => e.source === id);
+    for (const e of outs) {
+      if (type === 'if') {
+        const br = e.sourceHandle?.split('-')[0];
+        if ((br === 'yes' && block.conditionMet) || (br === 'no' && !block.conditionMet)) {
+          setActiveEdgeId(e.id);
+          await delay(EDGE_DELAY);
           setActiveEdgeId(null);
-          await traverse(edge.target, new Map(visitCounts));
+          await traverse(e.target, new Map(visits));
         }
-      } catch (edgeError) {
-        const errMsg = `Error processing edge ${edge.id}: ${edgeError.message}`;
-        console.error(errMsg, edgeError);
-        outputs.push(errMsg);
-        toast.error(errMsg);
-        if (setSnackbar) setSnackbar(errMsg);
-        setConsoleOutput(outputs.join('\n'));
-        return;
+      } else {
+        setActiveEdgeId(e.id);
+        await delay(EDGE_DELAY);
+        setActiveEdgeId(null);
+        await traverse(e.target, new Map(visits));
       }
     }
-    if (connectedEdges.length === 0 && block.data.blockType !== 'end') {
-      const warnMsg = `Warning: Block "${blockDisplayName}" has no outgoing connections; execution ended abruptly.`;
-      outputs.push(warnMsg);
-      console.warn(warnMsg);
-      toast.error(warnMsg);
-      if (setSnackbar) setSnackbar(warnMsg);
+
+    if (outs.length === 0 && type !== 'end') {
+      const w = `"${disp}" has no outgoing connections.`;
+      outputs.push(`Warning: ${w}`);
+      toast.error(w);
       setConsoleOutput(outputs.join('\n'));
     }
-
-    console.log(`--- Finished Node: ${block.id} ---\n`);
-  } catch (traverseError) {
-    const block = currentNodes.find((n) => n.id === blockId);
-    const blockDisplayName = (block && block.data && block.data.label) || blockId;
-
-    let customMessage = traverseError.message;
-    const match = customMessage.match(/Undefined symbol (\w+)/);
-    if (match) {
-      const missingVar = match[1];
-      customMessage = `Variable "${missingVar}" is not defined. Please initialise it before using this condition.`;
-    }
-    const errMsg = `Error in block "${blockDisplayName}": ${customMessage}`;
-    toast.error(errMsg);
-    if (setSnackbar) setSnackbar(errMsg);
-    console.error(`Unexpected error in block "${blockDisplayName}":`, traverseError);
-    outputs.push(errMsg);
-
-    if (setErrorBlockId && block) {
-      setErrorBlockId(block.id);
-      setTimeout(() => setErrorBlockId(null), 5000);
-    }
-
-    setConsoleOutput(outputs.join('\n'));
-  }
   }
 
-  async function executeNextNode(currentNodeId, visitCounts) {
-    const outgoingEdge = currentEdges.find((e) => e.source === currentNodeId);
-    if (outgoingEdge) {
-      setActiveEdgeId(outgoingEdge.id);
-      await delay(BASE_EDGE_DELAY);
+  // helper to step to exactly one next node
+  async function stepNext(from, visits) {
+    const e = conns.find(x => x.source === from);
+    if (e) {
+      setActiveEdgeId(e.id);
+      await delay(EDGE_DELAY);
       setActiveEdgeId(null);
-      console.log(`Executing next block via edge ${outgoingEdge.id} to block ${outgoingEdge.target}`);
-      await traverse(outgoingEdge.target, new Map(visitCounts));
+      await traverse(e.target, new Map(visits));
     } else {
       outputs.push('Execution ended.');
-      console.log('No outgoing edges. Execution ended.');
-      setConsoleOutput(outputs.join("\n"));
-      setCharacterPosition(context.characterPos);
-      setCharacterMessage(context.characterMsg);
+      setConsoleOutput(outputs.join('\n'));
     }
   }
 
-  async function runFlowchart() {
-    const endBlockExists = blocks.some(
-      (block) => (block.data.blockType || "").toLowerCase() === "end"
-    );
-    if (!endBlockExists) {
-      const errMsg = "Error: No End block connected.";
-      outputs.push(errMsg);
-      setConsoleOutput(outputs.join("\n"));
-      toast.error(errMsg);
-      if (setSnackbar) setSnackbar(errMsg);
-      return;
-    }
-  
-    const startBlock = currentNodes.find(
-      (block) =>
-        block.type === "custom" &&
-        (block.data.blockType || "").toLowerCase() === "start"
-    );
-    if (startBlock) {
-      await traverse(startBlock.id, new Map());
-      setConsoleOutput(outputs.join("\n"));
-    } else {
-      const errMsg = "Error: No start block found.";
-      outputs.push(errMsg);
-      setConsoleOutput(outputs.join("\n"));
-      toast.error(errMsg);
-      if (setSnackbar) setSnackbar(errMsg);
-    }
-  }
-
+  // the public entry point
   const executeFlowchart = useCallback(() => {
+    // clear old errors & reset state
     outputs.length = 0;
     context.variables = {};
     setConsoleOutput('');
     setCharacterMessage('');
     setCharacterPosition({ x: 0, y: 0 });
     speedRef.current = 2;
-    setLocalPaused(false);
+    setErrorBlockId?.(null);
+    setPaused(false);
 
-    // Run validation before executing.
-    const validationErrors = validateFlowchart(blocks, edges);
-    if (validationErrors.length > 0) {
-      validationErrors.forEach((err) => {
-        toast.error(err);
-        if (setSnackbar) setSnackbar(err);
-        outputs.push(err);
-      });
-      setConsoleOutput(outputs.join("\n"));
-      return; 
+    // validate up front
+    const errs = validateFlowchart(blocks, edges);
+    if (errs.length) {
+      errs.forEach(e => toast.error(e));
+      setConsoleOutput(errs.join('\n'));
+      return;
     }
 
-    runFlowchart();
-  }, [
-    blocks,
-    edges,
-    setConsoleOutput,
-    setCharacterPosition,
-    setCharacterMessage,
-    setCharacterRotation,
-    setActiveBlockId,
-    setActiveEdgeId,
-    setErrorBlockId,
-    setSnackbar,
-  ]);
+    // run from the Start block
+    const start = blocks.find(b => (b.data.blockType || '').toLowerCase() === 'start');
+    if (start) {
+      traverse(start.id, new Map()).then(() => {
+        setConsoleOutput(outputs.join('\n'));
+      });
+    } else {
+      toast.error('Error: No Start block found.');
+      setConsoleOutput('Error: No Start block found.');
+    }
+  }, [blocks, edges]);
 
-  return {
-    executeFlowchart,
-  };
+  return { executeFlowchart, inputRequest };
 }
