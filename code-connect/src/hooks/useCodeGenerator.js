@@ -50,7 +50,7 @@ export function generateJavaScriptCode(blocks, edges) {
         codeLines.push(indent + 'function runFlowchart() {');
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel+1, new Set(visited));
+          if (next) traverse(next, indentLevel+1, visited);
         }
         codeLines.push(indent + '}');
         break;
@@ -69,7 +69,7 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel, new Set(visited));
+          if (next) traverse(next, indentLevel, visited);
         }
         break;
 
@@ -84,7 +84,7 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel, new Set(visited));
+          if (next) traverse(next, indentLevel, visited);
         }
         break;
 
@@ -95,10 +95,10 @@ export function generateJavaScriptCode(blocks, edges) {
           const right = autoQuote(block.data.rightOperand);
           codeLines.push(indent + `if (${left} ${op} ${right}) {`);
           const tBr = getNext(id, 'yes');
-          if (tBr) traverse(tBr, indentLevel+1, new Set(visited));
+          if (tBr) traverse(tBr, indentLevel+1, visited);
           codeLines.push(indent + `} else {`);
           const fBr = getNext(id, 'no');
-          if (fBr) traverse(fBr, indentLevel+1, new Set(visited));
+          if (fBr) traverse(fBr, indentLevel+1, visited);
           codeLines.push(indent + `}`);
         } else {
           codeLines.push(indent + `// Incomplete condition in if block`);
@@ -108,7 +108,7 @@ export function generateJavaScriptCode(blocks, edges) {
       case 'join':
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel, new Set(visited));
+          if (next) traverse(next, indentLevel, visited);
         }
         break;
 
@@ -118,10 +118,10 @@ export function generateJavaScriptCode(blocks, edges) {
           const right = autoQuote(block.data.rightOperand);
           codeLines.push(indent + `while (${left} ${block.data.operator} ${right}) {`);
           const body = getNext(id, 'body');
-          if (body) traverse(body, indentLevel+1, new Set(visited));
+          if (body) traverse(body, indentLevel+1, visited);
           codeLines.push(indent + `}`);
           const exit = getNext(id, 'exit');
-          if (exit) traverse(exit, indentLevel, new Set(visited));
+          if (exit) traverse(exit, indentLevel, visited);
         } else {
           codeLines.push(indent + `// Incomplete while condition`);
         }
@@ -133,7 +133,7 @@ export function generateJavaScriptCode(blocks, edges) {
         codeLines.push(indent + `console.log(\`${tpl}\`);`);
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel, new Set(visited));
+          if (next) traverse(next, indentLevel, visited);
         }
         break;
 
@@ -147,7 +147,7 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel, new Set(visited));
+          if (next) traverse(next, indentLevel, visited);
         }
         break;
 
@@ -160,7 +160,7 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel, new Set(visited));
+          if (next) traverse(next, indentLevel, visited);
         }
         break;
 
@@ -168,7 +168,7 @@ export function generateJavaScriptCode(blocks, edges) {
         codeLines.push(indent + `// Unknown block type: ${block.data.blockType}`);
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel, new Set(visited));
+          if (next) traverse(next, indentLevel, visited);
         }
         break;
     }
