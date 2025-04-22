@@ -50,7 +50,7 @@ export function generateJavaScriptCode(blocks, edges) {
         codeLines.push(indent + 'function runFlowchart() {');
         {
           const next = getNext(id);
-          if (next) traverse(next, indentLevel+1, visited);
+          if (next) traverse(next, indentLevel + 1, visited);
         }
         codeLines.push(indent + '}');
         break;
@@ -94,21 +94,12 @@ export function generateJavaScriptCode(blocks, edges) {
           const left = block.data.leftOperand;
           const right = autoQuote(block.data.rightOperand);
           codeLines.push(indent + `if (${left} ${op} ${right}) {`);
-          const thenId = getNext(id, 'yes');
-          if (thenId) {
-            traverse(thenId, indentLevel + 1, new Set(visited));
-          }
+          const tBr = getNext(id, 'yes');
+          if (tBr) traverse(tBr, indentLevel + 1, new Set(visited));
           codeLines.push(indent + `} else {`);
-          const elseId = getNext(id, 'no');
-          if (elseId) {
-            traverse(elseId, indentLevel + 1, new Set(visited));
-          }
-          // const tBr = getNext(id, 'yes');
-          // if (tBr) traverse(tBr, indentLevel+1, visited);
-          // codeLines.push(indent + `} else {`);
-          // const fBr = getNext(id, 'no');
-          // if (fBr) traverse(fBr, indentLevel+1, visited);
-          // codeLines.push(indent + `}`);
+          const fBr = getNext(id, 'no');
+          if (fBr) traverse(fBr, indentLevel + 1, new Set(visited));
+          codeLines.push(indent + `}`);
         } else {
           codeLines.push(indent + `// Incomplete condition in if block`);
         }
@@ -127,7 +118,7 @@ export function generateJavaScriptCode(blocks, edges) {
           const right = autoQuote(block.data.rightOperand);
           codeLines.push(indent + `while (${left} ${block.data.operator} ${right}) {`);
           const body = getNext(id, 'body');
-          if (body) traverse(body, indentLevel+1, visited);
+          if (body) traverse(body, indentLevel + 1, visited);
           codeLines.push(indent + `}`);
           const exit = getNext(id, 'exit');
           if (exit) traverse(exit, indentLevel, visited);
@@ -137,32 +128,29 @@ export function generateJavaScriptCode(blocks, edges) {
         break;
 
       case 'input':
-         if (block.data.varName && block.data.prompt) {
-           // wrap the prompt text in quotes
-           const msg = block.data.prompt.replace(/"/g, '\\"');
-           codeLines.push(indent + `var ${block.data.varName} = prompt("${msg}");`);
-         } else {
-           codeLines.push(indent + `// Error: Incomplete Input block`);
-         }
-         {
-           const next = getNext(id);
-           if (next) traverse(next, indentLevel, visited);
-         }
-         break;
-
-      case 'output':
-        const raw = block.data.message || '';
-        // if the user already included a ${…} placeholder, leave it alone. otherwise turn {var} into ${var}
-        /* eslint-disable no-template-curly-in-string */
-        const tpl = raw.includes('${')
-          ? raw
-          : raw.replace(/\{(\w+)\}/g, '${$1}');
-         codeLines.push(indent + `console.log(\`${tpl}\`);`);
+        if (block.data.varName && block.data.prompt) {
+          const msg = block.data.prompt.replace(/"/g, '\\"');
+          codeLines.push(indent + `var ${block.data.varName} = prompt("${msg}");`);
+        } else {
+          codeLines.push(indent + `// Error: Incomplete Input block`);
+        }
         {
           const next = getNext(id);
           if (next) traverse(next, indentLevel, visited);
         }
-         break;
+        break;
+
+      case 'output':
+        const raw = block.data.message || '';
+        const tpl = raw.includes('${')
+          ? raw
+          : raw.replace(/\{(\w+)\}/g, '${$1}');
+        codeLines.push(indent + `console.log(` + '`' + tpl + '`' + `);`);
+        {
+          const next = getNext(id);
+          if (next) traverse(next, indentLevel, visited);
+        }
+        break;
 
       case 'move':
         if (block.data.direction && block.data.distance != null) {
@@ -180,9 +168,9 @@ export function generateJavaScriptCode(blocks, edges) {
 
       case 'rotate':
         {
-          const deg = parseInt(block.data.degrees,10) || 0;
+          const deg = parseInt(block.data.degrees, 10) || 0;
           const dir = block.data.rotateDirection;
-          const val = dir==='left' ? -deg : deg;
+          const val = dir === 'left' ? -deg : deg;
           codeLines.push(indent + `rotateCharacter(${val});`);
         }
         {
@@ -215,7 +203,7 @@ export function generateJavaScriptCode(blocks, edges) {
     return e ? e.target : null;
   }
 
-  const start = blocks.find(b => (b.data.blockType||'').toLowerCase()==='start');
+  const start = blocks.find(b => (b.data.blockType || '').toLowerCase() === 'start');
   if (!start) return '// Error: No start block found.';
   traverse(start.id);
   return codeLines.join('\n');
