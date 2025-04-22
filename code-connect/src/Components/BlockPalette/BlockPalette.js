@@ -4,11 +4,11 @@ import { FaPlay, FaStop } from 'react-icons/fa';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CallSplitIcon from '@mui/icons-material/CallSplit';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import PrintIcon from '@mui/icons-material/Print';
+import KeyboardIcon from '@mui/icons-material/Keyboard';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import Rotate90DegreesCcwIcon from '@mui/icons-material/Rotate90DegreesCcw';
 import CreateIcon from '@mui/icons-material/Create';
 import LoopIcon from '@mui/icons-material/Loop';
-import InputIcon from '@mui/icons-material/Input';
 import './BlockPalette.css';
 
 const BlockPalette = ({
@@ -61,16 +61,16 @@ const BlockPalette = ({
   };
 
   const blocks = [
-    { type: 'start',         label: 'Start',           color: '#d3f9d8', icon: <FaPlay />,                category: 'Terminal Blocks' },
-    { type: 'end',           label: 'End',             color: '#f9d8d8', icon: <FaStop />,                category: 'Terminal Blocks' },
-    { type: 'createVariable',   label: 'Create Variable',    color: '#e0e0e0', icon: <CreateIcon />,            category: 'Variable Blocks' },
-    { type: 'adjustVariable',label: 'Adjust Variable', color: '#e0ffe0', icon: <AddCircleIcon />,         category: 'Variable Blocks' },
-    { type: 'input',         label: 'Input',           color: '#ffe1f5', icon: <InputIcon />,    category: 'Input/Output Blocks' },
-    { type: 'output',         label: 'Output',           color: '#FFECB3', icon: <PrintIcon />,             category: 'Input/Output Blocks' },
-    { type: 'if',            label: 'If Then',         color: '#d8d8f9', icon: <CallSplitIcon />,         category: 'Control Blocks' },
-    { type: 'whileStart',    label: 'While',           color: '#f9f7d8', icon: <LoopIcon />,              category: 'Control Blocks' },
-    { type: 'move',          label: 'Move Character',  color: '#d8f9f9', icon: <CompareArrowsIcon />,    category: 'Character Action Blocks' },
-    { type: 'rotate',        label: 'Rotate',          color: '#e8e8ff', icon: <Rotate90DegreesCcwIcon />, category: 'Character Action Blocks' },
+    { type: 'start', label: 'Start', icon: <FaPlay />, category: 'Terminal Blocks' },
+    { type: 'end', label: 'End', icon: <FaStop />, category: 'Terminal Blocks' },
+    { type: 'createVariable', label: 'Create Variable', icon: <CreateIcon />, category: 'Variable Blocks' },
+    { type: 'updateVariable', label: 'Update Variable', icon: <AddCircleIcon />, category: 'Variable Blocks' },
+    { type: 'input', label: 'Input', icon: <KeyboardIcon />, category: 'Input/Output Blocks' },
+    { type: 'output', label: 'Output', icon: <ChatBubbleOutlineIcon />, category: 'Input/Output Blocks' },
+    { type: 'if', label: 'If Then', icon: <CallSplitIcon />, category: 'Control Blocks' },
+    { type: 'whileStart', label: 'While', icon: <LoopIcon />, category: 'Control Blocks' },
+    { type: 'move', label: 'Move Character', icon: <CompareArrowsIcon />, category: 'Character Action Blocks' },
+    { type: 'rotate', label: 'Rotate', icon: <Rotate90DegreesCcwIcon />, category: 'Character Action Blocks' },
   ];
   const filtered = excludeStart
     ? blocks.filter(b => b.type !== 'start')
@@ -124,13 +124,12 @@ const BlockPalette = ({
                   {items.map(block => (
                     <div
                       key={block.type}
-                      className="dndblock"
+                      className={`dndblock ${block.type}-block`}
                       onClick={() => onSelectBlock(block.type)}
                       onDragStart={e => onDragStart(e, block.type)}
                       onDragEnd={onDragEnd}
                       draggable
                       aria-label={`Drag to add ${block.label}`}
-                      style={{ backgroundColor: block.color }}
                     >
                       <div className="icon">{block.icon}</div>
                       <span>{block.label}</span>

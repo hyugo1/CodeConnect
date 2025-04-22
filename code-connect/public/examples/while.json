@@ -49,8 +49,8 @@
         "y": 630
       },
       "data": {
-        "label": "adjustVariable",
-        "blockType": "adjustVariable",
+        "label": "updateVariable",
+        "blockType": "updateVariable",
         "varName": "x",
         "varValue": "1"
       }

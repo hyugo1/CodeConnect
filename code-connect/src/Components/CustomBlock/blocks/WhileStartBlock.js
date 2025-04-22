@@ -34,7 +34,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
   };
 
   return (
-    <div className={`block-container while-start-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
+    <div className={`block-container whileStart-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
       <button
         onClick={() => setShowHelp(true)}
         className="help-button"
@@ -68,7 +68,7 @@ const WhileStartBlock = ({ id, data, selected, executing }) => {
           className="operand-input"
         />
         <select value={data.operator || ''} onChange={handleOperatorChange} className="operator-select">
-          <option value="">Op</option>
+          {/* <option value="">Op</option> */}
           <option value="<">&lt;</option>
           <option value=">">&gt;</option>
           {/* <option value="==">==</option> */}

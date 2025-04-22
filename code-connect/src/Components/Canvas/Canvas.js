@@ -279,10 +279,10 @@ function Canvas({
         } else {
           // For other block types, simply replace the dummy block.
           let newBlockData;
-          if (newBlockType === 'adjustVariable') {
+          if (newBlockType === 'updateVariable') {
             newBlockData = {
-              label: 'Adjust Variable',
-              blockType: 'adjustVariable',
+              label: 'Update Variable',
+              blockType: 'updateVariable',
               varName: '',
               varValue: '',
             };
@@ -473,7 +473,7 @@ function Canvas({
       } else if (
         blockType === 'start' ||
         blockType === 'end' ||
-        blockType === 'adjustVariable' ||
+        blockType === 'updateVariable' ||
         blockType === 'createVariable' ||
         blockType === 'move' ||
         blockType === 'rotate' ||

@@ -218,7 +218,7 @@ export function useFlowchartExecutor(
         }
         break;
 
-      case 'adjustvariable':
+      case 'updatevariable':
         if (!context.variables.hasOwnProperty(block.data.varName)) {
           const msg = `Error: Variable "${block.data.varName}" not defined.`;
           outputs.push(msg);
@@ -245,7 +245,7 @@ export function useFlowchartExecutor(
           }
           outputs.push(`Changed ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
         } catch (e) {
-          const msg = `Error in AdjustVariable "${disp}": ${e.message}`;
+          const msg = `Error in updateVariable "${disp}": ${e.message}`;
           outputs.push(msg);
           toast.error(msg);
           markError(id);

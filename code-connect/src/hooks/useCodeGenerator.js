@@ -73,7 +73,7 @@ export function generateJavaScriptCode(blocks, edges) {
         }
         break;
 
-      case 'adjustvariable':
+      case 'updatevariable':
         if (block.data.varName) {
           if (block.data.valueType === 'string') {
             codeLines.push(indent + `${block.data.varName} = "${block.data.varValue}";`);

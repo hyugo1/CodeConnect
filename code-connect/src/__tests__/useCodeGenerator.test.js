@@ -66,7 +66,7 @@ describe('generateJavaScriptCode', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
       { id: '2', data: { blockType: 'whileStart', leftOperand: 'i', operator: '<', rightOperand: '3' } },
-      { id: '3', data: { blockType: 'adjustVariable', varName: 'i', varValue: '1', valueType: 'number', operator: '+' } },
+      { id: '3', data: { blockType: 'updateVariable', varName: 'i', varValue: '1', valueType: 'number', operator: '+' } },
       { id: '4', data: { blockType: 'end' } },
     ];
     const edges = [
@@ -125,7 +125,7 @@ describe('generateJavaScriptCode', () => {
       { id: '3', data: { blockType: 'createVariable', varName: 'limit', varValue: '3', valueType: 'number' } },
       { id: '4', data: { blockType: 'whileStart', leftOperand: 'i', operator: '<', rightOperand: 'limit' } },
       { id: '5', data: { blockType: 'output', message: '${i}' } },
-      { id: '6', data: { blockType: 'adjustVariable', varName: 'i', varValue: '1', valueType: 'number', operator: '+' } },
+      { id: '6', data: { blockType: 'updateVariable', varName: 'i', varValue: '1', valueType: 'number', operator: '+' } },
       { id: '7', data: { blockType: 'end' } },
     ];
     const edges = [

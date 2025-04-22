@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import PrintIcon from '@mui/icons-material/Print';
+// import PrintIcon from '@mui/icons-material/Print';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
@@ -39,7 +40,7 @@ const OutputBlock = ({ id, data, selected, executing }) => {
         title="Output Block Help"
         onClose={() => setShowHelp(false)}
       />
-      <PrintIcon className="block-icon" />
+      <ChatBubbleOutlineIcon className="block-icon" />
       <div>{data.label || 'Output'}</div>
       <Handle
         type="target"

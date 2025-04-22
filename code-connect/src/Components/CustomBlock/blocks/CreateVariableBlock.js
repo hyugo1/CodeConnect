@@ -39,7 +39,7 @@
 //   `;
 
 //   return (
-//     <div className={`block-container set-variable-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
+//     <div className={`block-container createVariable-block ${selected ? 'selected' : ''} ${executing ? 'executing' : ''}`}>
 //       <button
 //         onClick={() => setShowHelp(true)}
 //         className="help-button"
@@ -150,7 +150,7 @@ const CreateVariableBlock = ({ id, data, selected, executing }) => {
   return (
     <div
       className={`
-        block-container set-variable-block
+        block-container createVariable-block
         ${selected ? 'selected' : ''}
         ${executing ? 'executing' : ''}
       `}
@@ -194,7 +194,7 @@ const CreateVariableBlock = ({ id, data, selected, executing }) => {
       <Tooltip id={`tooltip-${id}-source`} place="top" />
 
       {/* ↓ your two‑input row ↓ */}
-      <div className="set-variable-input-wrapper">
+      <div className="createVariable-input-wrapper">
         <span className="set-label">Set</span>
         <input
           type="text"

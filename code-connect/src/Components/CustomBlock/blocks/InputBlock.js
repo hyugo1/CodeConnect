@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import InputIcon from '@mui/icons-material/Input';
+import KeyboardIcon from '@mui/icons-material/Keyboard';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpModal from '../../Modal/HelpModal';
 import { Tooltip } from 'react-tooltip';
@@ -36,7 +36,7 @@ const InputBlock = ({ id, data, selected, executing }) => {
         helpText={helpText}
       />
 
-      <InputIcon className="block-icon" />
+      <KeyboardIcon className="block-icon" />
       <div>Input</div>
 
       <Handle

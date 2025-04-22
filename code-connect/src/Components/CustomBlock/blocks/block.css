@@ -12,7 +12,7 @@
   --block-shadow: rgba(0, 0, 0, 0.1);
   --transition-time: 0.3s;
   --operand-width: 110px;
-  --operator-width: 60px;
+  --operator-width: 50px;
   --font-family: 'Noto Sans', sans-serif;
 }
 
@@ -88,29 +88,27 @@
 }
 .if-block {
   background-color: #d8d8f9;
-  width: var(--conditional-width);
 }
-.while-start-block {
+.whileStart-block {
   background-color: #f9f7d8;
-  width: var(--conditional-width);
 }
 .input-block {
-  background-color: #ffe1f5;
+  background-color: #f0def0;
 }
 .output-block {
   background-color: #ffeeba;
 }
-.set-variable-block {
+.createVariable-block {
   background-color: #e0e0e0;
 }
-.change-variable-block {
-  background-color: #e0ffe0;
+.updateVariable-block {
+  background-color: #e0f7fa;
 }
 .move-block {
-  background-color: #d8f9f9;
+  background-color: #dcedc8;
 }
 .rotate-block {
-  background-color: #e8e8ff;
+  background-color: #f8ffb0;
 }
 .dummy-block {
   min-height: 30px;
@@ -118,6 +116,13 @@
   justify-content: center;
   align-items: center;
   width: 240px;
+}
+.block-container.if-block {
+  width: var(--conditional-width);
+}
+
+.block-container.whileStart-block {
+  width: var(--conditional-width);
 }
 .join-block .block-header {
   display: flex;
@@ -234,7 +239,7 @@
   width: 100%;
 }
 
-.set-variable-input-wrapper {
+.createVariable-input-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -242,13 +247,13 @@
   gap: 4px;
 }
 
-.set-variable-input-wrapper .set-label,
-.set-variable-input-wrapper .to-label {
+.createVariable-input-wrapper .set-label,
+.createVariable-input-wrapper .to-label {
   font-weight: bold;
   white-space: nowrap;
 }
 
-.set-variable-input-wrapper .operand-input {
+.createVariable-input-wrapper .operand-input {
   width: 73px;
 }
 

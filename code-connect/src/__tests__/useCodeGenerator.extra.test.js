@@ -16,11 +16,11 @@ describe('generateJavaScriptCode – individual block types', () => {
     expect(code).toContain(`var name = prompt("Enter your name");`);
   });
 
-  test('adjustVariable generates the correct operator assignment', () => {
+  test('updateVariable generates the correct operator assignment', () => {
     const blocks = [
       { id: '1', data: { blockType: 'start' } },
       { id: '2', data: { blockType: 'createVariable', varName: 'x', varValue: '5', valueType: 'number' } },
-      { id: '3', data: { blockType: 'adjustVariable', varName: 'x', varValue: '2', valueType: 'number', operator: '+' } },
+      { id: '3', data: { blockType: 'updateVariable', varName: 'x', varValue: '2', valueType: 'number', operator: '+' } },
       { id: '4', data: { blockType: 'end' } },
     ];
     const edges = [
@@ -84,8 +84,8 @@ describe('generateJavaScriptCode – combined scenario', () => {
       { id: 'i', data: { blockType: 'input', varName: 'n', prompt: 'Enter N' } },
       { id: 'c', data: { blockType: 'createVariable', varName: 'sum', varValue: '0', valueType: 'number' } },
       { id: 'w', data: { blockType: 'whileStart', leftOperand: 'n', operator: '>', rightOperand: '0' } },
-      { id: 'a', data: { blockType: 'adjustVariable', varName: 'sum', varValue: 'n', valueType: 'number', operator: '+' } },
-      { id: 'd', data: { blockType: 'adjustVariable', varName: 'n', varValue: '1', valueType: 'number', operator: '-' } },
+      { id: 'a', data: { blockType: 'updateVariable', varName: 'sum', varValue: 'n', valueType: 'number', operator: '+' } },
+      { id: 'd', data: { blockType: 'updateVariable', varName: 'n', varValue: '1', valueType: 'number', operator: '-' } },
       { id: 'x', data: { blockType: 'output', message: 'Sum is {sum}' } },
       { id: 'm', data: { blockType: 'move', direction: 'right', distance: 5 } },
       { id: 'r', data: { blockType: 'rotate', degrees: '45', rotateDirection: 'right' } },
