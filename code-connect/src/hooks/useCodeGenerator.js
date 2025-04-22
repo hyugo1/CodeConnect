@@ -94,12 +94,21 @@ export function generateJavaScriptCode(blocks, edges) {
           const left = block.data.leftOperand;
           const right = autoQuote(block.data.rightOperand);
           codeLines.push(indent + `if (${left} ${op} ${right}) {`);
-          const tBr = getNext(id, 'yes');
-          if (tBr) traverse(tBr, indentLevel+1, visited);
+          const thenId = getNext(id, 'yes');
+          if (thenId) {
+            traverse(thenId, indentLevel + 1, new Set(visited));
+          }
           codeLines.push(indent + `} else {`);
-          const fBr = getNext(id, 'no');
-          if (fBr) traverse(fBr, indentLevel+1, visited);
-          codeLines.push(indent + `}`);
+          const elseId = getNext(id, 'no');
+          if (elseId) {
+            traverse(elseId, indentLevel + 1, new Set(visited));
+          }
+          // const tBr = getNext(id, 'yes');
+          // if (tBr) traverse(tBr, indentLevel+1, visited);
+          // codeLines.push(indent + `} else {`);
+          // const fBr = getNext(id, 'no');
+          // if (fBr) traverse(fBr, indentLevel+1, visited);
+          // codeLines.push(indent + `}`);
         } else {
           codeLines.push(indent + `// Incomplete condition in if block`);
         }
@@ -143,13 +152,17 @@ export function generateJavaScriptCode(blocks, edges) {
 
       case 'output':
         const raw = block.data.message || '';
-        const tpl = raw.replace(/\{([^}]+)\}/g, '${$1}');
-        codeLines.push(indent + `console.log(\`${tpl}\`);`);
+        // if the user already included a ${…} placeholder, leave it alone. otherwise turn {var} into ${var}
+        /* eslint-disable no-template-curly-in-string */
+        const tpl = raw.includes('${')
+          ? raw
+          : raw.replace(/\{(\w+)\}/g, '${$1}');
+         codeLines.push(indent + `console.log(\`${tpl}\`);`);
         {
           const next = getNext(id);
           if (next) traverse(next, indentLevel, visited);
         }
-        break;
+         break;
 
       case 'move':
         if (block.data.direction && block.data.distance != null) {

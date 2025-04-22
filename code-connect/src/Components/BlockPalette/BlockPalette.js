@@ -63,12 +63,12 @@ const BlockPalette = ({
   const blocks = [
     { type: 'start',         label: 'Start',           color: '#d3f9d8', icon: <FaPlay />,                category: 'Terminal Blocks' },
     { type: 'end',           label: 'End',             color: '#f9d8d8', icon: <FaStop />,                category: 'Terminal Blocks' },
-    { type: 'if',            label: 'If Then',         color: '#d8d8f9', icon: <CallSplitIcon />,         category: 'Control Blocks' },
-    { type: 'whileStart',    label: 'While',           color: '#f9f7d8', icon: <LoopIcon />,              category: 'Control Blocks' },
-    { type: 'input',         label: 'Input',           color: '#ffe1f5', icon: <InputIcon />,    category: 'Input/Output Blocks' },
-    { type: 'output',         label: 'Output',           color: '#FFECB3', icon: <PrintIcon />,             category: 'Input/Output Blocks' },
     { type: 'createVariable',   label: 'Create Variable',    color: '#e0e0e0', icon: <CreateIcon />,            category: 'Variable Blocks' },
     { type: 'adjustVariable',label: 'Adjust Variable', color: '#e0ffe0', icon: <AddCircleIcon />,         category: 'Variable Blocks' },
+    { type: 'input',         label: 'Input',           color: '#ffe1f5', icon: <InputIcon />,    category: 'Input/Output Blocks' },
+    { type: 'output',         label: 'Output',           color: '#FFECB3', icon: <PrintIcon />,             category: 'Input/Output Blocks' },
+    { type: 'if',            label: 'If Then',         color: '#d8d8f9', icon: <CallSplitIcon />,         category: 'Control Blocks' },
+    { type: 'whileStart',    label: 'While',           color: '#f9f7d8', icon: <LoopIcon />,              category: 'Control Blocks' },
     { type: 'move',          label: 'Move Character',  color: '#d8f9f9', icon: <CompareArrowsIcon />,    category: 'Character Action Blocks' },
     { type: 'rotate',        label: 'Rotate',          color: '#e8e8ff', icon: <Rotate90DegreesCcwIcon />, category: 'Character Action Blocks' },
   ];

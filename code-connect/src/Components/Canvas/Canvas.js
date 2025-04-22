@@ -15,7 +15,7 @@ import CustomBlock from '../CustomBlock/CustomBlock';
 import CustomEdge from '../CustomEdge/CustomEdge';
 import ControlPanel from '../ControlPanel/ControlPanel';
 import { useFlowchartExecutor } from '../../hooks/useFlowchartExecutor';
-import useFlowchartHandlers from '../useFlowchartHandlers';
+import useFlowchartHandlers from '../../hooks/useFlowchartHandlers';
 import PaletteOverlay from '../PaletteOverlay/PaletteOverlay';
 import { ActiveFlowContext } from '../../contexts/ActiveFlowContext';
 import InputModal from '../Modal/InputModal';

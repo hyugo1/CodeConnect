@@ -84,7 +84,7 @@ export function useFlowchartExecutor(
   setSnackbar
 ) {
   // configuration
-  const MAX_VISITS    = 50;
+  const MAX_VISITS    = 3000;
   const BLOCK_DELAY   = 800;
   const EDGE_DELAY    = 800;
   const OUTPUT_DELAY   = 3000;
