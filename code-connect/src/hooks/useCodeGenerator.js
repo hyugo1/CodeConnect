@@ -94,6 +94,15 @@ export function generateJavaScriptCode(blocks, edges) {
           const left = block.data.leftOperand;
           const right = autoQuote(block.data.rightOperand);
           codeLines.push(indent + `if (${left} ${op} ${right}) {`);
+          // const thenId = getNext(id, 'yes');
+          // if (thenId) {
+          //   traverse(thenId, indentLevel + 1, new Set(visited));
+          // }
+          // codeLines.push(indent + `} else {`);
+          // const elseId = getNext(id, 'no');
+          // if (elseId) {
+          //   traverse(elseId, indentLevel + 1, new Set(visited));
+          // }
           const tBr = getNext(id, 'yes');
           if (tBr) traverse(tBr, indentLevel + 1, new Set(visited));
           codeLines.push(indent + `} else {`);
@@ -142,10 +151,11 @@ export function generateJavaScriptCode(blocks, edges) {
 
       case 'output':
         const raw = block.data.message || '';
+        /* eslint-disable no-template-curly-in-string */
         const tpl = raw.includes('${')
           ? raw
           : raw.replace(/\{(\w+)\}/g, '${$1}');
-        codeLines.push(indent + `console.log(` + '`' + tpl + '`' + `);`);
+        codeLines.push(indent + `console.log(\`${tpl}\`);`);
         {
           const next = getNext(id);
           if (next) traverse(next, indentLevel, visited);
@@ -203,7 +213,7 @@ export function generateJavaScriptCode(blocks, edges) {
     return e ? e.target : null;
   }
 
-  const start = blocks.find(b => (b.data.blockType || '').toLowerCase() === 'start');
+  const start = blocks.find(b => (b.data.blockType||'').toLowerCase()==='start');
   if (!start) return '// Error: No start block found.';
   traverse(start.id);
   return codeLines.join('\n');

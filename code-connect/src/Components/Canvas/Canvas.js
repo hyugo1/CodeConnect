@@ -439,7 +439,7 @@ function Canvas({
           <div className="help-modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>{helpModal.title}</h3>
             <p>{helpModal.content}</p>
-            <button onClick={() => setHelpModal({ ...helpModal, visible: false })} className="help-modal-close">
+            <button onClick={() => setHelpModal({ ...helpModal, visible: false })} className="help-modal-close" aria-label="Close help modal">
               Got It!
             </button>
           </div>

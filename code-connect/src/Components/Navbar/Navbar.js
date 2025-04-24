@@ -345,7 +345,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
     <>
       <nav className="navbar">
         <div className="navbar-container">
-          <a href="/" className="navbar-brand">
+          <a href="/" className="navbar-brand" aria-label="Go to Home">
             <img
               src="logo.png"
               alt="Code Connect Logo"
@@ -359,6 +359,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                 <button
                   onClick={() => setModal({ type: 'guide' })}
                   className="navbar-menu-item"
+                  aria-label="How to play Code Connect"
                 >
                   <InfoIcon style={{ marginRight: '0.5rem' }} />
                   HOW TO PLAY
@@ -368,6 +369,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                 <button
                   onClick={() => setModal({ type: 'save' })}
                   className="navbar-menu-item"
+                  aria-label="Save current project"
                 >
                   <SaveIcon style={{ marginRight: '0.5rem' }} />
                   SAVE
@@ -377,6 +379,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                 <button
                   onClick={() => setModal({ type: 'load' })}
                   className="navbar-menu-item"
+                  aria-label="Open a saved project"
                 >
                   <FolderOpenIcon style={{ marginRight: '0.5rem' }} />
                   OPEN
@@ -386,6 +389,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                 <button
                   onClick={() => setModal({ type: 'examples' })}
                   className="navbar-menu-item"
+                  aria-label="View example flowcharts"
                 >
                   <LibraryBooksIcon style={{ marginRight: '0.5rem' }} />
                   EXAMPLES
@@ -400,7 +404,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                 <button
                   className="user-menu-button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  aria-label="User menu"
+                  aria-label="Open user settings menu"
                 >
                   <img
                     src={currentUser?.photoURL ? currentUser.photoURL : 'profile_pic.png'}
@@ -419,13 +423,14 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                         <button
                           onClick={() => setModal({ type: 'settings' })}
                           className="dropdown-item"
+                          aria-label="Account settings"
                         >
                           <AccountCircleIcon style={{ marginRight: '0.5rem' }} />
                           Settings
                         </button>
                       </li>
                       <li>
-                        <button onClick={handleSignOut} className="dropdown-item">
+                        <button onClick={handleSignOut} className="dropdown-item" aria-label="Sign out">
                           <LoginIcon style={{ marginRight: '0.5rem' }} />
                           Sign Out
                         </button>
@@ -439,6 +444,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                 <button
                   className="btn signin-btn"
                   onClick={() => setsigninDropdownOpen(!signinDropdownOpen)}
+                  aria-label="Sign in options"
                 >
                   <LoginIcon style={{ marginRight: '0.5rem' }} />
                   SIGN IN
@@ -451,6 +457,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                         setModal({ type: 'signin' });
                         setsigninDropdownOpen(false);
                       }}
+                      aria-label="Sign in with email"
                     >
                       <LoginIcon style={{ marginRight: '0.5rem' }} />
                       Sign In with Email
@@ -461,6 +468,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                         handleSignInWithGoogle();
                         setsigninDropdownOpen(false);
                       }}
+                      aria-label="Sign in with Google"
                     >
                       <LoginIcon style={{ marginRight: '0.5rem' }} />
                       Sign In with Google
@@ -474,6 +482,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
               className="btn darkmode-btn-custom"
               onClick={toggleDarkMode}
               title="Toggle Dark Mode"
+              aria-label="Toggle dark mode"
             >
               <DarkModeIcon />
             </button>
@@ -489,6 +498,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
         className="hidden-file-input"
         onChange={handleImportFlowchart}
         style={{ display: 'none' }}
+        aria-label="Import project JSON file"
       />
 
       {/* Save Modal */}
@@ -502,15 +512,15 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
             className="modal-input"
           />
           <div className="modal-button-group">
-            <button onClick={handleSaveAsJSON} className="btn modal-btn file-btn">
+            <button onClick={handleSaveAsJSON} className="btn modal-btn file-btn" aria-label="Save project to your computer">
               <SaveIcon style={{ marginRight: '0.5rem' }} />
               Save to Your Computer
             </button>
-            <button onClick={handleSaveAsDatabase} className="btn modal-btn account-btn">
+            <button onClick={handleSaveAsDatabase} className="btn modal-btn account-btn" aria-label="Save project to your account">
               <SaveIcon style={{ marginRight: '0.5rem' }} />
               Save to Your Account
             </button>
-            <button onClick={handleSaveAsImage} className="btn modal-btn image-btn">
+            <button onClick={handleSaveAsImage} className="btn modal-btn image-btn" aria-label="Save project as image">
               <CameraAltIcon style={{ marginRight: '0.5rem' }} />
               Save as Image
             </button>
@@ -525,6 +535,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
             <button
               onClick={() => fileInputRef.current.click()}
               className="btn modal-btn import-btn"
+              aria-label="Import project from file"
             >
               <FolderOpenIcon style={{ marginRight: '0.5rem' }} />
               IMPORT
@@ -542,6 +553,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                         <button
                           onClick={() => handleLoadProject(project)}
                           className="btn project-load-btn"
+                          aria-label={`Load project ${project.project_name}`}
                         >
                           <FolderOpenIcon style={{ marginRight: '0.5rem' }} />
                           Load
@@ -549,6 +561,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                         <button
                           onClick={() => handleDeleteProject(project.id)}
                           className="btn project-delete-btn"
+                          aria-label={`Delete project ${project.project_name}`}
                         >
                           <DeleteIcon style={{ marginRight: '0.5rem' }} />
                           Delete
@@ -578,7 +591,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
                   {example.name}
                 </h4>
                 <p>{example.description}</p>
-                <button onClick={() => handleLoadExample(example)} className="btn modal-btn load-example-btn">
+                <button onClick={() => handleLoadExample(example)} className="btn modal-btn load-example-btn" aria-label={`Load example: ${example.name}`}>
                   <FolderOpenIcon style={{ marginRight: '0.5rem' }}/>
                   Load Example
                 </button>
@@ -605,7 +618,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
             onChange={(e) => setPassword(e.target.value)}
             className="modal-input"
           />
-          <button onClick={handleSignUp} className="btn modal-btn signup-btn">
+          <button onClick={handleSignUp} className="btn modal-btn signup-btn" aria-label="Sign in with email and password">
             <LoginIcon style={{ marginRight: '0.5rem' }} />
             Join Now
           </button>
@@ -630,13 +643,14 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
           />
           {/* Use the updated modal-button-group to fix the positions of these three buttons */}
           <div className="modal-button-group">
-            <button onClick={handleSignIn} className="btn signin-btn-custom modal-btn">
+            <button onClick={handleSignIn} className="btn signin-btn-custom modal-btn" aria-labe="Sign in with email and password">
               <LoginIcon style={{ marginRight: '0.5rem' }} />
               Sign In
             </button>
             <button
               onClick={() => setModal({ type: 'forgotPassword' })}
               className="btn forgot-btn modal-btn"
+              aria-label='Reset password'
             >
               <LoginIcon style={{ marginRight: '0.5rem' }} />
               Forgot Password?
@@ -644,6 +658,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
             <button
               onClick={() => setModal({ type: 'signup' })}
               className="btn newuser-btn modal-btn"
+              aria-label='Create a new account'
             >
               <LoginIcon style={{ marginRight: '0.5rem' }} />
               New here?
@@ -661,8 +676,9 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="modal-input"
+            aria-label="Enter your email for password reset"
           />
-          <button onClick={handleForgotPassword} className="btn forgot-btn modal-btn">
+          <button onClick={handleForgotPassword} className="btn forgot-btn modal-btn" aria-label="Send password reset email">
             <LoginIcon style={{ marginRight: '0.5rem' }} />
             Send Reset Email
           </button>
@@ -710,14 +726,14 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
         >
           <div className="settings-section">
             <h4 className="delete-account-title">Delete Account</h4>
-            <button onClick={handleDeleteAccount} className="btn modal-btn delete-btn animated-btn">
+            <button onClick={handleDeleteAccount} className="btn modal-btn delete-btn animated-btn" aria-label="Delete your account">
               <DeleteIcon style={{ marginRight: '0.5rem' }} />
               Delete Account
             </button>
           </div>
           <div className="settings-section">
             <h4 className="theme-title">Theme</h4>
-            <button onClick={toggleDarkMode} className="btn modal-btn animated-btn darkmode-btn-custom">
+            <button onClick={toggleDarkMode} className="btn modal-btn animated-btn darkmode-btn-custom" aria-label="Toggle dark mode">
               <DarkModeIcon style={{ marginRight: '0.5rem' }} />
               Dark Mode
             </button>
