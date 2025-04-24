@@ -1,35 +1,35 @@
 /* src/Components/blocks/block.css */
 
 :root {
-  --less-content-width: 220px;
-  --conditional-width: 320px;
-  --block-bg: #f7f9fc;
-    --block-border: #777;
-  --block-selected-bg: #c8dbfb;
-  --block-selected-border: rgba(239, 98, 175, 1);
-  --block-replacement-bg: rgb(255, 251, 21);
-  --handle-bg: #a3c6ff;
-  --block-shadow: rgba(0, 0, 0, 0.1);
-  --transition-time: 0.3s;
-  --operand-width: 110px;
-  --operator-width: 60px;
-  --font-family: 'Noto Sans', sans-serif;
+  --blk-less-content-width: 220px;
+  --blk-conditional-width: 320px;
+  --blk-bg: #f7f9fc;
+  --blk-border: #777;
+  --blk-selected-bg: #c8dbfb;
+  --blk-selected-border: rgba(239, 98, 175, 1);
+  --blk-replacement-bg: rgb(255, 251, 21);
+  --blk-handle-bg: #a3c6ff;
+  --blk-shadow: rgba(0, 0, 0, 0.1);
+  --blk-transition-time: 0.3s;
+  --blk-operand-width: 110px;
+  --blk-operator-width: 60px;
+  --blk-font-family: 'Noto Sans', sans-serif;
 }
 
 .block-container {
-  width: var(--less-content-width);
+  width: var(--blk-less-content-width);
   padding: 12px;
   margin-bottom: 12px;
-  border: 1px solid var(--block-border);
+  border: 1px solid var(--blk-border);
   border-radius: 8px;
-  background-color: var(--block-bg);
-  box-shadow: 0 4px 8px var(--block-shadow);
-  transition: 
-    background-color var(--transition-time),
-    border-color var(--transition-time),
-    box-shadow var(--transition-time),
-    transform var(--transition-time);
-  font-family: var(--font-family);
+  background-color: var(--blk-bg);
+  box-shadow: 0 4px 8px var(--blk-shadow);
+  transition:
+    background-color var(--blk-transition-time),
+    border-color var(--blk-transition-time),
+    box-shadow var(--blk-transition-time),
+    transform var(--blk-transition-time);
+  font-family: var(--blk-font-family);
   font-weight: bold;
   text-align: center;
   position: relative;
@@ -42,12 +42,12 @@
 
 .block-container:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px var(--block-shadow);
+  box-shadow: 0 6px 12px var(--blk-shadow);
 }
 
 /* Selected State with Animated Dotted Border */
 .block-container.selected {
-  box-shadow: 0 8px 16px var(--block-shadow);
+  box-shadow: 0 8px 16px var(--blk-shadow);
   position: relative;
 }
 
@@ -60,11 +60,11 @@
   bottom: -2px;
   border-radius: inherit;
   pointer-events: none;
-  background-image: 
-    linear-gradient(90deg, var(--block-selected-border) 50%, transparent 50%), 
-    linear-gradient(90deg, var(--block-selected-border) 50%, transparent 50%), 
-    linear-gradient(0deg, var(--block-selected-border) 50%, transparent 50%), 
-    linear-gradient(0deg, var(--block-selected-border) 50%, transparent 50%);
+  background-image:
+    linear-gradient(90deg, var(--blk-selected-border) 50%, transparent 50%),
+    linear-gradient(90deg, var(--blk-selected-border) 50%, transparent 50%),
+    linear-gradient(0deg,  var(--blk-selected-border) 50%, transparent 50%),
+    linear-gradient(0deg,  var(--blk-selected-border) 50%, transparent 50%);
   background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
   background-size: 15px 3px, 15px 3px, 3px 15px, 3px 15px;
   background-position: left top, right bottom, left bottom, right top;
@@ -80,36 +80,16 @@
   }
 }
 
-.start-block {
-  background-color: #d3f9d8;
-}
-.end-block {
-  background-color: #f9d8d8;
-}
-.if-block {
-  background-color: #d8d8f9;
-}
-.whileStart-block {
-  background-color: #f9f7d8;
-}
-.input-block {
-  background-color: #f0def0;
-}
-.output-block {
-  background-color: #ffeeba;
-}
-.createVariable-block {
-  background-color: #e0e0e0;
-}
-.updateVariable-block {
-  background-color: #e0f7fa;
-}
-.move-block {
-  background-color: #dcedc8;
-}
-.rotate-block {
-  background-color: #f8ffb0;
-}
+.start-block { background-color: #d3f9d8; }
+.end-block   { background-color: #f9d8d8; }
+.if-block    { background-color: #d8d8f9; }
+.whileStart-block { background-color: #f9f7d8; }
+.input-block  { background-color: #f0def0; }
+.output-block { background-color: #ffeeba; }
+.createVariable-block { background-color: #e0e0e0; }
+.updateVariable-block { background-color: #e0f7fa; }
+.move-block   { background-color: #dcedc8; }
+.rotate-block { background-color: #f8ffb0; }
 .dummy-block {
   min-height: 30px;
   display: flex;
@@ -117,22 +97,24 @@
   align-items: center;
   width: 240px;
 }
-.block-container.if-block {
-  width: var(--conditional-width);
+
+.block-container.if-block,
+.block-container.whileStart-block {
+  width: var(--blk-conditional-width);
 }
 
-.block-container.whileStart-block {
-  width: var(--conditional-width);
-}
 .join-block .block-header {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* keep text color unchanged in dark mode */
 .dark-mode .block-container {
   color: rgb(25, 26, 30);
 }
+
+/* handle buttons */
 .dark-mode .help-button {
   position: absolute;
   top: 4px;
@@ -150,10 +132,10 @@
   cursor: pointer;
   position: absolute;
   z-index: -1;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: background-color var(--blk-transition-time), border-color var(--blk-transition-time);
 }
+
 .handle-target-circle {
-  /* background: transparent; */
   background: #65a0ff;
   left: 50%;
   top: 0;
@@ -162,8 +144,9 @@
   border: 1px solid #555;
 }
 .handle-target-circle:hover {
-  border-color: var(--handle-bg);
+  border-color: var(--blk-handle-bg);
 }
+
 .handle-source-square {
   background: #65a0ff;
   left: 50%;
@@ -172,9 +155,10 @@
   border: 1px solid #555;
 }
 .handle-source-square:hover {
-  background-color: var(--handle-bg);
+  background-color: var(--blk-handle-bg);
 }
 
+/* inputs, operators, etc. */
 .block-input {
   width: 100%;
   margin-top: 10px;
@@ -183,17 +167,16 @@
   border: 1px solid #ccc;
   font-size: 16px;
   box-sizing: border-box;
-  transition: border-color 0.3s;
+  transition: border-color var(--blk-transition-time);
   text-align: center;
 }
-
 .block-input:focus {
   outline: none;
-  border-color: var(--block-selected-border);
+  border-color: var(--blk-selected-border);
 }
 
 .operand-input {
-  width: var(--operand-width);
+  width: var(--blk-operand-width);
   padding: 5px;
   border-radius: 3px;
   border: 1px solid #ccc;
@@ -201,8 +184,9 @@
   text-align: center;
   margin-right: 5px;
 }
+
 .operator-select {
-  width: var(--operator-width);
+  width: var(--blk-operator-width);
   padding: 5px;
   border-radius: 3px;
   border: 1px solid #ccc;
@@ -210,13 +194,13 @@
   text-align: center;
   margin-right: 5px;
 }
+
 .operator-input-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 10px;
 }
-
 .operator-input-wrapper select,
 .operator-input-wrapper input {
   display: inline-block;
@@ -230,11 +214,9 @@
   text-align: center;
   margin-top: 0;
 }
-
 .operator-input-wrapper select {
-  width: var(--operator-width);
+  width: var(--blk-operator-width);
 }
-
 .operator-input-wrapper .block-input {
   width: 100%;
 }
@@ -246,26 +228,14 @@
   margin-top: 10px;
   gap: 4px;
 }
-
 .createVariable-input-wrapper .set-label,
 .createVariable-input-wrapper .to-label {
   font-weight: bold;
   white-space: nowrap;
 }
-
 .createVariable-input-wrapper .operand-input {
   width: 73px;
 }
-
-.operand-input {
-  width: var(--operand-width);
-  padding: 5px;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-  text-align: center;
-}
-
 
 .condition-container {
   display: flex;
@@ -283,15 +253,12 @@
   cursor: pointer;
   font-size: 18px;
   color: #555;
-  transition: color var(--transition-time), transform var(--transition-time);
+  transition: color var(--blk-transition-time), transform var(--blk-transition-time);
 }
-
 .help-button:hover {
   animation: helpBounce 0.6s ease forwards;
-  color: var(--block-selected-border);
+  color: var(--blk-selected-border);
 }
-
-/* keyframes for bounce */
 @keyframes helpBounce {
   0%   { transform: translateY(0); }
   25%  { transform: translateY(-4px) scale(1.05); }
@@ -318,7 +285,6 @@
 .block-container.executing {
   animation: blockPulse 0.5s ease-out;
 }
-
 @keyframes blockPulse {
   0% {
     transform: scale(1);
@@ -335,52 +301,30 @@
 }
 
 @keyframes edgePulse {
-  0% {
-    stroke-width: 3;
-    opacity: 1;
-  }
-  50% {
-    stroke-width: 5;
-    opacity: 0.4;
-  }
-  100% {
-    stroke-width: 3;
-    opacity: 1;
-  }
+  0% { stroke-width: 3; opacity: 1; }
+  50% { stroke-width: 5; opacity: 0.4; }
+  100% { stroke-width: 3; opacity: 1; }
 }
 
 .react-flow__edges {
   z-index: 1000;
 }
 
-/* Additional Animations for Dummy Blocks */
+/* Dummy block animations */
 @keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(44, 188, 44, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
-  }
+  0%   { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+  70%  { box-shadow: 0 0 0 10px rgba(44, 188, 44, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
 }
+.dummy-replaceable { animation: pulse 2s infinite; }
+.dummy-fixed      { border: 2px solid var(--blk-selected-border); }
 
-.dummy-replaceable {
-  animation: pulse 2s infinite;
-}
-
-.dummy-fixed {
-  border: 2px solid var(--block-selected-border);
-}
-
-/* Replacement Success Flash */
+/* Replacement flash */
 @keyframes flash {
-  0% { background-color: transparent; transform: scale(1);}
-  50% { background-color: var(--block-replacement-bg); transform: scale(1.2);  }
-  100% { background-color: transparent; transform: scale(1);}
+  0%   { background-color: transparent; transform: scale(1); }
+  50%  { background-color: var(--blk-replacement-bg); transform: scale(1.2); }
+  100% { background-color: transparent; transform: scale(1); }
 }
-
 .replacement-success {
   animation: flash 1s ease-out forwards;
   transform-origin: center center;

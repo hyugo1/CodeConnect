@@ -320,7 +320,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
 
   const toggleDarkMode = () => {
     document.body.classList.toggle("dark-mode");
-    toast.success("Dark mode toggled.");
+    // toast.success("Dark mode toggled.");
   };
 
   const handleLoadExample = async (example) => {
@@ -643,7 +643,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
           />
           {/* Use the updated modal-button-group to fix the positions of these three buttons */}
           <div className="modal-button-group">
-            <button onClick={handleSignIn} className="btn signin-btn-custom modal-btn" aria-labe="Sign in with email and password">
+            <button onClick={handleSignIn} className="btn signin-btn-custom modal-btn" aria-label="Sign in with email and password">
               <LoginIcon style={{ marginRight: '0.5rem' }} />
               Sign In
             </button>

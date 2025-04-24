@@ -109,17 +109,11 @@
   color: #ecf0f1;
 }
 
-.dark-mode .aside-container {
+/* .dark-mode .aside-container {
   background-color: #34495e;
   color: #ecf0f1;
   border-color: #aaa;
-}
-
-.dark-mode .aside-container .dndblock {
-  background-color: #1F2129;
-  color: #ecf0f1;
-  border-color: #bbb;
-}
+} */
 
 .dark-mode .right-panel {
   background-color: #34495e;
