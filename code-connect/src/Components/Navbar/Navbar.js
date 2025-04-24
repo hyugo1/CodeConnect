@@ -346,11 +346,19 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
       <nav className="navbar">
         <div className="navbar-container">
           <a href="/" className="navbar-brand" aria-label="Go to Home">
+          <picture>
+            {/* 1) WebP first */}
+            <source
+              srcSet={`${process.env.PUBLIC_URL}/logo-2.webp`}
+              type="image/webp"
+            />
+            {/* 2) Fallback to PNG */}
             <img
-              src="logo.png"
+              src={`${process.env.PUBLIC_URL}/logo.png`}
               alt="Code Connect Logo"
               className="navbar-logo"
             />
+          </picture>
             <span className="navbar-title">Code Connect!</span>
           </a>
           <div className="navbar-menu">

@@ -27,7 +27,6 @@
   align-items: center; 
   }
   
-  /* Base “btn” styles (just in case submit-btn isn’t already getting these) */
 .input-modal-footer .submit-btn {
     display: inline-flex;
     align-items: center;
@@ -44,9 +43,7 @@
                 background-color var(--transition-speed) ease,
                 color var(--transition-speed) ease;
     outline: none;
-  
-    /* match your chosen color scheme */
-    background: var(--delete-btn-bg-color);           /* or any accent */
+    background: var(--delete-btn-bg-color); 
     color: #fff;
     box-shadow: 0 3px 6px var(--shadow-color);
   }
@@ -56,11 +53,9 @@
   .input-modal-footer .submit-btn:focus {
     transform: scale(1.05);
     box-shadow: 0 4px 8px var(--shadow-color);
-    background-color: var(--delete-btn-hover-bg-color); /* or your chosen hover color */
-    color: var(--accent-color);                         /* optional text flip */
+    background-color: var(--delete-btn-hover-bg-color);
+    color: var(--accent-color); 
   }
-  
-  /* If you want a gradient like some of your other buttons: */
   
   .input-modal-footer .submit-btn {
     background: linear-gradient(145deg, #1e90ff, #00bfff);

@@ -4,10 +4,10 @@
   position: relative;
 }
 
-.character-container .character-image {
+/* .character-container .character-image {
   width: 100px;
   height: auto;
-}
+} */
   
 .message-bubble {
   position: absolute;
@@ -44,12 +44,3 @@
 
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
 }
-
-  /* Position the character area appropriately */
-.character-area {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
-  }

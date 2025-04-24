@@ -20,13 +20,13 @@ body, html {
 }
 
 /* App Layout */
-.app-container {
+/* .app-container {
   display: flex;
   flex: 1;
   gap: 10px;
   padding: 10px;
   overflow: hidden;
-}
+} */
 
 /* Left Section - Block Palette */
 .BlockPalette > * {
@@ -59,22 +59,6 @@ body, html {
   background-color: #ecf0f1;
 }
 
-.right-panel {
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  padding: 10px;
-  background-color: #f7f9fc;
-  /* border: 2px solid #555; */
-  border: 2px solid #929292;
-  box-sizing: border-box;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  transition: width 0.3s;
-}
-
 .right-panel > * {
   overflow-y: auto;
   color: #929292;
@@ -86,14 +70,6 @@ body, html {
   justify-content: center;
   align-items: center;
   position: relative;
-}
-
-.console {
-  border-top: 1px solid #ccc;
-  padding: 10px;
-  max-height: 200px;
-  overflow-y: auto;
-  color: rgb(0, 0, 0);
 }
 
 .CharacterDisplay {
@@ -162,7 +138,7 @@ body, html {
   max-height: 150px;
 }
 
-.Console {
+/* .Console {
   background: #34495e;
   color: white;
   padding: 10px;
@@ -172,7 +148,7 @@ body, html {
   font-size: 14px;
   height: 120px;
   overflow-y: auto;
-}
+} */
 
 ::-webkit-scrollbar {
   width: 3px;
@@ -235,10 +211,10 @@ body, html {
   border-color: #aaa;
 }
 
-.dark-mode .block-container {
+/* .dark-mode .block-container {
   border: 2px solid #444;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-}
+} */
 
 .dark-mode .console {
   background-color: rgb(31, 32, 36);

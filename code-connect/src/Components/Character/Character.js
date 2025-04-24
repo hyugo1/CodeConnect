@@ -16,13 +16,17 @@ import React from 'react';
             <p>{message}</p>
           </div>
         )}
-        <img
-          src={`${process.env.PUBLIC_URL}/orange_blob.png`}
-          alt="Character"
-          className="character-image"
-          width={48}
-          height={48}
-        />
+       <picture>
+          <source
+            srcSet={`${process.env.PUBLIC_URL}/orange_blob-2.webp`}
+            type="image/webp"
+          />
+          <img
+            src={`${process.env.PUBLIC_URL}/orange_blob.png`}
+            alt="Character"
+            className="character-image"
+          />
+        </picture>
       </div>
     );
   };

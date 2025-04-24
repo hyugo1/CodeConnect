@@ -17,7 +17,7 @@
 
 .console-toggle-button {
   cursor: pointer;
-  background-color: #9896f1;
+  background-color: #5797ff;
   color: #fff;
   border: none;
   padding: 5px 10px;
@@ -70,6 +70,9 @@
   padding: 10px;
   display: flex;
   flex-direction: column;
+  max-height: 200px;
+  overflow-y: auto;
+  color: black;
 }
 
 .console-toggle-button {

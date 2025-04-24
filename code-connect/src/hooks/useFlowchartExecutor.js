@@ -1,6 +1,5 @@
 // src/hooks/useFlowchartExecutor.js
 
-import { evaluate } from 'mathjs';
 import { useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
@@ -83,11 +82,21 @@ export function useFlowchartExecutor(
   setErrorBlockId,
   setSnackbar
 ) {
+  // --- dynamically load mathjs only when needed ---
+  const evaluateRef = useRef(null);
+  async function getEvaluate() {
+    if (!evaluateRef.current) {
+      const math = await import('mathjs');
+      evaluateRef.current = math.evaluate;
+    }
+    return evaluateRef.current;
+  }
+
   // configuration
   const MAX_VISITS    = 3000;
   const BLOCK_DELAY   = 800;
   const EDGE_DELAY    = 800;
-  const OUTPUT_DELAY   = 3000;
+  const OUTPUT_DELAY  = 3000;
   const speedRef      = useRef(2);
   const [paused, setPaused] = useState(false);
   const [inputRequest, setInputRequest] = useState(null);
@@ -119,7 +128,7 @@ export function useFlowchartExecutor(
     }
   }
 
-  // helper: resolve {varName} in strings to either quoted string or raw number
+  // helper: resolve {varName} in strings
   function resolveTemplate(str) {
     if (typeof str !== 'string') return str;
     return str.replace(/\{(\w+)\}/g, (_m, v) => {
@@ -129,7 +138,7 @@ export function useFlowchartExecutor(
     });
   }
 
-  // helper: auto‑quote an operand if it's not a number or a known variable
+  // helper: auto-quote an operand if needed
   function autoQuote(op) {
     if (typeof op !== 'string' || !op.trim()) return op;
     if (context.variables.hasOwnProperty(op)) return op;
@@ -140,7 +149,7 @@ export function useFlowchartExecutor(
     return `"${t}"`;
   }
 
-  // helper: mark an error block, then auto‑clear it after 5s
+  // helper: mark error block temporarily
   function markError(id) {
     if (!setErrorBlockId) return;
     setErrorBlockId(id);
@@ -149,7 +158,6 @@ export function useFlowchartExecutor(
 
   // recursive executor
   async function traverse(id, visits = new Map()) {
-    // infinite‑loop guard
     const count = visits.get(id) || 0;
     if (count >= MAX_VISITS) {
       const msg = `Error: Block ${id} visited too many times.`;
@@ -184,7 +192,7 @@ export function useFlowchartExecutor(
       case 'input': {
         const raw = await new Promise(res =>
           setInputRequest({
-            varName:   block.data.varName,
+            varName:    block.data.varName,
             promptText: block.data.prompt,
             resolve:    res,
           })
@@ -196,15 +204,14 @@ export function useFlowchartExecutor(
         break;
       }
 
-      case 'createvariable':
+      case 'createvariable': {
         try {
           let val;
           if (block.data.valueType === 'string') {
-            const tmpl = resolveTemplate(block.data.varValue);
-            val = tmpl.replace(/^"|"$/g, '');
+            val = resolveTemplate(block.data.varValue).replace(/^"|"$/g, '');
           } else {
-            const tmpl = resolveTemplate(block.data.varValue);
-            val = evaluate(tmpl, context.variables);
+            const evaluate = await getEvaluate();
+            val = evaluate(resolveTemplate(block.data.varValue), context.variables);
           }
           context.variables[block.data.varName] = val;
           outputs.push(`Create Variable ${block.data.varName} = ${JSON.stringify(val)}`);
@@ -217,8 +224,9 @@ export function useFlowchartExecutor(
           return;
         }
         break;
+      }
 
-      case 'updatevariable':
+      case 'updatevariable': {
         if (!context.variables.hasOwnProperty(block.data.varName)) {
           const msg = `Error: Variable "${block.data.varName}" not defined.`;
           outputs.push(msg);
@@ -229,11 +237,11 @@ export function useFlowchartExecutor(
         }
         try {
           let nv;
+          const tmpl = resolveTemplate(block.data.varValue);
           if (block.data.valueType === 'string') {
-            const tmpl = resolveTemplate(block.data.varValue);
             nv = tmpl.replace(/^"|"$/g, '');
           } else {
-            const tmpl = resolveTemplate(block.data.varValue);
+            const evaluate = await getEvaluate();
             nv = evaluate(tmpl, context.variables);
           }
           const op = block.data.operator || '+';
@@ -241,7 +249,7 @@ export function useFlowchartExecutor(
             case '-': context.variables[block.data.varName] -= nv; break;
             case '*': context.variables[block.data.varName] *= nv; break;
             case '/': context.variables[block.data.varName] /= nv; break;
-            default:  context.variables[block.data.varName] += nv; 
+            default:  context.variables[block.data.varName] += nv;
           }
           outputs.push(`Changed ${block.data.varName} to ${JSON.stringify(context.variables[block.data.varName])}`);
         } catch (e) {
@@ -253,6 +261,7 @@ export function useFlowchartExecutor(
           return;
         }
         break;
+      }
 
       case 'if': {
         const { leftOperand, operator, rightOperand } = block.data;
@@ -273,6 +282,7 @@ export function useFlowchartExecutor(
             : context.variables[leftOperand] !== rhs;
         } else {
           const expr = `${leftOperand} ${op} ${autoQuote(rightOperand)}`;
+          const evaluate = await getEvaluate();
           cond = evaluate(expr, context.variables);
         }
         block.conditionMet = cond;
@@ -295,6 +305,7 @@ export function useFlowchartExecutor(
             : context.variables[leftOperand] !== rhs;
         } else {
           const expr = `${leftOperand} ${op} ${autoQuote(rightOperand)}`;
+          const evaluate = await getEvaluate();
           cond = evaluate(expr, context.variables);
         }
         if (cond) {
@@ -446,6 +457,11 @@ export function useFlowchartExecutor(
 
   // the public entry point
   const executeFlowchart = useCallback(() => {
+    // preload mathjs chunk
+    getEvaluate().catch(() => {
+      toast.error('Could not load math engine');
+    });
+
     // clear old errors & reset state
     outputs.length = 0;
     context.variables = {};
