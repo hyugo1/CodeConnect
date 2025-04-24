@@ -349,7 +349,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
           <picture>
             {/* 1) WebP first */}
             <source
-              srcSet={`${process.env.PUBLIC_URL}/logo-2.webp`}
+              srcSet={`${process.env.PUBLIC_URL}/logo.webp`}
               type="image/webp"
             />
             {/* 2) Fallback to PNG */}

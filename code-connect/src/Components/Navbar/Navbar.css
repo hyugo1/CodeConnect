@@ -121,13 +121,15 @@ body {
   color: var(--text-color);
   display: flex;
   align-items: center;
-  /* height: 45px; */
+  height: 45px;
+  /* width: 55px; */
   /* margin-right: 0.5rem; */
   vertical-align: middle;
 }
 
 .navbar-logo {
   height: 45px;
+  width: 55px;
   margin-right: 0.5rem;
   filter: drop-shadow(0 2px 4px var(--shadow-color));
   vertical-align: middle;

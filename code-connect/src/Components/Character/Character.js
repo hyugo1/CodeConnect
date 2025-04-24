@@ -18,7 +18,7 @@ import React from 'react';
         )}
        <picture>
           <source
-            srcSet={`${process.env.PUBLIC_URL}/orange_blob-2.webp`}
+            srcSet={`${process.env.PUBLIC_URL}/orange_blob.webp`}
             type="image/webp"
           />
           <img

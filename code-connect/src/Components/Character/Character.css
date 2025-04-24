@@ -4,10 +4,11 @@
   position: relative;
 }
 
-/* .character-container .character-image {
+.character-container .character-image {
   width: 100px;
-  height: auto;
-} */
+  /* height: auto; */
+  height: 81px;
+}
   
 .message-bubble {
   position: absolute;
