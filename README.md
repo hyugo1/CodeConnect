@@ -59,13 +59,11 @@ Code Connect is a browser-based visual programming environment for beginners. Bu
 
 ## 🛠️ Tech Stack
 
-- **Framework**: React 18.x (Create React App)  
+- **Framework**: React 18.3.1 (Create React App)  
 - **Diagramming**: React Flow  
 - **Styling**: CSS Modules + CSS Variables, Material UI (+ Emotion)  
 - **Icons**: Material UI Icons, React-Icons (Font Awesome)  
-- **State & Logic**: React Context, custom hooks (`useFlowchartExecutor`, `useFlowchartHandlers`, etc.)  
 - **Persistence**: Firebase Auth, Firestore, `localStorage`  
-- **Evaluation**: mathjs for safe expression parsing  
 - **Utilities**: uuid, use-undo, react-split, html2canvas, react-hot-toast  
 - **Testing**: Jest, React Testing Library, @testing-library/jest-dom  
 - **Lint / Format**: ESLint, Prettier  
