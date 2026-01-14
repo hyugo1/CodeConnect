@@ -1,6 +1,7 @@
 # Code Connect
 
 [![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://third-year-project-be34c.web.app)  
+This project is licensed under the [MIT License](LICENSE).
 
 Most compatible with Google Chrome: https://third-year-project-be34c.web.app
 
