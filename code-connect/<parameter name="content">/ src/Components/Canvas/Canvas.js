@@ -1,6 +1,4 @@
-// src/Components/Canvas/Canvas.js
-
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
   Controls,
   Background,
@@ -17,16 +15,13 @@ import ControlPanel from '../ControlPanel/ControlPanel';
 import { useFlowchartExecutor } from '../../hooks/useFlowchartExecutor';
 import useFlowchartHandlers from '../../hooks/useFlowchartHandlers';
 import PaletteOverlay from '../PaletteOverlay/PaletteOverlay';
-import { ActiveFlowProvider, useActiveFlow } from '../../contexts/ActiveFlowContext';
+import { ActiveFlowContext } from '../../contexts/ActiveFlowContext';
 import InputModal from '../Modal/InputModal';
 import useFlowchartReset from '../../hooks/useFlowchartReset';
 import { v4 as uuidv4 } from 'uuid';
 import './Canvas.css';
 
-/**
- * Inner Canvas component that uses the ActiveFlowContext
- */
-function CanvasInner({
+function Canvas({
   blocks,
   setNodes,
   edges,
@@ -40,33 +35,24 @@ function CanvasInner({
   setCancelDrag,
   setIsDragging,
 }) {
+  const [activeBlockId, setActiveBlockId] = useState(null);
+  const [activeEdgeId, setActiveEdgeId] = useState(null);
+  const [errorBlockId, setErrorBlockId] = useState(null);
+  const [selectedNodes, setSelectedNodes] = useState([]);
+  const [selectedEdges, setSelectedEdges] = useState([]);
+  const [paletteVisible, setPaletteVisible] = useState(false);
+  const [currentDummyBlockId, setCurrentDummyBlockId] = useState(null);
+  const [dummyBlockPosition, setDummyBlockPosition] = useState(null);
+  const [helpModal, setHelpModal] = useState({ visible: false, title: '', content: '' });
+
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
-
-  const {
-    activeBlockId,
-    activeEdgeId,
-    errorBlockId,
-    setErrorBlockId,
-    setActiveBlockId,
-    setActiveEdgeId,
-    paletteVisible,
-    currentDummyBlockId,
-    dummyBlockPosition,
-    onReplace,
-    closePalette,
-  } = useActiveFlow();
-
-  const [selectedNodes, setSelectedNodes] = React.useState([]);
-  const [selectedEdges, setSelectedEdges] = React.useState([]);
-  const [helpModal, setHelpModal] = React.useState({ visible: false, title: '', content: '' });
 
   const lastBlockId = useRef(null);
   useEffect(() => {
     lastBlockId.current = blocks.length > 0 ? blocks[blocks.length - 1].id : null;
   }, [blocks]);
 
-  // Block replacement handler
   const handleReplaceDummyBlock = useCallback(
     (dummyId, newBlockType) => {
       const blockToReplace = blocks.find(b => b.id === dummyId);
@@ -193,10 +179,12 @@ function CanvasInner({
           );
         }
 
-        closePalette();
+        setPaletteVisible(false);
+        setCurrentDummyBlockId(null);
+        setDummyBlockPosition(null);
       }, 300);
     },
-    [blocks, setNodes, setEdges, closePalette]
+    [blocks, setNodes, setEdges]
   );
 
   const CustomBlockWrapper = props => <CustomBlock {...props} />;
@@ -353,6 +341,24 @@ function CanvasInner({
 
   return (
     <div ref={reactFlowWrapper} className="flowchart-container" style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <ActiveFlowContext.Provider
+      value={{
+        activeBlockId,
+        activeEdgeId,
+        errorBlockId,
+        setErrorBlockId, 
+        onReplace: (dummyId, e) => {
+          if (e && e.currentTarget) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            setDummyBlockPosition({ top: rect.top, left: rect.right + 10 });
+          } else {
+            setDummyBlockPosition({ top: 100, left: 100 });
+          }
+          setCurrentDummyBlockId(dummyId);
+          setPaletteVisible(true);
+        },
+      }}
+    >
       <ReactFlow
         nodes={blocks}
         edges={edges}
@@ -416,7 +422,7 @@ function CanvasInner({
       {paletteVisible && dummyBlockPosition && (
         <PaletteOverlay
           dummyBlockPosition={dummyBlockPosition}
-          setPaletteVisible={closePalette}
+          setPaletteVisible={setPaletteVisible}
           currentDummyBlockId={currentDummyBlockId}
           handleReplaceDummyBlock={handleReplaceDummyBlock}
           isDragging={isDragging}
@@ -426,16 +432,16 @@ function CanvasInner({
       )}
   
       {helpModal.visible && (
-        <div className="help-modal-overlay" onClick={() => setHelpModal({ ...helpModal, visible: false })}>
-          <div className="help-modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>{helpModal.title}</h3>
-            <p>{helpModal.content}</p>
-            <button onClick={() => setHelpModal({ ...helpModal, visible: false })} className="help-modal-close" aria-label="Close help modal">
-              Got It!
-            </button>
+          <div className="help-modal-overlay" onClick={() => setHelpModal({ ...helpModal, visible: false })}>
+            <div className="help-modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>{helpModal.title}</h3>
+              <p>{helpModal.content}</p>
+              <button onClick={() => setHelpModal({ ...helpModal, visible: false })} className="help-modal-close" aria-label="Close help modal">
+                Got It!
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {inputRequest && (
         <InputModal
@@ -445,18 +451,9 @@ function CanvasInner({
           onCancel={() => inputRequest.resolve(null)}
         />
       )}
-    </div>
-  );
-}
 
-/**
- * Canvas wrapper component that provides context
- */
-function Canvas(props) {
-  return (
-    <ActiveFlowProvider>
-      <CanvasInner {...props} />
-    </ActiveFlowProvider>
+    </ActiveFlowContext.Provider>
+    </div>
   );
 }
 
