@@ -73,6 +73,10 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
+.dark-mode .message-bubble p {
+  color: inherit;
+}
+
 .dark-mode .message-bubble::after {
   border-color: #1e293b transparent transparent transparent;
 }

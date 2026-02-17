@@ -487,6 +487,10 @@ body, html {
   color: #f1f5f9;
 }
 
+.dark-mode .message-bubble p {
+  color: inherit;
+}
+
 .dark-mode .character-area {
   background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
 }

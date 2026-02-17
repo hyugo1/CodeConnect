@@ -52,11 +52,19 @@
 }
 
 .dark-mode .flowchart-container .react-flow__controls-button {
-  color: #cbd5e1;
+  color: #f1f5f9;
+}
+
+.dark-mode .flowchart-container .react-flow__controls-button svg {
+  fill: currentColor;
 }
 
 .dark-mode .flowchart-container .react-flow__controls-button:hover {
   background: rgba(56, 189, 248, 0.16);
+}
+
+.dark-mode .flowchart-container .react-flow__controls-button:disabled {
+  color: #475569;
 }
 
 .flowchart-container .react-flow__minimap {
