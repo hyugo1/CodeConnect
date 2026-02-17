@@ -1,69 +1,127 @@
-/* PaletteOverlay.css */
+/* src/Components/PaletteOverlay/PaletteOverlay.css */
 
 .palette-overlay {
   position: absolute;
   z-index: 1000;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-  padding: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 16px;
   max-height: calc(100vh - 30vh);
-  border: 1px solid #ccc;
+  border: 1px solid rgba(14, 165, 233, 0.2);
   overflow-y: auto;
+  backdrop-filter: blur(12px);
+  animation: overlaySlideIn 0.3s ease-out;
+}
+
+@keyframes overlaySlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .close-button {
-  display: block;
-  margin: 0 auto 10px auto;
-  font-size: 20px;
-  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px auto;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
   border: none;
+  border-radius: 10px;
   cursor: pointer;
-  color: #333;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  transform: scale(1.05);
 }
 
 .palette-overlay .aside-container {
-  width: 250px !important;
-  max-width: 250px !important;
-  transition: width var(--transition-time) ease;
+  width: 280px !important;
+  max-width: 280px !important;
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .palette-overlay .aside-container.collapsed {
-  width: 100px !important;
-  max-width: 100px !important;
+  width: 80px !important;
+  max-width: 80px !important;
 }
 
 .dark-mode .palette-overlay {
-  background-color: rgba(31, 34, 38, 0.9);
-  border-color: #444;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border-color: rgba(56, 189, 248, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .dark-mode .palette-overlay .close-button {
-  color: #ebebeb;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  color: #94a3b8;
+}
+
+.dark-mode .palette-overlay .close-button:hover {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
 }
 
 .dark-mode .palette-overlay .aside-container {
-  background-color: var(--aside-bg);
-  border-color: var(--aside-border);
+  background-color: transparent;
+  border: none;
 }
 
 .dark-mode .palette-overlay .aside-container .collapse-button {
-  color: var(--text-main);
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  color: #e2e8f0;
+  border-color: #475569;
 }
 
 .dark-mode .palette-overlay .dndblock {
-  background-color: var(--block-bg);
-  border-color: var(--block-border);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
 }
+
 .dark-mode .palette-overlay .dndblock span {
-  color: var(--text-main);
+  color: #e2e8f0;
 }
 
 .palette-overlay-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1px;
+  padding: 8px;
   cursor: move;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark-mode .palette-overlay-header {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 640px) {
+  .palette-overlay {
+    width: 90% !important;
+    max-width: 320px !important;
+    left: 5% !important;
+    right: 5% !important;
+    border-radius: 16px;
+    padding: 12px;
+  }
+  
+  .palette-overlay .aside-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }

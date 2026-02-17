@@ -1,26 +1,30 @@
+/* src/Components/CustomBlock/CustomBlock.css */
+
+
 .custom-block-wrapper {
-  position: relative; /* Ensure that the pseudo-element is positioned relative to the block */
+  position: relative;
 }
 
 /* Overlay for error highlighting with animated dotted borders */
 .custom-block-wrapper.error-highlight::before {
   content: "";
   position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border-radius: 8px;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 18px;
   pointer-events: none;
   background-image: 
-    linear-gradient(90deg, red 50%, transparent 50%), 
-    linear-gradient(90deg, red 50%, transparent 50%), 
-    linear-gradient(0deg, red 50%, transparent 50%), 
-    linear-gradient(0deg, red 50%, transparent 50%);
+    linear-gradient(90deg, #ef4444 50%, transparent 50%), 
+    linear-gradient(90deg, #ef4444 50%, transparent 50%), 
+    linear-gradient(0deg, #ef4444 50%, transparent 50%), 
+    linear-gradient(0deg, #ef4444 50%, transparent 50%);
   background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
-  background-size: 15px 2px, 15px 2px, 2px 15px, 2px 15px;
+  background-size: 16px 3px, 16px 3px, 3px 16px, 3px 16px;
   background-position: left top, right bottom, left bottom, right top;
   animation: border-dance 0.4s infinite linear;
+  z-index: 100;
 }
 
 /* Keyframes for the animated dotted border */
@@ -29,21 +33,47 @@
     background-position: left top, right bottom, left bottom, right top;
   }
   100% {
-    background-position: left 15px top, right 15px bottom, left bottom 15px, right top 15px;
+    background-position: left 16px top, right 16px bottom, left bottom 16px, right top 16px;
   }
 }
 
-/* Your existing error snackbar styles */
+
 .error-snackbar {
   position: absolute;
-  bottom: -30px;
+  bottom: -36px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 31, 31, 0.8);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
   white-space: nowrap;
   z-index: 10;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  animation: errorSlideIn 0.3s ease-out;
+}
+
+@keyframes errorSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.dark-mode .custom-block-wrapper.error-highlight::before {
+  background-image: 
+    linear-gradient(90deg, #f87171 50%, transparent 50%), 
+    linear-gradient(90deg, #f87171 50%, transparent 50%), 
+    linear-gradient(0deg, #f87171 50%, transparent 50%), 
+    linear-gradient(0deg, #f87171 50%, transparent 50%);
+}
+
+.dark-mode .error-snackbar {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
 }

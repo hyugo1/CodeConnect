@@ -1,87 +1,158 @@
 /* src/Components/ControlPanel/ControlPanel.css */
 
 :root {
-  --execute-btn-bg-color: #66BB6A; 
-  --execute-btn-hover-bg-color: #43A047;
+  --execute-btn-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --execute-btn-hover: linear-gradient(135deg, #059669 0%, #047857 100%);
+  --execute-btn-shadow: rgba(16, 185, 129, 0.4);
 
-  --reset-btn-bg-color: #FFB74D;
-  --reset-btn-hover-bg-color: #FB8C00;
+  --reset-btn-bg: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --reset-btn-hover: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  --reset-btn-shadow: rgba(245, 158, 11, 0.4);
 
-  --delete-btn-bg-color: #E57373;
-  --delete-btn-hover-bg-color: #EF5350;
+  --delete-btn-bg: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --delete-btn-hover: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  --delete-btn-shadow: rgba(239, 68, 68, 0.4);
 
-  --speed-btn-bg-color: #42A5F5;
-  --speed-btn-hover-bg-color: #1E88E5;
+  --speed-btn-bg: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --speed-btn-hover: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  --speed-btn-shadow: rgba(59, 130, 246, 0.4);
 }
 
 .control-panel {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 16px;
+  right: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  z-index: 20;
 }
 
 .control-panel button {
   display: inline-flex;
-  align-items: center; 
-  gap: 5px;
-  padding: 8px 12px;
-  font-size: 1rem;
-  border: 2px solid transparent;
-  border-radius: 3px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background-color 0.2s ease,
-              transform 0.1s ease,
-              border-color 0.2s ease,
-              box-shadow 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: white;
+  min-width: 100px;
 }
 
 .execute-button {
-  background-color: var(--execute-btn-bg-color, #66BB6A);
-  color: white;
+  background: var(--execute-btn-bg);
+  box-shadow: 0 4px 12px var(--execute-btn-shadow);
 }
+
 .execute-button:hover {
-  background-color: var(--execute-btn-hover-bg-color, #43A047);
-  transform: scale(1.02);
-  box-shadow: 0 0 5px rgba(67, 160, 71, 0.7);
+  background: var(--execute-btn-hover);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px var(--execute-btn-shadow);
+}
+
+.execute-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.execute-button.running {
+  background: var(--reset-btn-bg);
+  box-shadow: var(--reset-btn-shadow);
+}
+
+.execute-button.running:hover {
+  background: var(--reset-btn-hover);
+  box-shadow: 0 6px 20px var(--reset-btn-shadow);
 }
 
 .reset-button,
 .pause-button {
-  background-color: var(--reset-btn-bg-color, #FFB74D);
-  color: white;
+  background: var(--reset-btn-bg);
+  box-shadow: 0 4px 12px var(--reset-btn-shadow);
 }
+
 .reset-button:hover,
 .pause-button:hover {
-  background-color: var(--reset-btn-hover-bg-color, #FB8C00);
-  transform: scale(1.02);
-  box-shadow: 0 0 5px rgba(251, 140, 0, 0.7);
+  background: var(--reset-btn-hover);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px var(--reset-btn-shadow);
+}
+
+.reset-button:active,
+.pause-button:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .delete-button {
-  background-color: var(--delete-btn-bg-color, #E57373);
-  color: white;
-  border-color: var(--delete-btn-bg-color, #E57373);
+  background: var(--delete-btn-bg);
+  box-shadow: 0 4px 12px var(--delete-btn-shadow);
 }
+
 .delete-button:hover {
-  background-color: var(--delete-btn-hover-bg-color, #EF5350);
-  border-color: var(--delete-btn-hover-bg-color, #EF5350);
-  transform: scale(1.02);
-  box-shadow: 0 0 5px rgba(239, 83, 80, 0.7);
+  background: var(--delete-btn-hover);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px var(--delete-btn-shadow);
 }
+
 .delete-button:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
   box-shadow: none;
 }
 
 .speed-button {
-  background-color: var(--speed-btn-bg-color, #42A5F5);
-  color: white;
+  background: var(--speed-btn-bg);
+  box-shadow: 0 4px 12px var(--speed-btn-shadow);
 }
+
 .speed-button:hover {
-  background-color: var(--speed-btn-hover-bg-color, #1E88E5);
-  transform: scale(1.02);
-  box-shadow: 0 0 5px rgba(30, 136, 229, 0.7);
+  background: var(--speed-btn-hover);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px var(--speed-btn-shadow);
+}
+
+.speed-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.control-panel button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.control-panel button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+@media (max-width: 640px) {
+  .control-panel {
+    top: 12px;
+    right: 12px;
+    gap: 8px;
+  }
+  
+  .control-panel button {
+    padding: 8px 14px;
+    font-size: 0.8125rem;
+    min-width: 80px;
+    border-radius: 10px;
+  }
+  
+  .control-panel button svg {
+    width: 14px;
+    height: 14px;
+  }
 }
