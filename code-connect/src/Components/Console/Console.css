@@ -4,93 +4,213 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 5px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid;
+  border-image: linear-gradient(90deg, #0ea5e9, #8b5cf6) 1;
 }
 
 .console-header h3 {
   margin: 0;
-  font-size: 16px;
-  color: black;
-  border-bottom: 1px solid #444;
-  padding-bottom: 5px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* .console-toggle-button {
+.console-header h3::before {
+  content: '>';
+  color: #10b981;
+  font-weight: 800;
+}
+
+.dark-mode .console-header h3 {
+  color: #f1f5f9;
+}
+
+.console-toggle-button {
   cursor: pointer;
-  background-color: #5797FF;
-  color: #000;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
   border: none;
-  padding: 5px 10px;
-  border-radius: 3px;
-} */
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.console-toggle-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.console-toggle-button:active {
+  transform: translateY(0);
+}
 
 .code-preview {
-  border: 1px solid #444;
-  padding: 10px;
-  border-radius: 4px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
+  box-shadow: inset 0 1px 4px rgba(15, 23, 42, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.code-preview::before {
+  content: 'CODE';
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.3);
+  letter-spacing: 1px;
 }
 
 .code-preview .console-pre,
 .console .console-pre {
-  border: 1px solid #444;
-  border-radius: 4px;
-  font-family: Consolas, "Courier New", monospace;
-  font-size: 14px;
-  line-height: 1.4;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.8125rem;
+  line-height: 1.7;
   overflow-y: auto;
   margin: 0;
   transition: height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
   height: 150px;
   opacity: 1;
-  padding: 10px;
-  /* background-color: #eee; */
-  color: black;
+  padding: 0;
+  color: #10b981;
 }
 
 .code-preview.minimized .console-pre,
 .console.minimized .console-pre {
   height: 0;
   opacity: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 0;
 }
 
 .error-line {
-  color: rgb(255, 44, 44);
-  font-weight: bold;
+  color: #ef4444;
+  font-weight: 600;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .console {
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 10px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   max-height: 200px;
   overflow-y: auto;
-  color: black;
+  color: #0f172a;
+  box-shadow: inset 0 1px 4px rgba(15, 23, 42, 0.08);
+  position: relative;
 }
 
-.console-toggle-button {
-  cursor: pointer;
-  background-color: #9896f1;
-  color: #000;
-  border: 1px solid #444;
-  padding: 5px 10px;
+.console::before {
+  content: 'OUTPUT';
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.3);
+  letter-spacing: 1px;
+}
+
+.dark-mode .console {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .code-preview {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .code-preview::before,
+.dark-mode .console::before {
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.console-line {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.console-line.error {
+  color: #ef4444;
+}
+
+.console-line.warning {
+  color: #f59e0b;
+}
+
+.console-line.info {
+  color: #3b82f6;
+}
+
+.console-line.success {
+  color: #10b981;
+}
+
+.console::-webkit-scrollbar,
+.code-preview::-webkit-scrollbar {
+  width: 6px;
+}
+
+.console::-webkit-scrollbar-track,
+.code-preview::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.console::-webkit-scrollbar-thumb,
+.code-preview::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #475569 0%, #334155 100%);
   border-radius: 3px;
-  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
 }
 
-.console-toggle-button:hover {
-  background-color: #7a78d1;
-  transform: scale(1.05);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.console-toggle-button:active {
-  transform: scale(0.98);
+@media (max-width: 640px) {
+  .console-header {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+  
+  .console-header h3 {
+    font-size: 0.75rem;
+  }
+  
+  .console-toggle-button {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .code-preview .console-pre,
+  .console .console-pre {
+    font-size: 0.75rem;
+    height: 120px;
+  }
+  
+  .console {
+    max-height: 160px;
+  }
 }

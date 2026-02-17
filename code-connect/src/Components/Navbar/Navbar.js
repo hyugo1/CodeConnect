@@ -36,7 +36,7 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import LoginIcon from '@mui/icons-material/Login';
 
-const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
+const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef, themeMode, setThemeMode }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [signinDropdownOpen, setsigninDropdownOpen] = useState(false);
    // types: 'save', 'load', 'signup', 'signin', 'forgotPassword', 'guide', 'settings', 'examples'
@@ -318,9 +318,18 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
     }
   };
 
-  const toggleDarkMode = () => {
-    document.body.classList.toggle("dark-mode");
-    // toast.success("Dark mode toggled.");
+  const cycleThemeMode = () => {
+    setThemeMode((previousMode) => {
+      if (previousMode === 'light') return 'dark';
+      if (previousMode === 'dark') return 'system';
+      return 'light';
+    });
+  };
+
+  const getThemeModeLabel = () => {
+    if (themeMode === 'dark') return 'Dark';
+    if (themeMode === 'light') return 'Light';
+    return 'System';
   };
 
   const handleLoadExample = async (example) => {
@@ -488,11 +497,12 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
             {/* Dark mode toggle */}
             <button
               className="btn darkmode-btn-custom"
-              onClick={toggleDarkMode}
-              title="Toggle Dark Mode"
-              aria-label="Toggle dark mode"
+              onClick={cycleThemeMode}
+              title={`Theme: ${getThemeModeLabel()} (click to cycle)`}
+              aria-label={`Theme mode ${getThemeModeLabel()}. Click to cycle`}
             >
               <DarkModeIcon />
+              <span className="theme-mode-label">{getThemeModeLabel()}</span>
             </button>
           </div>
         </div>
@@ -519,7 +529,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
             onChange={(e) => setProjectName(e.target.value)}
             className="modal-input"
           />
-          <div className="modal-button-group">
+          <div className="modal-button-group save-button-group">
             <button onClick={handleSaveAsJSON} className="btn modal-btn file-btn" aria-label="Save project to your computer">
               <SaveIcon style={{ marginRight: '0.5rem' }} />
               Save to Your Computer
@@ -650,7 +660,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
             className="modal-input"
           />
           {/* Use the updated modal-button-group to fix the positions of these three buttons */}
-          <div className="modal-button-group">
+          <div className="modal-button-group signin-button-group">
             <button onClick={handleSignIn} className="btn signin-btn-custom modal-btn" aria-label="Sign in with email and password">
               <LoginIcon style={{ marginRight: '0.5rem' }} />
               Sign In
@@ -741,9 +751,13 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef }) => {
           </div>
           <div className="settings-section">
             <h4 className="theme-title">Theme</h4>
-            <button onClick={toggleDarkMode} className="btn modal-btn animated-btn darkmode-btn-custom" aria-label="Toggle dark mode">
+            <button
+              onClick={cycleThemeMode}
+              className="btn modal-btn animated-btn darkmode-btn-custom"
+              aria-label={`Theme mode ${getThemeModeLabel()}. Click to cycle`}
+            >
               <DarkModeIcon style={{ marginRight: '0.5rem' }} />
-              Dark Mode
+              {`Mode: ${getThemeModeLabel()} (cycle)`}
             </button>
           </div>
         </AccessibleModal>

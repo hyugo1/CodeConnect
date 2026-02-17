@@ -5,7 +5,7 @@
   
   .modal-footer {
     text-align: center;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
   }
   
   .modal-button-group {
@@ -14,11 +14,24 @@
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    margin-top: 1rem;
-    flex-wrap: nowrap;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
   }
   
   .modal-button-group button {
     flex: 1;
     max-width: 200px;
+    min-width: 120px;
+  }
+
+  @media (max-width: 640px) {
+    .modal-button-group {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .modal-button-group button {
+      width: 100%;
+      max-width: none;
+    }
   }

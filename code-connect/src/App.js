@@ -1,6 +1,6 @@
 // src/App.js
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import BlockPalette from './Components/BlockPalette/BlockPalette';
 import Canvas from './Components/Canvas/Canvas';
@@ -25,8 +25,45 @@ function App() {
   // Flowchart state
   const [blocks, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
+  const [themeMode, setThemeMode] = useState(() => localStorage.getItem('theme-mode') || 'system');
+  const [prefersDark, setPrefersDark] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : false
+  );
 
   const reactFlowWrapper = useRef(null);
+
+  const effectiveColorMode = useMemo(() => {
+    if (themeMode === 'system') {
+      return prefersDark ? 'dark' : 'light';
+    }
+    return themeMode;
+  }, [themeMode, prefersDark]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const onMediaChange = (event) => setPrefersDark(event.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', onMediaChange);
+    } else {
+      mediaQuery.addListener(onMediaChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', onMediaChange);
+      } else {
+        mediaQuery.removeListener(onMediaChange);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('theme-mode', themeMode);
+    document.body.classList.toggle('dark-mode', effectiveColorMode === 'dark');
+  }, [themeMode, effectiveColorMode]);
 
   const {
     executeFlowchart,
@@ -39,7 +76,15 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar blocks={blocks} edges={edges} setNodes={setNodes} setEdges={setEdges} reactFlowWrapperRef={reactFlowWrapper}/>
+      <Navbar
+        blocks={blocks}
+        edges={edges}
+        setNodes={setNodes}
+        setEdges={setEdges}
+        reactFlowWrapperRef={reactFlowWrapper}
+        themeMode={themeMode}
+        setThemeMode={setThemeMode}
+      />
       <Toaster/>
       <ToastContainer />
       <div className="app-container">
@@ -68,6 +113,7 @@ function App() {
             cancelDrag={cancelDrag}
             setCancelDrag={setCancelDrag}
             setIsDragging={setIsDragging}
+            colorMode={effectiveColorMode}
           />
           </div>
         </ReactFlowProvider>

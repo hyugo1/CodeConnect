@@ -23,6 +23,9 @@ import useFlowchartReset from '../../hooks/useFlowchartReset';
 import { v4 as uuidv4 } from 'uuid';
 import './Canvas.css';
 
+const MIN_DISTANCE = 150;
+const PROXIMITY_TEMP_EDGE_CLASS = 'proximity-temp-edge';
+
 /**
  * Inner Canvas component that uses the ActiveFlowContext
  */
@@ -39,6 +42,7 @@ function CanvasInner({
   cancelDrag,
   setCancelDrag,
   setIsDragging,
+  colorMode,
 }) {
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
@@ -351,9 +355,102 @@ function CanvasInner({
     setActiveEdgeId,
   });
 
+  const getNodeCenter = useCallback((node) => {
+    const width = node.width ?? node.measured?.width ?? 180;
+    const height = node.height ?? node.measured?.height ?? 60;
+    const x = (node.positionAbsolute?.x ?? node.position?.x ?? 0) + width / 2;
+    const y = (node.positionAbsolute?.y ?? node.position?.y ?? 0) + height / 2;
+    return { x, y };
+  }, []);
+
+  const getClosestEdge = useCallback((draggedNode) => {
+    const draggedCenter = getNodeCenter(draggedNode);
+
+    const closestNode = blocks.reduce(
+      (closest, node) => {
+        if (node.id === draggedNode.id) {
+          return closest;
+        }
+
+        const nodeCenter = getNodeCenter(node);
+        const dx = nodeCenter.x - draggedCenter.x;
+        const dy = nodeCenter.y - draggedCenter.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < closest.distance && distance < MIN_DISTANCE) {
+          return { distance, node };
+        }
+
+        return closest;
+      },
+      { distance: Number.MAX_VALUE, node: null }
+    );
+
+    if (!closestNode.node) {
+      return null;
+    }
+
+    const closeNodeCenter = getNodeCenter(closestNode.node);
+    const closeNodeIsSource = closeNodeCenter.x < draggedCenter.x;
+
+    return {
+      id: `${closeNodeIsSource ? closestNode.node.id : draggedNode.id}-${closeNodeIsSource ? draggedNode.id : closestNode.node.id}`,
+      source: closeNodeIsSource ? closestNode.node.id : draggedNode.id,
+      target: closeNodeIsSource ? draggedNode.id : closestNode.node.id,
+      type: 'custom',
+      markerEnd: { type: MarkerType.ArrowClosed },
+    };
+  }, [blocks, getNodeCenter]);
+
+  const onNodeDrag = useCallback((_, node) => {
+    const closeEdge = getClosestEdge(node);
+
+    setEdges((currentEdges) => {
+      const nextEdges = currentEdges.filter((edge) => edge.className !== PROXIMITY_TEMP_EDGE_CLASS);
+
+      if (
+        closeEdge &&
+        !nextEdges.some(
+          (edge) => edge.source === closeEdge.source && edge.target === closeEdge.target
+        )
+      ) {
+        nextEdges.push({
+          ...closeEdge,
+          className: PROXIMITY_TEMP_EDGE_CLASS,
+        });
+      }
+
+      return nextEdges;
+    });
+  }, [getClosestEdge, setEdges]);
+
+  const onNodeDragStop = useCallback((_, node) => {
+    const closeEdge = getClosestEdge(node);
+
+    setEdges((currentEdges) => {
+      const nextEdges = currentEdges.filter((edge) => edge.className !== PROXIMITY_TEMP_EDGE_CLASS);
+
+      if (
+        closeEdge &&
+        !nextEdges.some(
+          (edge) => edge.source === closeEdge.source && edge.target === closeEdge.target
+        )
+      ) {
+        nextEdges.push({
+          ...closeEdge,
+          id: `${closeEdge.id}-${uuidv4()}`,
+          className: 'proximity-edge',
+        });
+      }
+
+      return nextEdges;
+    });
+  }, [getClosestEdge, setEdges]);
+
   return (
     <div ref={reactFlowWrapper} className="flowchart-container" style={{ width: '100%', height: '100%', position: 'relative' }}>
       <ReactFlow
+        colorMode={colorMode}
         nodes={blocks}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -379,23 +476,25 @@ function CanvasInner({
         }}
         onDrop={handleDrop}
         onDragOver={onDragOverHandler}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStop={onNodeDragStop}
       >
         <MiniMap
           style={{
-            backgroundColor: document.body.classList.contains('dark-mode') ? '#2c2c2c' : '#fff'
+            backgroundColor: colorMode === 'dark' ? '#0f172a' : '#ffffff'
           }}
           nodeStrokeColor={(node) => {
             if (node.style?.background) return node.style.background;
-            return document.body.classList.contains('dark-mode') ? '#f0f0f0' : '#333';
+            return colorMode === 'dark' ? '#f0f0f0' : '#334155';
           }}
           nodeColor={(node) => {
             if (node.style?.background) return node.style.background;
-            return document.body.classList.contains('dark-mode') ? '#333' : '#aaa';
+            return colorMode === 'dark' ? '#334155' : '#cbd5e1';
           }}
           nodeBorderRadius={2}
         />
         <Controls />
-        <Background color="#aaa" gap={16} />
+        <Background color={colorMode === 'dark' ? '#334155' : '#94a3b8'} gap={20} />
       </ReactFlow>
 
       <ControlPanel
