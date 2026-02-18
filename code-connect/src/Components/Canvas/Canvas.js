@@ -1,6 +1,6 @@
 // src/Components/Canvas/Canvas.js
 
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import ReactFlow, {
   Controls,
   Background,
@@ -26,6 +26,9 @@ import './Canvas.css';
 const MIN_DISTANCE = 150;
 const PROXIMITY_TEMP_EDGE_CLASS = 'proximity-temp-edge';
 
+const CustomBlockWrapper = props => <CustomBlock {...props} />;
+const CustomEdgeWrapper = props => <CustomEdge {...props} />;
+
 /**
  * Inner Canvas component that uses the ActiveFlowContext
  */
@@ -48,22 +51,18 @@ function CanvasInner({
   const { screenToFlowPosition } = useReactFlow();
 
   const {
-    activeBlockId,
-    activeEdgeId,
-    errorBlockId,
     setErrorBlockId,
     setActiveBlockId,
     setActiveEdgeId,
     paletteVisible,
     currentDummyBlockId,
     dummyBlockPosition,
-    onReplace,
     closePalette,
   } = useActiveFlow();
 
-  const [selectedNodes, setSelectedNodes] = React.useState([]);
-  const [selectedEdges, setSelectedEdges] = React.useState([]);
-  const [helpModal, setHelpModal] = React.useState({ visible: false, title: '', content: '' });
+  const [selectedNodes, setSelectedNodes] = useState([]);
+  const [selectedEdges, setSelectedEdges] = useState([]);
+  const [helpModal, setHelpModal] = useState({ visible: false, title: '', content: '' });
 
   const lastBlockId = useRef(null);
   useEffect(() => {
@@ -203,10 +202,8 @@ function CanvasInner({
     [blocks, setNodes, setEdges, closePalette]
   );
 
-  const CustomBlockWrapper = props => <CustomBlock {...props} />;
   const nodeTypes = useMemo(() => ({ custom: CustomBlockWrapper }), []);
 
-  const CustomEdgeWrapper = props => <CustomEdge {...props} />;
   const edgeTypes = useMemo(() => ({ custom: CustomEdgeWrapper }), []);
 
   const { onConnect } = useFlowchartHandlers({
@@ -363,8 +360,47 @@ function CanvasInner({
     return { x, y };
   }, []);
 
+  const getNodeBounds = useCallback((node) => {
+    const width = node.width ?? node.measured?.width ?? 180;
+    const height = node.height ?? node.measured?.height ?? 60;
+    const left = node.positionAbsolute?.x ?? node.position?.x ?? 0;
+    const top = node.positionAbsolute?.y ?? node.position?.y ?? 0;
+
+    return {
+      left,
+      top,
+      right: left + width,
+      bottom: top + height,
+    };
+  }, []);
+
+  const getBoundsGapDistance = useCallback((a, b) => {
+    const dx = Math.max(0, Math.max(a.left, b.left) - Math.min(a.right, b.right));
+    const dy = Math.max(0, Math.max(a.top, b.top) - Math.min(a.bottom, b.bottom));
+    return Math.sqrt(dx * dx + dy * dy);
+  }, []);
+
+  const getDefaultHandlesForProximity = useCallback((sourceNode, targetNode) => {
+    const sourceType = (sourceNode?.data?.blockType || '').toLowerCase();
+    const targetType = (targetNode?.data?.blockType || '').toLowerCase();
+
+    if (sourceType === 'end' || sourceType === 'if' || sourceType === 'whilestart') {
+      return null;
+    }
+
+    if (targetType === 'start') {
+      return null;
+    }
+
+    return {
+      sourceHandle: `source-${sourceNode.id}`,
+      targetHandle: `target-${targetNode.id}`,
+    };
+  }, []);
+
   const getClosestEdge = useCallback((draggedNode) => {
     const draggedCenter = getNodeCenter(draggedNode);
+    const draggedBounds = getNodeBounds(draggedNode);
 
     const closestNode = blocks.reduce(
       (closest, node) => {
@@ -372,10 +408,8 @@ function CanvasInner({
           return closest;
         }
 
-        const nodeCenter = getNodeCenter(node);
-        const dx = nodeCenter.x - draggedCenter.x;
-        const dy = nodeCenter.y - draggedCenter.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const nodeBounds = getNodeBounds(node);
+        const distance = getBoundsGapDistance(draggedBounds, nodeBounds);
 
         if (distance < closest.distance && distance < MIN_DISTANCE) {
           return { distance, node };
@@ -392,15 +426,24 @@ function CanvasInner({
 
     const closeNodeCenter = getNodeCenter(closestNode.node);
     const closeNodeIsSource = closeNodeCenter.x < draggedCenter.x;
+    const sourceNode = closeNodeIsSource ? closestNode.node : draggedNode;
+    const targetNode = closeNodeIsSource ? draggedNode : closestNode.node;
+    const handles = getDefaultHandlesForProximity(sourceNode, targetNode);
+
+    if (!handles) {
+      return null;
+    }
 
     return {
-      id: `${closeNodeIsSource ? closestNode.node.id : draggedNode.id}-${closeNodeIsSource ? draggedNode.id : closestNode.node.id}`,
-      source: closeNodeIsSource ? closestNode.node.id : draggedNode.id,
-      target: closeNodeIsSource ? draggedNode.id : closestNode.node.id,
+      id: `${sourceNode.id}-${targetNode.id}`,
+      source: sourceNode.id,
+      target: targetNode.id,
+      sourceHandle: handles.sourceHandle,
+      targetHandle: handles.targetHandle,
       type: 'custom',
       markerEnd: { type: MarkerType.ArrowClosed },
     };
-  }, [blocks, getNodeCenter]);
+  }, [blocks, getBoundsGapDistance, getDefaultHandlesForProximity, getNodeBounds, getNodeCenter]);
 
   const onNodeDrag = useCallback((_, node) => {
     const closeEdge = getClosestEdge(node);
@@ -411,12 +454,20 @@ function CanvasInner({
       if (
         closeEdge &&
         !nextEdges.some(
-          (edge) => edge.source === closeEdge.source && edge.target === closeEdge.target
+          (edge) =>
+            edge.source === closeEdge.source &&
+            edge.target === closeEdge.target &&
+            edge.sourceHandle === closeEdge.sourceHandle &&
+            edge.targetHandle === closeEdge.targetHandle
         )
       ) {
         nextEdges.push({
           ...closeEdge,
           className: PROXIMITY_TEMP_EDGE_CLASS,
+          style: {
+            strokeDasharray: '6 6',
+            strokeWidth: 2.5,
+          },
         });
       }
 
@@ -433,12 +484,16 @@ function CanvasInner({
       if (
         closeEdge &&
         !nextEdges.some(
-          (edge) => edge.source === closeEdge.source && edge.target === closeEdge.target
+          (edge) =>
+            edge.source === closeEdge.source &&
+            edge.target === closeEdge.target &&
+            edge.sourceHandle === closeEdge.sourceHandle &&
+            edge.targetHandle === closeEdge.targetHandle
         )
       ) {
         nextEdges.push({
           ...closeEdge,
-          id: `${closeEdge.id}-${uuidv4()}`,
+          id: uuidv4(),
           className: 'proximity-edge',
         });
       }
@@ -515,7 +570,7 @@ function CanvasInner({
       {paletteVisible && dummyBlockPosition && (
         <PaletteOverlay
           dummyBlockPosition={dummyBlockPosition}
-          setPaletteVisible={closePalette}
+          onClose={closePalette}
           currentDummyBlockId={currentDummyBlockId}
           handleReplaceDummyBlock={handleReplaceDummyBlock}
           isDragging={isDragging}

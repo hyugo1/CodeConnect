@@ -12,7 +12,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1200;
-  animation: fadeIn 0.2s ease-out;
+  animation: fade-in 0.2s ease-out;
 }
 
 .flowchart-container .react-flow__renderer {
@@ -95,7 +95,7 @@
   }
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
@@ -107,12 +107,12 @@
   max-width: 440px;
   width: 90%;
   text-align: center;
-  animation: modalSlideIn 0.3s ease-out;
+  animation: modal-slide-in 0.3s ease-out;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(14, 165, 233, 0.1);
   border: 1px solid rgba(14, 165, 233, 0.2);
 }
 
-@keyframes modalSlideIn {
+@keyframes modal-slide-in {
   from { 
     opacity: 0; 
     transform: scale(0.95) translateY(20px); 
@@ -478,10 +478,10 @@
 }
 
 .executing-node {
-  animation: nodeHighlight 0.6s ease-out;
+  animation: node-highlight 0.6s ease-out;
 }
 
-@keyframes nodeHighlight {
+@keyframes node-highlight {
   0% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.5);
@@ -505,10 +505,10 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   z-index: 1100;
   min-width: 180px;
-  animation: contextMenuFadeIn 0.15s ease-out;
+  animation: context-menu-fade-in 0.15s ease-out;
 }
 
-@keyframes contextMenuFadeIn {
+@keyframes context-menu-fade-in {
   from {
     opacity: 0;
     transform: scale(0.95);

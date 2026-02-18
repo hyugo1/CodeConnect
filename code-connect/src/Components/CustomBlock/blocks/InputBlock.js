@@ -20,7 +20,7 @@ const InputBlock = ({ id, data, selected, executing }) => {
   const helpText = `
   • Use this block to ask the user for a value.
   • Type the variable name to store it in.
-  • Type the prompt message (e.g. \"Enter your name\").
+  • Type the prompt message (e.g. "Enter your name").
   • Toggle between number or text input mode.
   `;
 

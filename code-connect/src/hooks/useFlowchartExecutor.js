@@ -1,6 +1,6 @@
 // src/hooks/useFlowchartExecutor.js
 
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 /**
@@ -349,6 +349,7 @@ export function useFlowchartExecutor(
             case 'right': x += distance; break;
             case 'up':    y -= distance; break;
             case 'down':  y += distance; break;
+            default: break;
           }
           context.characterPos = { x, y };
           outputs.push(`Moved ${direction} by ${distance} to (${x},${y})`);
@@ -456,7 +457,7 @@ export function useFlowchartExecutor(
   }
 
   // the public entry point
-  const executeFlowchart = useCallback(() => {
+  const executeFlowchart = () => {
     // preload mathjs chunk
     getEvaluate().catch(() => {
       toast.error('Could not load math engine');
@@ -490,7 +491,7 @@ export function useFlowchartExecutor(
       toast.error('Error: No Start block found.');
       setConsoleOutput('Error: No Start block found.');
     }
-  }, [blocks, edges]);
+  };
 
   return { executeFlowchart, inputRequest };
 }

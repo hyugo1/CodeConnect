@@ -9,6 +9,8 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   deleteUser,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
 } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 
@@ -25,10 +27,19 @@ export function useAuth() {
 
   // Listen to auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        setCurrentUser(user);
+        setLoading(false);
+      },
+      (authError) => {
+        console.error('Auth state listener error:', authError);
+        setCurrentUser(null);
+        setError(authError.message);
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
@@ -48,7 +59,9 @@ export function useAuth() {
   const signIn = useCallback(async (email, password) => {
     setError(null);
     if (!email.trim() || !password) {
-      throw new Error('Please fill in your email and password.');
+      const validationError = 'Please fill in your email and password.';
+      setError(validationError);
+      throw new Error(validationError);
     }
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -84,7 +97,9 @@ export function useAuth() {
   const resetPassword = useCallback(async (email) => {
     setError(null);
     if (!email.trim()) {
-      throw new Error('Please type your email address.');
+      const validationError = 'Please type your email address.';
+      setError(validationError);
+      throw new Error(validationError);
     }
     try {
       await sendPasswordResetEmail(auth, email);
@@ -95,7 +110,7 @@ export function useAuth() {
   }, []);
 
   // Delete user account
-  const deleteAccount = useCallback(async () => {
+  const deleteAccount = useCallback(async (password) => {
     setError(null);
     if (!currentUser) {
       throw new Error('No user signed in.');
@@ -104,6 +119,20 @@ export function useAuth() {
       await deleteUser(currentUser);
       setCurrentUser(null);
     } catch (err) {
+      if (err.code === 'auth/requires-recent-login') {
+        const reauthMessage = 'Please re-authenticate to delete your account';
+        setError(reauthMessage);
+
+        if (!currentUser.email || !password) {
+          throw new Error(reauthMessage);
+        }
+
+        const credential = EmailAuthProvider.credential(currentUser.email, password);
+        await reauthenticateWithCredential(currentUser, credential);
+        await deleteUser(currentUser);
+        setCurrentUser(null);
+        return;
+      }
       setError(err.message);
       throw err;
     }

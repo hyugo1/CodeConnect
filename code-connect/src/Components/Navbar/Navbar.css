@@ -1,6 +1,11 @@
 /* src/Components/Navbar/Navbar.css */
 
-:root {
+.navbar,
+.modal-backdrop,
+.modal-content,
+.signin-dropdown,
+.user-dropdown,
+.darkmode-btn-custom {
   --brand-gradient: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 50%, #ec4899 100%);
   --brand-primary: #0ea5e9;
   --brand-secondary: #8b5cf6;
@@ -25,18 +30,6 @@
   
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-brand: 'Outfit', sans-serif;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: var(--font-primary);
-  background: #f8fafc;
-  color: var(--text-primary);
 }
 
 .btn {
@@ -146,7 +139,7 @@ body {
   font-size: 0.9375rem;
   font-weight: 500;
   font-family: var(--font-primary);
-  color: rgb(239, 232, 232);
+  color: var(--text-secondary);
   cursor: pointer;
   border-radius: 10px;
   transition: all var(--transition-base);
@@ -317,10 +310,10 @@ body {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
   text-align: center;
   color: #f8fafc;
-  animation: modalSlideIn 0.3s ease-out;
+  animation: modal-slide-in 0.3s ease-out;
 }
 
-@keyframes modalSlideIn {
+@keyframes modal-slide-in {
   from {
     opacity: 0;
     transform: scale(0.95) translateY(20px);
@@ -729,7 +722,7 @@ body {
   }
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
@@ -737,14 +730,13 @@ body {
 .modal-content,
 .user-dropdown,
 .navbar-menu {
-  animation: fadeIn 0.3s ease-out;
+  animation: fade-in 0.3s ease-out;
 }
 
 .btn:hover {
   transform: translateY(-2px);
 }
 
-.navbar-menu-item:hover,
 .signin-dropdown-item:hover,
 .dropdown-item:hover {
   transform: translateX(4px);

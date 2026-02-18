@@ -24,16 +24,7 @@ export function useFlowchartState() {
   // Handle edge changes from React Flow
   const onEdgesChange = useCallback(
     (changes) => {
-      setEdges((eds) => {
-        const updatedEdges = applyEdgeChanges(changes, eds);
-        // Add 'Loop Back' label to loopback edges
-        return updatedEdges.map((edge) => {
-          if (edge.sourceHandle && edge.sourceHandle.startsWith('loopBack')) {
-            return { ...edge, label: 'Loop Back' };
-          }
-          return edge;
-        });
-      });
+      setEdges((eds) => applyEdgeChanges(changes, eds));
     },
     []
   );
@@ -46,8 +37,8 @@ export function useFlowchartState() {
 
   // Load blocks and edges (for import/load operations)
   const loadFlowchart = useCallback((newBlocks, newEdges) => {
-    setBlocks(newBlocks);
-    setEdges(newEdges);
+    setBlocks(newBlocks ?? []);
+    setEdges(newEdges ?? []);
   }, []);
 
   return {

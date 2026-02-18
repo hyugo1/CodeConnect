@@ -1,6 +1,6 @@
 /* src/styles/index.css */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+@import 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap';
 
 *,
 *::before,
@@ -24,6 +24,11 @@ body {
   height: 100%;
   line-height: 1.5;
   overflow: hidden;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+  min-height: 100vh;
 }
 
 img, picture, video, canvas, svg {
@@ -120,14 +125,6 @@ p, h1, h2, h3, h4, h5, h6 {
   --z-tooltip: 1070;
 }
 
-body {
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  color: var(--text-primary);
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
-  min-height: 100vh;
-}
-
 ::selection {
   background: rgba(14, 165, 233, 0.3);
   color: var(--text-primary);
@@ -213,7 +210,8 @@ button {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
 }
