@@ -29,6 +29,9 @@ const useFlowchartHandlers = ({
           label = 'True';
           edgeStyle = { stroke: 'green', strokeWidth: 3 };
           break;
+        case 'loopback':
+          label = 'Loop Back';
+          break;
         case 'no':
         case 'false':
         case 'exit':

@@ -13,10 +13,10 @@
   align-items: center;
   z-index: 1300;
   padding: 20px;
-  animation: overlayFadeIn 0.2s ease-out;
+  animation: overlay-fade-in 0.2s ease-out;
 }
 
-@keyframes overlayFadeIn {
+@keyframes overlay-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
@@ -25,18 +25,18 @@
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   padding: 32px;
   border-radius: 24px;
-  min-width: 480px;
-  max-width: 90%;
+  width: 100%;
+  max-width: 640px;
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(14, 165, 233, 0.1);
   border: 1px solid rgba(14, 165, 233, 0.2);
   text-align: left;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  animation: modalSlideIn 0.3s ease-out;
+  animation: modal-slide-in 0.3s ease-out;
 }
 
-@keyframes modalSlideIn {
+@keyframes modal-slide-in {
   from {
     opacity: 0;
     transform: scale(0.95) translateY(20px);
@@ -119,8 +119,8 @@
 @media (max-width: 640px) {
   .help-modal-content {
     padding: 24px;
-    min-width: auto;
     width: 100%;
+    max-width: 100%;
     border-radius: 20px;
   }
   

@@ -33,16 +33,16 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
   
   white-space: normal;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   line-height: 1.5;
   font-size: 0.9375rem;
   font-weight: 500;
   z-index: 10;
   
-  animation: bubbleSlideIn 0.3s ease-out;
+  animation: bubble-slide-in 0.3s ease-out;
 }
 
-@keyframes bubbleSlideIn {
+@keyframes bubble-slide-in {
   from {
     opacity: 0;
     transform: translateX(-50%) translateY(8px) scale(0.95);

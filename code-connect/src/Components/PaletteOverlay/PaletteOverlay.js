@@ -5,7 +5,7 @@ import './PaletteOverlay.css';
 
 const PaletteOverlay = ({
   dummyBlockPosition,
-  setPaletteVisible,
+  onClose,
   currentDummyBlockId,
   handleReplaceDummyBlock,
   isDragging,
@@ -65,7 +65,7 @@ const PaletteOverlay = ({
     >
       <div className="palette-overlay-header" onMouseDown={onMouseDown}>
         <button
-          onClick={() => setPaletteVisible(false)}
+          onClick={onClose}
           className="close-button"
           title="Close"
         >

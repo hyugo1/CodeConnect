@@ -83,7 +83,7 @@
   cursor: ew-resize;
   background: linear-gradient(90deg, transparent 0%, rgba(14, 165, 233, 0.2) 100%);
   z-index: 10;
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast, 0.15s ease);
 }
 
 .resizer:hover,
@@ -405,14 +405,3 @@
   animation-delay: calc(var(--index, 0) * 0.05s);
   opacity: 0;
 }
-
-.blocks-container .dndblock:nth-child(1) { --index: 1; }
-.blocks-container .dndblock:nth-child(2) { --index: 2; }
-.blocks-container .dndblock:nth-child(3) { --index: 3; }
-.blocks-container .dndblock:nth-child(4) { --index: 4; }
-.blocks-container .dndblock:nth-child(5) { --index: 5; }
-.blocks-container .dndblock:nth-child(6) { --index: 6; }
-.blocks-container .dndblock:nth-child(7) { --index: 7; }
-.blocks-container .dndblock:nth-child(8) { --index: 8; }
-.blocks-container .dndblock:nth-child(9) { --index: 9; }
-.blocks-container .dndblock:nth-child(10) { --index: 10; }

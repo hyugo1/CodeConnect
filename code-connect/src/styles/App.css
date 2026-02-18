@@ -42,6 +42,10 @@
   --surface-overlay: rgba(255, 255, 255, 0.8);
   
   --text-secondary: #475569;
+  --text-primary: #1e293b;
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-glow-primary: 0 0 20px rgba(14, 165, 233, 0.3);
   --shadow-glow-accent: 0 0 20px rgba(139, 92, 246, 0.3);
   
@@ -501,7 +505,7 @@ body, html {
   color: #e2e8f0;
 }
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -531,7 +535,7 @@ body, html {
 }
 
 .animate-fade-in {
-  animation: fadeInUp 0.4s ease-out forwards;
+  animation: fade-in-up 0.4s ease-out forwards;
 }
 
 .animate-pulse {
@@ -539,13 +543,6 @@ body, html {
 }
 
 *:focus-visible {
-  outline: 2px solid var(--primary-500);
-  outline-offset: 2px;
-}
-
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
   outline: 2px solid var(--primary-500);
   outline-offset: 2px;
 }

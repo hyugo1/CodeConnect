@@ -492,12 +492,6 @@
   }
 }
 
-@keyframes edgePulse {
-  0% { stroke-width: 3; opacity: 1; }
-  50% { stroke-width: 5; opacity: 0.5; }
-  100% { stroke-width: 3; opacity: 1; }
-}
-
 .react-flow__edges {
   z-index: 1000;
 }

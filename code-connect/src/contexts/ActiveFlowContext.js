@@ -1,6 +1,6 @@
 // src/contexts/ActiveFlowContext.js
 
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 export const ActiveFlowContext = createContext({
   // Execution state
@@ -57,7 +57,7 @@ export function ActiveFlowProvider({ children }) {
     setDummyBlockPosition(null);
   }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     // Execution state
     activeBlockId,
     activeEdgeId,
@@ -67,14 +67,28 @@ export function ActiveFlowProvider({ children }) {
     setActiveEdgeId,
     setErrorBlockId,
     setIsExecuting,
-    
+
     // Block replacement state
     paletteVisible,
     currentDummyBlockId,
     dummyBlockPosition,
     onReplace,
     closePalette,
-  };
+  }), [
+    activeBlockId,
+    activeEdgeId,
+    errorBlockId,
+    isExecuting,
+    setActiveBlockId,
+    setActiveEdgeId,
+    setErrorBlockId,
+    setIsExecuting,
+    paletteVisible,
+    currentDummyBlockId,
+    dummyBlockPosition,
+    onReplace,
+    closePalette,
+  ]);
 
   return (
     <ActiveFlowContext.Provider value={value}>

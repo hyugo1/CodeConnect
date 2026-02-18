@@ -121,10 +121,11 @@ const BlockPalette = ({
               {Object.entries(grouped).map(([category, items]) => (
                 <div key={category}>
                   <h4 className="block-category">{category}</h4>
-                  {items.map(block => (
+                  {items.map((block, index) => (
                     <div
                       key={block.type}
                       className={`dndblock ${block.type}-block`}
+                      style={{ '--index': index + 1 }}
                       onClick={() => onSelectBlock(block.type)}
                       onDragStart={e => onDragStart(e, block.type)}
                       onDragEnd={onDragEnd}

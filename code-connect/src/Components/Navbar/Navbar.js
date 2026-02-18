@@ -30,6 +30,8 @@ import './Navbar.css';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 import InfoIcon from '@mui/icons-material/Info';
 import SaveIcon from '@mui/icons-material/Save';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
@@ -86,9 +88,9 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef, themeM
 
   // new: snapshot the canvas and download as PNG
   const handleSaveAsImage = async () => {
-    const wrapper = reactFlowWrapperRef.current;
-    if (!reactFlowWrapperRef?.current) {
-      if (!wrapper) return toast.error('Could not capture the canvas.');
+    const wrapper = reactFlowWrapperRef?.current;
+    if (!wrapper) {
+      toast.error('Could not capture the canvas.');
       return;
     }
     wrapper.classList.add('exporting');
@@ -501,7 +503,13 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef, themeM
               title={`Theme: ${getThemeModeLabel()} (click to cycle)`}
               aria-label={`Theme mode ${getThemeModeLabel()}. Click to cycle`}
             >
-              <DarkModeIcon />
+              {themeMode === 'dark' ? (
+                <LightModeIcon />
+              ) : themeMode === 'light' ? (
+                <DarkModeIcon />
+              ) : (
+                <SettingsBrightnessIcon />
+              )}
               <span className="theme-mode-label">{getThemeModeLabel()}</span>
             </button>
           </div>
@@ -756,7 +764,13 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef, themeM
               className="btn modal-btn animated-btn darkmode-btn-custom"
               aria-label={`Theme mode ${getThemeModeLabel()}. Click to cycle`}
             >
-              <DarkModeIcon style={{ marginRight: '0.5rem' }} />
+              {themeMode === 'dark' ? (
+                <LightModeIcon style={{ marginRight: '0.5rem' }} />
+              ) : themeMode === 'light' ? (
+                <DarkModeIcon style={{ marginRight: '0.5rem' }} />
+              ) : (
+                <SettingsBrightnessIcon style={{ marginRight: '0.5rem' }} />
+              )}
               {`Mode: ${getThemeModeLabel()} (cycle)`}
             </button>
           </div>
