@@ -771,7 +771,7 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef, themeM
               ) : (
                 <SettingsBrightnessIcon style={{ marginRight: '0.5rem' }} />
               )}
-              {`Mode: ${getThemeModeLabel()} (cycle)`}
+              {`Mode: ${getThemeModeLabel()}`}
             </button>
           </div>
         </AccessibleModal>

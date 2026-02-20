@@ -11,6 +11,12 @@ import CreateIcon from '@mui/icons-material/Create';
 import LoopIcon from '@mui/icons-material/Loop';
 import './BlockPalette.css';
 
+const getResponsivePanelWidth = () => {
+  if (typeof window === 'undefined') return 380;
+  const target = Math.round(window.innerWidth * 0.23);
+  return Math.max(300, Math.min(target, 520));
+};
+
 const BlockPalette = ({
   onSelectBlock,
   isDragging,
@@ -19,17 +25,30 @@ const BlockPalette = ({
   excludeStart
 }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [width, setWidth] = useState(350);
+  const [width, setWidth] = useState(() => getResponsivePanelWidth());
   const [resizing, setResizing] = useState(false);
+  const [userResized, setUserResized] = useState(false);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
 
   const onMouseDownResizer = e => {
     e.preventDefault();
     setResizing(true);
+    setUserResized(true);
     startXRef.current = e.clientX;
     startWidthRef.current = width;
   };
+
+  useEffect(() => {
+    if (userResized) return;
+
+    const handleResize = () => {
+      setWidth(getResponsivePanelWidth());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [userResized]);
 
   useEffect(() => {
     const onMouseMove = e => {

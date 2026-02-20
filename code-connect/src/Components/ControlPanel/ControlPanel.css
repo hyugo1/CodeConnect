@@ -137,6 +137,26 @@
   transform: none !important;
 }
 
+.control-panel-hint {
+  margin-top: 2px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.86);
+  color: #e2e8f0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.3);
+}
+
+.control-panel-hint div + div {
+  margin-top: 2px;
+}
+
+.dark-mode .control-panel-hint {
+  background: rgba(15, 23, 42, 0.9);
+  color: #cbd5e1;
+}
+
 @media (max-width: 640px) {
   .control-panel {
     top: 12px;
@@ -154,5 +174,10 @@
   .control-panel button svg {
     width: 14px;
     height: 14px;
+  }
+
+  .control-panel-hint {
+    max-width: 180px;
+    font-size: 0.67rem;
   }
 }

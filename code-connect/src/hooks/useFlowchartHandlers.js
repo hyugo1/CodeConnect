@@ -16,6 +16,9 @@ const useFlowchartHandlers = ({
 }) => {
   const onConnect = useCallback(
     (params) => {
+      if (!params?.source || !params?.target) {
+        return;
+      }
       const originalSourceHandle = params.sourceHandle;
       let sourceHandleType = originalSourceHandle
         ? originalSourceHandle.split('-')[0].toLowerCase()
@@ -42,7 +45,18 @@ const useFlowchartHandlers = ({
           label = '';
       }
       setEdges((eds) =>
-        addEdge(
+        {
+          const hasExistingIncomingOnHandle = eds.some(
+            (edge) =>
+              edge.target === params.target &&
+              (edge.targetHandle || null) === (params.targetHandle || null)
+          );
+
+          if (hasExistingIncomingOnHandle) {
+            return eds;
+          }
+
+        return addEdge(
           {
             ...params,
             sourceHandle: originalSourceHandle,
@@ -59,7 +73,8 @@ const useFlowchartHandlers = ({
             id: uuidv4(),
           },
           eds
-        )
+        );
+      }
       );
     },
     [setEdges]
