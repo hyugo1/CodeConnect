@@ -11,9 +11,18 @@ import ReactFlow, {
   useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import {
+  FaPlay,
+  FaUndo,
+  FaRedo,
+  FaCopy,
+  FaPaste,
+  FaTrash,
+  FaCompressArrowsAlt,
+  FaSyncAlt,
+} from 'react-icons/fa';
 import CustomBlock from '../CustomBlock/CustomBlock';
 import CustomEdge from '../CustomEdge/CustomEdge';
-import ControlPanel from '../ControlPanel/ControlPanel';
 import { useFlowchartExecutor } from '../../hooks/useFlowchartExecutor';
 import useFlowchartHandlers from '../../hooks/useFlowchartHandlers';
 import PaletteOverlay from '../PaletteOverlay/PaletteOverlay';
@@ -25,6 +34,16 @@ import './Canvas.css';
 
 const MIN_DISTANCE = 150;
 const PROXIMITY_TEMP_EDGE_CLASS = 'proximity-temp-edge';
+const HISTORY_LIMIT = 60;
+const PASTE_OFFSET = 40;
+
+const deepClone = (value) => {
+  if (typeof structuredClone === 'function') {
+    return structuredClone(value);
+  }
+
+  return JSON.parse(JSON.stringify(value));
+};
 
 const CustomBlockWrapper = props => <CustomBlock {...props} />;
 const CustomEdgeWrapper = props => <CustomEdge {...props} />;
@@ -48,7 +67,7 @@ function CanvasInner({
   colorMode,
 }) {
   const reactFlowWrapper = useRef(null);
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, fitView, setViewport, getViewport } = useReactFlow();
 
   const {
     setErrorBlockId,
@@ -63,11 +82,266 @@ function CanvasInner({
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [selectedEdges, setSelectedEdges] = useState([]);
   const [helpModal, setHelpModal] = useState({ visible: false, title: '', content: '' });
+  const [, setHistory] = useState([]);
+  const [, setFuture] = useState([]);
+  const [clipboard, setClipboard] = useState({ nodes: [], edges: [] });
+  const [nodeContextMenu, setNodeContextMenu] = useState({ visible: false, x: 0, y: 0, nodeId: null });
+
+  const snapshotRef = useRef({ blocks: deepClone(blocks), edges: deepClone(edges) });
+  const restoringHistoryRef = useRef(false);
+  const pasteIterationRef = useRef(0);
+  const viewportRestoredRef = useRef(false);
+  const hasAutoFittedRef = useRef(false);
 
   const lastBlockId = useRef(null);
   useEffect(() => {
     lastBlockId.current = blocks.length > 0 ? blocks[blocks.length - 1].id : null;
   }, [blocks]);
+
+  useEffect(() => {
+    const currentSnapshot = { blocks: deepClone(blocks), edges: deepClone(edges) };
+
+    if (restoringHistoryRef.current) {
+      snapshotRef.current = currentSnapshot;
+      restoringHistoryRef.current = false;
+      return;
+    }
+
+    const previousSnapshot = snapshotRef.current;
+    const hasChanged =
+      JSON.stringify(previousSnapshot.blocks) !== JSON.stringify(currentSnapshot.blocks) ||
+      JSON.stringify(previousSnapshot.edges) !== JSON.stringify(currentSnapshot.edges);
+
+    if (!hasChanged) {
+      return;
+    }
+
+    setHistory((entries) => [...entries.slice(-(HISTORY_LIMIT - 1)), previousSnapshot]);
+    setFuture([]);
+    snapshotRef.current = currentSnapshot;
+  }, [blocks, edges]);
+
+  useEffect(() => {
+    if (viewportRestoredRef.current) {
+      return;
+    }
+
+    viewportRestoredRef.current = true;
+
+    try {
+      const raw = localStorage.getItem('code-connect:viewport');
+      if (!raw) {
+        return;
+      }
+
+      const parsed = JSON.parse(raw);
+      if (
+        typeof parsed?.x === 'number' &&
+        typeof parsed?.y === 'number' &&
+        typeof parsed?.zoom === 'number'
+      ) {
+        setViewport(parsed, { duration: 220 });
+      }
+    } catch (_error) {
+      localStorage.removeItem('code-connect:viewport');
+    }
+  }, [setViewport]);
+
+  useEffect(() => {
+    if (hasAutoFittedRef.current || blocks.length === 0) {
+      return;
+    }
+
+    hasAutoFittedRef.current = true;
+    fitView({ duration: 240, padding: 0.22 });
+  }, [blocks.length, fitView]);
+
+  const closeNodeContextMenu = useCallback(() => {
+    setNodeContextMenu({ visible: false, x: 0, y: 0, nodeId: null });
+  }, []);
+
+  const copySelectedFlow = useCallback(() => {
+    if (selectedNodes.length === 0) {
+      return;
+    }
+
+    const selectedNodeIdSet = new Set(selectedNodes);
+    const nodesToCopy = blocks.filter((node) => selectedNodeIdSet.has(node.id));
+    const edgesToCopy = edges.filter(
+      (edge) =>
+        selectedEdges.includes(edge.id) ||
+        (selectedNodeIdSet.has(edge.source) && selectedNodeIdSet.has(edge.target))
+    );
+
+    setClipboard({
+      nodes: deepClone(nodesToCopy),
+      edges: deepClone(edgesToCopy),
+    });
+    pasteIterationRef.current = 0;
+  }, [blocks, edges, selectedEdges, selectedNodes]);
+
+  const pasteFlow = useCallback(() => {
+    if (!clipboard.nodes?.length) {
+      return;
+    }
+
+    pasteIterationRef.current += 1;
+    const offset = PASTE_OFFSET * pasteIterationRef.current;
+    const idMap = new Map();
+
+    const pastedNodes = clipboard.nodes.map((node) => {
+      const newId = uuidv4();
+      idMap.set(node.id, newId);
+
+      return {
+        ...deepClone(node),
+        id: newId,
+        selected: true,
+        position: {
+          x: (node.position?.x || 0) + offset,
+          y: (node.position?.y || 0) + offset,
+        },
+      };
+    });
+
+    const pastedEdges = (clipboard.edges || [])
+      .filter((edge) => idMap.has(edge.source) && idMap.has(edge.target))
+      .map((edge) => ({
+        ...deepClone(edge),
+        id: uuidv4(),
+        source: idMap.get(edge.source),
+        target: idMap.get(edge.target),
+        selected: false,
+      }));
+
+    setNodes((nds) => nds.map((node) => ({ ...node, selected: false })).concat(pastedNodes));
+    setEdges((eds) => eds.map((edge) => ({ ...edge, selected: false })).concat(pastedEdges));
+    setSelectedNodes(pastedNodes.map((node) => node.id));
+    setSelectedEdges([]);
+    closeNodeContextMenu();
+  }, [clipboard.edges, clipboard.nodes, closeNodeContextMenu, setEdges, setNodes]);
+
+  const duplicateSingleNode = useCallback((nodeId) => {
+    const originalNode = blocks.find((node) => node.id === nodeId);
+    if (!originalNode) {
+      return;
+    }
+
+    const duplicatedNode = {
+      ...deepClone(originalNode),
+      id: uuidv4(),
+      selected: true,
+      position: {
+        x: (originalNode.position?.x || 0) + PASTE_OFFSET,
+        y: (originalNode.position?.y || 0) + PASTE_OFFSET,
+      },
+    };
+
+    setNodes((nds) => nds.map((node) => ({ ...node, selected: false })).concat(duplicatedNode));
+    setSelectedNodes([duplicatedNode.id]);
+    setSelectedEdges([]);
+    closeNodeContextMenu();
+  }, [blocks, closeNodeContextMenu, setNodes]);
+
+  const deleteSingleNode = useCallback((nodeId) => {
+    setNodes((nds) => nds.filter((node) => node.id !== nodeId));
+    setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
+    setSelectedNodes((ids) => ids.filter((id) => id !== nodeId));
+    setSelectedEdges([]);
+    closeNodeContextMenu();
+  }, [closeNodeContextMenu, setEdges, setNodes]);
+
+  const deleteSelection = useCallback(() => {
+    if (selectedNodes.length === 0 && selectedEdges.length === 0) {
+      return;
+    }
+
+    const selectedNodeIds = new Set(selectedNodes);
+    const selectedEdgeIds = new Set(selectedEdges);
+
+    setNodes((nds) => nds.filter((node) => !selectedNodeIds.has(node.id)));
+    setEdges((eds) =>
+      eds.filter(
+        (edge) =>
+          !selectedEdgeIds.has(edge.id) &&
+          !selectedNodeIds.has(edge.source) &&
+          !selectedNodeIds.has(edge.target)
+      )
+    );
+    setSelectedNodes([]);
+    setSelectedEdges([]);
+    closeNodeContextMenu();
+  }, [closeNodeContextMenu, selectedEdges, selectedNodes, setEdges, setNodes]);
+
+  const undoFlow = useCallback(() => {
+    setHistory((entries) => {
+      if (entries.length === 0) {
+        return entries;
+      }
+
+      const previousSnapshot = entries[entries.length - 1];
+      const currentSnapshot = snapshotRef.current;
+
+      setFuture((futureEntries) => [currentSnapshot, ...futureEntries].slice(0, HISTORY_LIMIT));
+      restoringHistoryRef.current = true;
+      snapshotRef.current = deepClone(previousSnapshot);
+
+      setNodes(deepClone(previousSnapshot.blocks));
+      setEdges(deepClone(previousSnapshot.edges));
+      setSelectedNodes([]);
+      setSelectedEdges([]);
+
+      closeNodeContextMenu();
+      return entries.slice(0, -1);
+    });
+  }, [closeNodeContextMenu, setEdges, setNodes]);
+
+  const redoFlow = useCallback(() => {
+    setFuture((futureEntries) => {
+      if (futureEntries.length === 0) {
+        return futureEntries;
+      }
+
+      const nextSnapshot = futureEntries[0];
+      const currentSnapshot = snapshotRef.current;
+
+      setHistory((entries) => [...entries.slice(-(HISTORY_LIMIT - 1)), currentSnapshot]);
+      restoringHistoryRef.current = true;
+      snapshotRef.current = deepClone(nextSnapshot);
+
+      setNodes(deepClone(nextSnapshot.blocks));
+      setEdges(deepClone(nextSnapshot.edges));
+      setSelectedNodes([]);
+      setSelectedEdges([]);
+
+      closeNodeContextMenu();
+      return futureEntries.slice(1);
+    });
+  }, [closeNodeContextMenu, setEdges, setNodes]);
+
+  useEffect(() => {
+    if (!nodeContextMenu.visible) {
+      return;
+    }
+
+    const handleWindowClick = () => {
+      closeNodeContextMenu();
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        closeNodeContextMenu();
+      }
+    };
+
+    window.addEventListener('click', handleWindowClick);
+    window.addEventListener('keydown', handleEscape);
+
+    return () => {
+      window.removeEventListener('click', handleWindowClick);
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [closeNodeContextMenu, nodeContextMenu.visible]);
 
   // Block replacement handler
   const handleReplaceDummyBlock = useCallback(
@@ -343,6 +617,86 @@ function CanvasInner({
     setErrorBlockId
   );
 
+  const executeSelectedFlowchart = useCallback(() => {
+    const selectedBlockId = selectedNodes[0] || null;
+    executeFlowchart({ selectedBlockId });
+  }, [executeFlowchart, selectedNodes]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        target?.isContentEditable
+      ) {
+        return;
+      }
+
+      if ((event.key === 'Delete' || event.key === 'Backspace') && !event.metaKey && !event.ctrlKey) {
+        event.preventDefault();
+        deleteSelection();
+        return;
+      }
+
+      const usesCommandModifier = event.metaKey || event.ctrlKey;
+      if (!usesCommandModifier) {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+
+      if (key === 'c') {
+        event.preventDefault();
+        copySelectedFlow();
+        return;
+      }
+
+      if (key === 'v') {
+        event.preventDefault();
+        pasteFlow();
+        return;
+      }
+
+      if (key === 'enter') {
+        event.preventDefault();
+        executeSelectedFlowchart();
+        return;
+      }
+
+      if (key === 'a') {
+        event.preventDefault();
+        setNodes((nds) => nds.map((node) => ({ ...node, selected: true })));
+        setEdges((eds) => eds.map((edge) => ({ ...edge, selected: true })));
+        setSelectedNodes(blocks.map((node) => node.id));
+        setSelectedEdges(edges.map((edge) => edge.id));
+        return;
+      }
+
+      if (key === '0') {
+        event.preventDefault();
+        fitView({ duration: 250, padding: 0.22 });
+        return;
+      }
+
+      if (key === 'z' && !event.shiftKey) {
+        event.preventDefault();
+        undoFlow();
+        return;
+      }
+
+      if ((key === 'z' && event.shiftKey) || key === 'y') {
+        event.preventDefault();
+        redoFlow();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [blocks, copySelectedFlow, deleteSelection, edges, executeSelectedFlowchart, fitView, pasteFlow, redoFlow, setEdges, setNodes, undoFlow]);
+
+
   const resetExecution = useFlowchartReset({
     setConsoleOutput,
     setCharacterPosition,
@@ -397,6 +751,55 @@ function CanvasInner({
       targetHandle: `target-${targetNode.id}`,
     };
   }, []);
+
+  const hasIncomingConnectionAtEntrance = useCallback(
+    (edgeList, candidateEdge) =>
+      edgeList.some(
+        (edge) =>
+          edge.target === candidateEdge.target &&
+          (edge.targetHandle || null) === (candidateEdge.targetHandle || null)
+      ),
+    []
+  );
+
+  const isValidConnection = useCallback(
+    (connection) => {
+      if (!connection?.source || !connection?.target) {
+        return false;
+      }
+
+      if (connection.source === connection.target) {
+        return false;
+      }
+
+      const sourceNode = blocks.find((node) => node.id === connection.source);
+      const targetNode = blocks.find((node) => node.id === connection.target);
+      const sourceType = (sourceNode?.data?.blockType || '').toLowerCase();
+      const targetType = (targetNode?.data?.blockType || '').toLowerCase();
+
+      if (sourceType === 'end' || sourceType === 'if' || sourceType === 'whilestart') {
+        return false;
+      }
+
+      if (targetType === 'start') {
+        return false;
+      }
+
+      const hasIncomingOnSameEntrance = edges.some(
+        (edge) =>
+          edge.target === connection.target &&
+          (edge.targetHandle || null) === (connection.targetHandle || null)
+      );
+
+      return !hasIncomingOnSameEntrance;
+    },
+    [blocks, edges]
+  );
+
+  const onMoveEnd = useCallback(() => {
+    const viewport = getViewport();
+    localStorage.setItem('code-connect:viewport', JSON.stringify(viewport));
+  }, [getViewport]);
 
   const getClosestEdge = useCallback((draggedNode) => {
     const draggedCenter = getNodeCenter(draggedNode);
@@ -453,6 +856,7 @@ function CanvasInner({
 
       if (
         closeEdge &&
+        !hasIncomingConnectionAtEntrance(nextEdges, closeEdge) &&
         !nextEdges.some(
           (edge) =>
             edge.source === closeEdge.source &&
@@ -473,7 +877,7 @@ function CanvasInner({
 
       return nextEdges;
     });
-  }, [getClosestEdge, setEdges]);
+  }, [getClosestEdge, hasIncomingConnectionAtEntrance, setEdges]);
 
   const onNodeDragStop = useCallback((_, node) => {
     const closeEdge = getClosestEdge(node);
@@ -483,6 +887,7 @@ function CanvasInner({
 
       if (
         closeEdge &&
+        !hasIncomingConnectionAtEntrance(nextEdges, closeEdge) &&
         !nextEdges.some(
           (edge) =>
             edge.source === closeEdge.source &&
@@ -500,10 +905,80 @@ function CanvasInner({
 
       return nextEdges;
     });
-  }, [getClosestEdge, setEdges]);
+  }, [getClosestEdge, hasIncomingConnectionAtEntrance, setEdges]);
+
+  const onNodeContextMenu = useCallback((event, node) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setSelectedNodes([node.id]);
+    setSelectedEdges([]);
+    setNodeContextMenu({
+      visible: true,
+      x: event.clientX,
+      y: event.clientY,
+      nodeId: node.id,
+    });
+  }, []);
 
   return (
     <div ref={reactFlowWrapper} className="flowchart-container" style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <div className="canvas-toolbar">
+        <div className="toolbar-group">
+          <button
+            className="toolbar-btn primary"
+            type="button"
+            onClick={executeSelectedFlowchart}
+            aria-label="Run"
+            data-tooltip="Run"
+          >
+            <FaPlay />
+            <span className="toolbar-label">Run</span>
+          </button>
+          <button
+            className="toolbar-btn"
+            type="button"
+            onClick={resetExecution}
+            aria-label="Reset execution"
+            data-tooltip="Reset"
+          >
+            <FaSyncAlt />
+            <span className="toolbar-label">Reset</span>
+          </button>
+        </div>
+        <div className="toolbar-group">
+          <button className="toolbar-btn" type="button" onClick={undoFlow} aria-label="Undo" data-tooltip="Undo">
+            <FaUndo />
+            <span className="toolbar-label">Undo</span>
+          </button>
+          <button className="toolbar-btn" type="button" onClick={redoFlow} aria-label="Redo" data-tooltip="Redo">
+            <FaRedo />
+            <span className="toolbar-label">Redo</span>
+          </button>
+          <button className="toolbar-btn" type="button" onClick={copySelectedFlow} aria-label="Copy" data-tooltip="Copy">
+            <FaCopy />
+            <span className="toolbar-label">Copy</span>
+          </button>
+          <button className="toolbar-btn" type="button" onClick={pasteFlow} aria-label="Paste" data-tooltip="Paste">
+            <FaPaste />
+            <span className="toolbar-label">Paste</span>
+          </button>
+          <button className="toolbar-btn danger" type="button" onClick={deleteSelection} aria-label="Delete" data-tooltip="Delete">
+            <FaTrash />
+            <span className="toolbar-label">Delete</span>
+          </button>
+          <button
+            className="toolbar-btn"
+            type="button"
+            onClick={() => fitView({ duration: 250, padding: 0.22 })}
+            aria-label="Fit view"
+            data-tooltip="Fit view"
+          >
+            <FaCompressArrowsAlt />
+            <span className="toolbar-label">Fit</span>
+          </button>
+        </div>
+      </div>
       <ReactFlow
         colorMode={colorMode}
         nodes={blocks}
@@ -525,6 +1000,7 @@ function CanvasInner({
           })
         }
         onConnect={onConnect}
+        isValidConnection={isValidConnection}
         onSelectionChange={({ nodes, edges }) => {
           setSelectedNodes(nodes.map((node) => node.id));
           setSelectedEdges(edges.map((edge) => edge.id));
@@ -533,6 +1009,9 @@ function CanvasInner({
         onDragOver={onDragOverHandler}
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
+        onMoveEnd={onMoveEnd}
+        onPaneClick={closeNodeContextMenu}
+        onNodeContextMenu={onNodeContextMenu}
       >
         <MiniMap
           style={{
@@ -552,21 +1031,6 @@ function CanvasInner({
         <Background color={colorMode === 'dark' ? '#334155' : '#94a3b8'} gap={20} />
       </ReactFlow>
 
-      <ControlPanel
-        executeFlowchart={executeFlowchart}
-        resetExecution={resetExecution}
-        selectedNodes={selectedNodes}
-        selectedEdges={selectedEdges}
-        setNodes={setNodes}
-        setEdges={setEdges}
-        setConsoleOutput={setConsoleOutput}
-        setCharacterPosition={setCharacterPosition}
-        setCharacterRotation={setCharacterRotation}
-        setCharacterMessage={setCharacterMessage}
-        setActiveBlockId={setActiveBlockId}
-        setActiveEdgeId={setActiveEdgeId}
-      />
-  
       {paletteVisible && dummyBlockPosition && (
         <PaletteOverlay
           dummyBlockPosition={dummyBlockPosition}
@@ -598,6 +1062,37 @@ function CanvasInner({
           onSubmit={val => inputRequest.resolve(val)}
           onCancel={() => inputRequest.resolve(null)}
         />
+      )}
+
+      {nodeContextMenu.visible && (
+        <div
+          className="node-context-menu"
+          style={{ left: nodeContextMenu.x, top: nodeContextMenu.y }}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              const node = blocks.find((item) => item.id === nodeContextMenu.nodeId);
+              if (node) {
+                setClipboard({ nodes: [deepClone(node)], edges: [] });
+                pasteIterationRef.current = 0;
+              }
+              closeNodeContextMenu();
+            }}
+          >
+            Copy Node
+          </button>
+          <button type="button" onClick={pasteFlow} disabled={!clipboard.nodes?.length}>
+            Paste
+          </button>
+          <button type="button" onClick={() => duplicateSingleNode(nodeContextMenu.nodeId)}>
+            Duplicate Node
+          </button>
+          <button type="button" className="danger" onClick={() => deleteSingleNode(nodeContextMenu.nodeId)}>
+            Delete Node
+          </button>
+        </div>
       )}
     </div>
   );

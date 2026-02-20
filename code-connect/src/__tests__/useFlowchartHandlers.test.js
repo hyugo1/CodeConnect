@@ -62,6 +62,20 @@ describe('useFlowchartHandlers', () => {
     expect(edges[0].label).toBe('');
     expect(edges[0].style).toMatchObject({ stroke: '#555', strokeWidth: 3 });
   });
+
+  test('onConnect blocks second connection to same target handle', () => {
+    const { result } = renderHook(() =>
+      useFlowchartHandlers({ setEdges })
+    );
+
+    act(() => {
+      result.current.onConnect({ source: 'a', target: 'b', sourceHandle: 'source-a', targetHandle: 'target-b' });
+      result.current.onConnect({ source: 'c', target: 'b', sourceHandle: 'source-c', targetHandle: 'target-b' });
+    });
+
+    expect(edges).toHaveLength(1);
+    expect(edges[0]).toMatchObject({ source: 'a', target: 'b', targetHandle: 'target-b' });
+  });
 });
 
 

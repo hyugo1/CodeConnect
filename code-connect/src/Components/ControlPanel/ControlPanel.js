@@ -63,6 +63,14 @@ const ControlPanel = ({
           <FaTrash /> Delete Selected
         </button>
       )}
+
+      <div className="control-panel-hint" aria-live="polite">
+        <div>{selectedNodes.length > 0 ? 'Run scope: selected flow' : 'Run scope: first start flow'}</div>
+        <div>Shortcuts: ⌘/Ctrl+Z undo, ⇧+⌘/Ctrl+Z redo</div>
+        <div>Shortcuts: ⌘/Ctrl+C copy, ⌘/Ctrl+V paste</div>
+        <div>Shortcuts: ⌘/Ctrl+0 fit view, Delete remove</div>
+        <div>Shortcuts: ⌘/Ctrl+Enter run</div>
+      </div>
     </div>
   );
 };

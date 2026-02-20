@@ -5,6 +5,12 @@ import CodePreview from '../CodePreview';
 import Console from '../Console/Console';
 import './RightPanel.css';
 
+const getResponsivePanelWidth = () => {
+  if (typeof window === 'undefined') return 380;
+  const target = Math.round(window.innerWidth * 0.23);
+  return Math.max(300, Math.min(target, 520));
+};
+
 const RightPanel = ({
   characterMessage,
   characterPosition,
@@ -14,8 +20,9 @@ const RightPanel = ({
   consoleOutput
 }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [width,     setWidth]     = useState(350); 
+  const [width,     setWidth]     = useState(() => getResponsivePanelWidth()); 
   const [resizing,  setResizing]  = useState(false);
+  const [userResized, setUserResized] = useState(false);
   const startXRef    = useRef(0);
   const startWidthRef= useRef(0);
 
@@ -23,9 +30,21 @@ const RightPanel = ({
   const onMouseDownResizer = e => {
     e.preventDefault();
     setResizing(true);
+    setUserResized(true);
     startXRef.current     = e.clientX;
     startWidthRef.current = width;
   };
+
+  useEffect(() => {
+    if (userResized) return;
+
+    const handleResize = () => {
+      setWidth(getResponsivePanelWidth());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [userResized]);
 
   // track global mousemove & mouseup
   useEffect(() => {

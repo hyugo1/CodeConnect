@@ -51,7 +51,7 @@
 .aside-container {
   position: relative;
   min-width: 60px;
-  max-width: 360px;
+  max-width: 520px;
   height: calc(100vh - 70px);
   background: var(--aside-bg);
   border-right: 1px solid var(--aside-border);
@@ -372,7 +372,7 @@
 
 @media (max-width: 768px) {
   .aside-container {
-    max-width: 280px;
+    max-width: 320px;
     min-width: 50px;
   }
   

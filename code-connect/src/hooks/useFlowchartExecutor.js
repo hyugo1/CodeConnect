@@ -3,6 +3,62 @@
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
+const getBlockType = (block) => (block?.data?.blockType || '').toLowerCase();
+
+function collectConnectedComponentNodeIds(anchorId, edges) {
+  if (!anchorId) {
+    return new Set();
+  }
+
+  const adjacency = new Map();
+  for (const edge of edges) {
+    if (!adjacency.has(edge.source)) adjacency.set(edge.source, []);
+    if (!adjacency.has(edge.target)) adjacency.set(edge.target, []);
+    adjacency.get(edge.source).push(edge.target);
+    adjacency.get(edge.target).push(edge.source);
+  }
+
+  const visited = new Set([anchorId]);
+  const queue = [anchorId];
+
+  while (queue.length) {
+    const current = queue.shift();
+    const neighbors = adjacency.get(current) || [];
+    for (const next of neighbors) {
+      if (!visited.has(next)) {
+        visited.add(next);
+        queue.push(next);
+      }
+    }
+  }
+
+  return visited;
+}
+
+function collectReachableNodeIds(startId, edges) {
+  const visited = new Set();
+
+  function dfs(id) {
+    if (!id || visited.has(id)) {
+      return;
+    }
+    visited.add(id);
+    edges.forEach((edge) => {
+      if (edge.source === id) {
+        dfs(edge.target);
+      }
+    });
+  }
+
+  dfs(startId);
+  return visited;
+}
+
+function canReachTarget(sourceId, targetId, edges) {
+  const reachable = collectReachableNodeIds(sourceId, edges);
+  return reachable.has(targetId);
+}
+
 /**
  * Validates the flowchart structure and the integrity of block data.
  * Returns an array of error messages. If the array is empty, the flowchart is valid.
@@ -11,20 +67,19 @@ import toast from 'react-hot-toast';
  * @param {Array} edges - The edges of the flowchart.
  * @returns {Array} errors - An array of error messages.
  */
-function validateFlowchart(blocks, edges) {
+function validateFlowchart(blocks, edges, preferredStartId = null) {
   const errors = [];
   const nodeIds = blocks.map(b => b.id);
 
   // Start block?
-  const start = blocks.find(b =>
-    (b.data.blockType || '').toLowerCase() === 'start' && b.type === 'custom'
-  );
+  const start = preferredStartId
+    ? blocks.find((b) => b.id === preferredStartId)
+    : blocks.find((b) => getBlockType(b) === 'start');
+
   if (!start) errors.push('Error: No Start block found.');
 
   // Check for existence of an End block
-  const end = blocks.find(b =>
-    (b.data.blockType || '').toLowerCase() === 'end'
-  );
+  const end = blocks.find((b) => getBlockType(b) === 'end');
   if (!end) errors.push('Error: No End block found.');
 
   // Check that all edges point to existing blocks
@@ -39,21 +94,19 @@ function validateFlowchart(blocks, edges) {
 
   // Check for connectivity from Start to End
   if (start && end) {
-    const visited = new Set();
-    function dfs(id) {
-      if (visited.has(id)) return;
-      visited.add(id);
-      edges.forEach(e => { if (e.source === id) dfs(e.target); });
-    }
-    dfs(start.id);
-    if (!visited.has(end.id)) {
+    const visited = collectReachableNodeIds(start.id, edges);
+    const hasReachableEnd = blocks
+      .filter((b) => getBlockType(b) === 'end')
+      .some((b) => visited.has(b.id));
+
+    if (!hasReachableEnd) {
       errors.push('Error: End block is not reachable from Start block.');
     }
   }
 
   // Validate each block's internal data
   blocks.forEach(b => {
-    if ((b.data.blockType || '').toLowerCase() === 'createvariable') {
+    if (getBlockType(b) === 'createvariable') {
       if (!b.data.varName?.trim()) {
         errors.push(
           `Error: Create Variable block "${b.data.label || b.id}" needs a variable name.`
@@ -109,8 +162,8 @@ export function useFlowchartExecutor(
     characterRotation: 0,
   };
   const outputs = [];
-  const nodes = blocks;
-  const conns = edges;
+  let nodes = blocks;
+  let conns = edges;
 
   // helper: delay with pause & speed multiplier
   async function delay(ms) {
@@ -415,23 +468,30 @@ export function useFlowchartExecutor(
         return;
     }
 
-    // walk all outgoing edges
+    // walk outgoing edges
     const outs = conns.filter(e => e.source === id);
-    for (const e of outs) {
-      if (type === 'if') {
-        const br = e.sourceHandle?.split('-')[0];
-        if ((br === 'yes' && block.conditionMet) || (br === 'no' && !block.conditionMet)) {
-          setActiveEdgeId(e.id);
-          await delay(EDGE_DELAY);
-          setActiveEdgeId(null);
-          await traverse(e.target, new Map(visits));
-        }
-      } else {
-        setActiveEdgeId(e.id);
+    if (type === 'if') {
+      const matchingEdge = outs.find((edge) => {
+        const br = edge.sourceHandle?.split('-')[0];
+        return (br === 'yes' && block.conditionMet) || (br === 'no' && !block.conditionMet);
+      });
+
+      if (matchingEdge) {
+        setActiveEdgeId(matchingEdge.id);
         await delay(EDGE_DELAY);
         setActiveEdgeId(null);
-        await traverse(e.target, new Map(visits));
+        await traverse(matchingEdge.target, new Map(visits));
       }
+    } else if (outs.length > 0) {
+      const edgeToFollow = outs[0];
+      if (outs.length > 1) {
+        outputs.push(`Warning: "${disp}" has multiple outgoing connections. Following the first one.`);
+      }
+
+      setActiveEdgeId(edgeToFollow.id);
+      await delay(EDGE_DELAY);
+      setActiveEdgeId(null);
+      await traverse(edgeToFollow.target, new Map(visits));
     }
 
     if (outs.length === 0 && type !== 'end') {
@@ -457,7 +517,7 @@ export function useFlowchartExecutor(
   }
 
   // the public entry point
-  const executeFlowchart = () => {
+  const executeFlowchart = ({ selectedBlockId = null } = {}) => {
     // preload mathjs chunk
     getEvaluate().catch(() => {
       toast.error('Could not load math engine');
@@ -473,24 +533,66 @@ export function useFlowchartExecutor(
     setErrorBlockId?.(null);
     setPaused(false);
 
+    const selectedBlock = selectedBlockId
+      ? blocks.find((block) => block.id === selectedBlockId)
+      : null;
+
+    let selectedComponentBlocks = blocks;
+    let selectedComponentEdges = edges;
+    let start = null;
+
+    if (selectedBlock) {
+      const componentNodeIds = collectConnectedComponentNodeIds(selectedBlock.id, edges);
+      selectedComponentBlocks = blocks.filter((block) => componentNodeIds.has(block.id));
+      selectedComponentEdges = edges.filter(
+        (edge) => componentNodeIds.has(edge.source) && componentNodeIds.has(edge.target)
+      );
+
+      const startCandidates = selectedComponentBlocks.filter((block) => getBlockType(block) === 'start');
+
+      if (getBlockType(selectedBlock) === 'start') {
+        start = selectedBlock;
+      } else {
+        const reachingStarts = startCandidates.filter((candidate) =>
+          canReachTarget(candidate.id, selectedBlock.id, selectedComponentEdges)
+        );
+        start = reachingStarts[0] || startCandidates[0] || null;
+      }
+
+      if (!start) {
+        const msg = 'Error: Selected block is not in a flow that has a Start block.';
+        toast.error(msg);
+        setConsoleOutput(msg);
+        return;
+      }
+    } else {
+      start = blocks.find((block) => getBlockType(block) === 'start') || null;
+    }
+
+    if (!start) {
+      toast.error('Error: No Start block found.');
+      setConsoleOutput('Error: No Start block found.');
+      return;
+    }
+
+    const reachableFromStart = collectReachableNodeIds(start.id, selectedComponentEdges);
+    nodes = selectedComponentBlocks.filter((block) => reachableFromStart.has(block.id));
+    conns = selectedComponentEdges.filter(
+      (edge) => reachableFromStart.has(edge.source) && reachableFromStart.has(edge.target)
+    );
+
     // validate up front
-    const errs = validateFlowchart(blocks, edges);
+    const errs = validateFlowchart(nodes, conns, start.id);
     if (errs.length) {
       errs.forEach(e => toast.error(e));
       setConsoleOutput(errs.join('\n'));
       return;
     }
 
-    // run from the Start block
-    const start = blocks.find(b => (b.data.blockType || '').toLowerCase() === 'start');
-    if (start) {
-      traverse(start.id, new Map()).then(() => {
-        setConsoleOutput(outputs.join('\n'));
-      });
-    } else {
-      toast.error('Error: No Start block found.');
-      setConsoleOutput('Error: No Start block found.');
-    }
+    // run from resolved Start block
+    traverse(start.id, new Map()).then(() => {
+      setConsoleOutput(outputs.join('\n'));
+    });
   };
 
   return { executeFlowchart, inputRequest };
