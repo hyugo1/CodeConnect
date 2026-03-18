@@ -62,7 +62,7 @@ With real-time code generation, step-by-step execution, and visual feedback, Cod
 
 ### Prerequisites
 
-- **Node.js** (v18 or later recommended)
+- **Node.js** (v20 or later)
 - **npm** or **yarn**
 - A Firebase project (for authentication and cloud storage features)
 
