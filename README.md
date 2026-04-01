@@ -15,18 +15,18 @@ Code Connect is a browser-based visual programming environment for beginners. Bu
 
 ## 📋 Table of Contents
 
-1. [🌟 Features](#-features)  
-2. [🛠️ Tech Stack](#️-tech-stack)  
-3. [💾 Installation & Local Development](#-installation--local-development)  
-4. [⚙️ Configuration](#️-configuration)  
-5. [🚀 Available Scripts](#-available-scripts)  
-6. [📦 Deployment](#-deployment)  
-7. [🤝 Contributing](#-contributing)  
-8. [📄 License](#-license)
+1. [Features](#-features)  
+2. [Tech Stack](#️-tech-stack)  
+3. [Installation & Local Development](#-installation--local-development)  
+4. [Configuration](#️-configuration)  
+5. [Available Scripts](#-available-scripts)  
+6. [Deployment](#-deployment)  
+7. [Contributing](#-contributing)  
+8. [License](#-license)
 
 ---
 
-## 🌟 Features
+## Features
 
 - **Visual Flowchart Editor**  
   Drag & drop blocks (Start, If, While, Variables, I/O, Move, Rotate, etc.) on a React Flow canvas, connect them, and see a live mini-map with zoom/pan controls.
@@ -58,7 +58,7 @@ Code Connect is a browser-based visual programming environment for beginners. Bu
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework**: React 18.3.1 (Create React App)  
 - **Diagramming**: React Flow  
@@ -72,7 +72,7 @@ Code Connect is a browser-based visual programming environment for beginners. Bu
 
 ---
 
-## 💾 Installation & Local Development
+## Installation & Local Development
 
 1. **Clone the repo**  
    ```bash
@@ -94,10 +94,10 @@ Code Connect is a browser-based visual programming environment for beginners. Bu
 7.	**Run locally**:
  - npm start or yarn start, Visit http://localhost:3000.
 
-⚙️ **Configuration**
+**Configuration**
 - All environment variables are prefixed with REACT_APP_.
 
-🚀 **Available Scripts**
+**Available Scripts**
 - npm start           # start dev server
 - npm test            # run unit & integration tests
 - npm run build       # production build (minified & tree-shaken)
@@ -105,7 +105,7 @@ Code Connect is a browser-based visual programming environment for beginners. Bu
 - npm run format      # Prettier code formatting
 - npm run serve       # serve `build/` locally for testing
 
-📦 **Deployment**
+**Deployment**
 Continuous Deployment is configured via Firebase Hosting:
 - npm run build
 - firebase deploy
