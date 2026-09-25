@@ -1,4 +1,4 @@
-// src/Components/Canvas/Canvas.js
+// src/Components/Canvas/Canvas.jsx
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import ReactFlow, {

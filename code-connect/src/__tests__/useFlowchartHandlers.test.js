@@ -4,8 +4,9 @@ import { renderHook } from '@testing-library/react';
 import { act } from 'react';
 import useFlowchartHandlers from '../hooks/useFlowchartHandlers';
 import { MarkerType } from 'reactflow';
+import { vi } from 'vitest';
 
-jest.mock('uuid', () => ({ v4: () => 'test-uuid' }));
+vi.mock('uuid', () => ({ v4: () => 'test-uuid' }));
 
 describe('useFlowchartHandlers', () => {
   let edges;

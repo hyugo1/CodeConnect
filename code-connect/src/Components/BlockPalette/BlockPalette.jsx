@@ -1,4 +1,4 @@
-// src/Components/BlockPalette/BlockPalette.js
+// src/Components/BlockPalette/BlockPalette.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { FaPlay, FaStop } from 'react-icons/fa';
 import AddCircleIcon from '@mui/icons-material/AddCircle';

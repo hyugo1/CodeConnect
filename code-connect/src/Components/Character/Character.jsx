@@ -1,4 +1,4 @@
-// src/Components/Character/Character.js
+// src/Components/Character/Character.jsx
 import React from 'react';
   import './Character.css';
 
@@ -18,11 +18,11 @@ import React from 'react';
         )}
        <picture>
           <source
-            srcSet={`${process.env.PUBLIC_URL}/orange_blob.webp`}
+            srcSet="/orange_blob.webp"
             type="image/webp"
           />
           <img
-            src={`${process.env.PUBLIC_URL}/orange_blob.png`}
+            src="/orange_blob.png"
             alt="Character"
             className="character-image"
           />

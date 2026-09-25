@@ -1,4 +1,4 @@
-// src/Components/blocks/EndBlock.js
+// src/Components/CustomBlock/blocks/EndBlock.jsx
 
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';

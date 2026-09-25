@@ -1,4 +1,4 @@
-// src/contexts/ActiveFlowContext.js
+// src/contexts/ActiveFlowContext.jsx
 
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
