@@ -1,4 +1,4 @@
-// // src/Components/CustomBlock/blocks/createVariable.js
+// // src/Components/CustomBlock/blocks/createVariable.jsx
 
 // import React, { useState } from 'react';
 // import { Handle, Position } from 'reactflow';

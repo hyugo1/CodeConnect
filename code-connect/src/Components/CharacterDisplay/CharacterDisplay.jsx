@@ -1,4 +1,4 @@
-// src/Components/CharacterDisplay.js
+// src/Components/CharacterDisplay.jsx
 
 import React from 'react';
 import Character from '../Character/Character';

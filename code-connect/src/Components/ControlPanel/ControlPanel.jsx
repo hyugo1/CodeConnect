@@ -1,4 +1,4 @@
-// src/Components/ControlPanel/ControlPanel.js
+// src/Components/ControlPanel/ControlPanel.jsx
 import React from 'react';
 import './ControlPanel.css';
 import { FaPlay, FaRedo, FaTrash } from 'react-icons/fa';

@@ -1,4 +1,4 @@
-// src/Components/RightPanel/RightPanel.js
+// src/Components/RightPanel/RightPanel.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import CharacterDisplay from '../CharacterDisplay/CharacterDisplay';
 import CodePreview from '../CodePreview';

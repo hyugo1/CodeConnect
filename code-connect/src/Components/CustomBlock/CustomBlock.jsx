@@ -1,4 +1,4 @@
-// src/Components/CustomBlock/CustomBlock.js
+// src/Components/CustomBlock/CustomBlock.jsx
 
 import React from 'react';
 import { useActiveFlow } from '../../contexts/ActiveFlowContext';

@@ -1,3 +1,4 @@
+// src/Components/CustomBlock/blocks/DummyBlock.jsx
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';

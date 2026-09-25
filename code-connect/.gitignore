@@ -10,6 +10,7 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -27,3 +28,4 @@ firebase.js
 .firebase
 .firebaserc
 firebase.json
+firebase-debug.log

@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.jsx
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { ReactFlowProvider } from 'reactflow';

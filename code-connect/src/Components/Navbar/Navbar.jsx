@@ -360,12 +360,12 @@ const Navbar = ({ blocks, edges, setNodes, setEdges, reactFlowWrapperRef, themeM
           <picture>
             {/* 1) WebP first */}
             <source
-              srcSet={`${process.env.PUBLIC_URL}/logo.webp`}
+              srcSet="/logo.webp"
               type="image/webp"
             />
             {/* 2) Fallback to PNG */}
             <img
-              src={`${process.env.PUBLIC_URL}/logo.png`}
+              src="/logo.png"
               alt="Code Connect Logo"
               className="navbar-logo"
             />

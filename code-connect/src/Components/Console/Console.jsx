@@ -1,4 +1,4 @@
-// src/Components/Console/Console.js
+// src/Components/Console/Console.jsx
 
 import React, { useState } from 'react';
 import './Console.css';
