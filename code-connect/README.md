@@ -7,6 +7,7 @@
 **A visual programming tool for learning coding fundamentals through interactive flowcharts**
 
 [![React](https://img.shields.io/badge/React-18.3-blue?logo=react)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.0-purple?logo=vite)](https://vite.dev/)
 [![React Flow](https://img.shields.io/badge/React_Flow-12.0-green?logo=flow)](https://reactflow.dev/)
 [![Firebase](https://img.shields.io/badge/Firebase-10.0-yellow?logo=firebase)](https://firebase.google.com/)
 
@@ -86,7 +87,7 @@ With real-time code generation, step-by-step execution, and visual feedback, Cod
    - Copy your Firebase config to `src/config/firebase.js`:
      ```javascript
      import { initializeApp } from "firebase/app";
-     import { getAuth } from "firebase/auth";
+     import { getAuth, GoogleAuthProvider } from "firebase/auth";
      import { getFirestore } from "firebase/firestore";
 
      const firebaseConfig = {
@@ -95,11 +96,13 @@ With real-time code generation, step-by-step execution, and visual feedback, Cod
        projectId: "YOUR_PROJECT_ID",
        storageBucket: "YOUR_PROJECT_ID.appspot.com",
        messagingSenderId: "YOUR_SENDER_ID",
-       appId: "YOUR_APP_ID"
+       appId: "YOUR_APP_ID",
+       measurementId: "YOUR_MEASUREMENT_ID"
      };
 
      const app = initializeApp(firebaseConfig);
      export const auth = getAuth(app);
+     export const googleProvider = new GoogleAuthProvider();
      export const db = getFirestore(app);
      ```
 
@@ -108,15 +111,26 @@ With real-time code generation, step-by-step execution, and visual feedback, Cod
    npm start
    ```
 
-   The app will open at [http://localhost:3000](http://localhost:3000)
+   The app will open at [http://localhost:5173](http://localhost:5173)
+
+### Other Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm start` / `npm run dev` | Start the Vite dev server with hot module reloading |
+| `npm run build` | Build an optimized production bundle to `dist/` |
+| `npm run preview` | Serve the production build locally to sanity-check it |
+| `npm test` | Run the test suite with Vitest |
 
 ## 🛠️ Tech Stack
 
 | Technology | Purpose |
 |------------|---------|
 | **React 18** | UI Framework |
+| **Vite** | Build tool & dev server |
 | **React Flow** | Flowchart/Block Editor |
 | **Firebase** | Auth & Database |
+| **Vitest** | Testing |
 | **CSS Modules** | Styling |
 
 ## 📖 Usage Guide
@@ -157,7 +171,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Libraries & Tools
 - [React Flow](https://reactflow.dev/) for the amazing flowchart library
-- [Create React App](https://github.com/facebook/create-react-app) for the project bootstrap
+- [Vite](https://vite.dev/) for the build tooling and dev server
 - [Firebase](https://firebase.google.com/) for backend services
 - [React.js](https://reactjs.org/) for the UI framework
 - [Google Fonts](https://fonts.google.com/) for typography
